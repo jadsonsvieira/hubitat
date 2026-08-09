@@ -392,6 +392,27 @@ def login_page():
 def cadastro_page():
     return FileResponse(os.path.join(STATIC_DIR, "index.html"))
 
+@app.get("/manifest.json")
+def get_manifest():
+    return FileResponse(os.path.join(STATIC_DIR, "manifest.json"))
+
+@app.get("/sw.js")
+def get_sw():
+    return FileResponse(os.path.join(STATIC_DIR, "sw.js"))
+
+@app.get("/favicon.ico")
+@app.get("/favicon.png")
+def get_favicon():
+    return FileResponse(os.path.join(STATIC_DIR, "favicon.png"))
+
+@app.get("/icon-192.png")
+def get_icon192():
+    return FileResponse(os.path.join(STATIC_DIR, "icon-192.png"))
+
+@app.get("/icon-512.png")
+def get_icon512():
+    return FileResponse(os.path.join(STATIC_DIR, "icon-512.png"))
+
 @app.get("/api/config")
 def get_public_config():
     return {
