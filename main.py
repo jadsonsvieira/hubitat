@@ -62,10 +62,10 @@ class OrdemServico(BaseModel):
     location: str
     category: str
     priority: str
-    status: str
-    date: str
-    assignee: str
-    description: str
+    status: Optional[str] = "Pendente"
+    date: Optional[str] = "Hoje"
+    assignee: Optional[str] = ""
+    description: Optional[str] = ""
 
 class Reserva(BaseModel):
     id: str
