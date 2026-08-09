@@ -588,17 +588,25 @@
     <div class="modal-overlay" id="osModal">
         <div class="modal-card glass shadow-lg">
             <div class="modal-header">
-                <h3><i class="fa-solid fa-wrench"></i> Abrir Nova Ordem de Serviço</h3>
-                <button class="close-btn" onclick="closeModal('osModal')"><i class="fa-solid fa-xmark"></i></button>
+                <div class="modal-header-title">
+                    <div class="modal-header-icon">
+                        <i class="fa-solid fa-wrench"></i>
+                    </div>
+                    <div>
+                        <h3>Abrir Nova Ordem de Serviço</h3>
+                        <p class="modal-subtitle">Registre a manutenção preventiva ou corretiva do condomínio</p>
+                    </div>
+                </div>
+                <button type="button" class="close-btn" onclick="closeModal('osModal')"><i class="fa-solid fa-xmark"></i></button>
             </div>
             <form id="newOSForm">
                 <div class="form-group">
-                    <label>Título da O.S.</label>
+                    <label><i class="fa-solid fa-heading color-primary"></i> Título da O.S.</label>
                     <input type="text" id="osTitle" placeholder="Ex: Substituição de refletor LED na quadra de beach tennis" required>
                 </div>
                 <div class="form-group-row">
                     <div class="form-group">
-                        <label>Categoria</label>
+                        <label><i class="fa-solid fa-layer-group color-primary"></i> Categoria</label>
                         <select id="osCategory" required>
                             <option value="Elétrica">Elétrica</option>
                             <option value="Hidráulica">Hidráulica</option>
@@ -608,13 +616,13 @@
                         </select>
                     </div>
                     <div class="form-group">
-                        <label>Localização / Área</label>
+                        <label><i class="fa-solid fa-location-dot color-primary"></i> Localização / Área</label>
                         <input type="text" id="osLocation" placeholder="Ex: Alameda das Mangueiras, Lote 14" required>
                     </div>
                 </div>
                 <div class="form-group-row">
                     <div class="form-group">
-                        <label>Prioridade</label>
+                        <label><i class="fa-solid fa-shield-cat color-primary"></i> Prioridade</label>
                         <select id="osPriority">
                             <option value="Baixa">Baixa</option>
                             <option value="Média" selected>Média</option>
@@ -623,12 +631,12 @@
                         </select>
                     </div>
                     <div class="form-group">
-                        <label>Prestador / Responsável</label>
+                        <label><i class="fa-solid fa-user-gear color-primary"></i> Prestador / Responsável</label>
                         <input type="text" id="osAssignee" placeholder="Ex: Eusébio ServElétrica Ltda">
                     </div>
                 </div>
                 <div class="form-group">
-                    <label>Descrição Detalhada do Problema</label>
+                    <label><i class="fa-solid fa-align-left color-primary"></i> Descrição Detalhada do Problema</label>
                     <textarea id="osDescription" rows="3" placeholder="Descreva os detalhes da solicitação..." required></textarea>
                 </div>
                 <div class="modal-footer">
@@ -643,32 +651,40 @@
     <div class="modal-overlay" id="reservaModal">
         <div class="modal-card glass shadow-lg">
             <div class="modal-header">
-                <h3><i class="fa-solid fa-calendar-plus"></i> Reservar Área de Lazer</h3>
-                <button class="close-btn" onclick="closeModal('reservaModal')"><i class="fa-solid fa-xmark"></i></button>
+                <div class="modal-header-title">
+                    <div class="modal-header-icon" style="background: linear-gradient(135deg, rgba(16, 185, 129, 0.25), rgba(52, 211, 153, 0.1)); border-color: rgba(16, 185, 129, 0.4); color: #34d399;">
+                        <i class="fa-solid fa-calendar-plus"></i>
+                    </div>
+                    <div>
+                        <h3>Reservar Área de Lazer</h3>
+                        <p class="modal-subtitle">Agende um espaço comum de acordo com o estatuto do condomínio</p>
+                    </div>
+                </div>
+                <button type="button" class="close-btn" onclick="closeModal('reservaModal')"><i class="fa-solid fa-xmark"></i></button>
             </div>
             <form id="newReservaForm">
                 <input type="hidden" id="modalSpaceId">
                 <div class="form-group">
-                    <label>Espaço Selecionado</label>
+                    <label><i class="fa-solid fa-house-user color-emerald"></i> Espaço Selecionado</label>
                     <input type="text" id="modalSpaceName" readonly class="readonly-input">
                 </div>
                 <div class="form-group-row">
                     <div class="form-group">
-                        <label>Nome do Morador</label>
+                        <label><i class="fa-solid fa-user color-emerald"></i> Nome do Morador</label>
                         <input type="text" id="reservaMorador" placeholder="Nome do titular" required>
                     </div>
                     <div class="form-group">
-                        <label>Unidade / Casa</label>
+                        <label><i class="fa-solid fa-building-user color-emerald"></i> Unidade / Casa</label>
                         <input type="text" id="reservaUnidade" placeholder="Ex: Casa 18 - Alameda Flamboyant" required>
                     </div>
                 </div>
                 <div class="form-group-row">
                     <div class="form-group">
-                        <label>Data da Reserva</label>
+                        <label><i class="fa-solid fa-calendar-day color-emerald"></i> Data da Reserva</label>
                         <input type="date" id="reservaData" required>
                     </div>
                     <div class="form-group">
-                        <label>Turno / Horário</label>
+                        <label><i class="fa-solid fa-clock color-emerald"></i> Turno / Horário</label>
                         <select id="reservaTurno">
                             <option value="Manhã (08h às 13h)">Manhã (08h às 13h)</option>
                             <option value="Tarde (13h às 18h)">Tarde (13h às 18h)</option>
@@ -678,7 +694,7 @@
                     </div>
                 </div>
                 <div class="form-group">
-                    <label>Estimativa de Convidados</label>
+                    <label><i class="fa-solid fa-users color-emerald"></i> Estimativa de Convidados</label>
                     <input type="number" id="reservaConvidados" min="1" max="100" value="15" required>
                 </div>
                 <div class="modal-footer">
