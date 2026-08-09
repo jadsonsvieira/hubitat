@@ -1295,42 +1295,7 @@ body {
 .login-subtitle {
     font-size: 0.85rem;
     color: var(--text-muted);
-    margin-bottom: 1.5rem;
-}
-
-.auth-tabs {
-    display: flex;
-    background: #121214;
-    border: 1px solid var(--border-color);
-    border-radius: var(--radius-lg);
-    padding: 4px;
-    margin-bottom: 1.5rem;
-    gap: 4px;
-}
-
-.auth-tab-btn {
-    flex: 1;
-    background: transparent;
-    border: none;
-    color: var(--text-muted);
-    padding: 0.6rem 0.5rem;
-    border-radius: var(--radius-md);
-    font-family: var(--font-body);
-    font-size: 0.82rem;
-    font-weight: 600;
-    cursor: pointer;
-    transition: var(--transition);
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    gap: 0.4rem;
-}
-
-.auth-tab-btn.active {
-    background: #18181b;
-    color: #c084fc;
-    border: 1px solid rgba(139, 92, 246, 0.35);
-    box-shadow: 0 2px 8px rgba(0, 0, 0, 0.4);
+    margin-bottom: 2rem;
 }
 
 .login-card .form-group {

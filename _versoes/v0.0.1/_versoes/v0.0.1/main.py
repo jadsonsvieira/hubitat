@@ -3,7 +3,6 @@ import json
 from typing import List, Optional
 from pydantic import BaseModel
 from fastapi import FastAPI, HTTPException, Depends, Security
-from fastapi.responses import FileResponse
 from fastapi.middleware.cors import CORSMiddleware
 from fastapi.staticfiles import StaticFiles
 from fastapi.security import HTTPBearer, HTTPAuthorizationCredentials
@@ -48,12 +47,6 @@ def verify_token(credentials: HTTPAuthorizationCredentials = Depends(security)):
 # Model definitions
 class LoginRequest(BaseModel):
     username: str
-    password: str
-
-class CadastroRequest(BaseModel):
-    name: str
-    email: str
-    condo: str
     password: str
 
 class OrdemServico(BaseModel):
@@ -356,20 +349,6 @@ def login(request: LoginRequest):
     if request.username == ADMIN_USER and request.password == ADMIN_PASSWORD:
         return {"access_token": ADMIN_TOKEN, "token_type": "bearer"}
     raise HTTPException(status_code=401, detail="Usuário ou senha incorretos")
-
-@app.post("/api/cadastro")
-def cadastro(request: CadastroRequest):
-    if not request.email or not request.password or not request.name:
-        raise HTTPException(status_code=400, detail="Por favor preencha todos os campos obrigatórios")
-    return {"access_token": ADMIN_TOKEN, "token_type": "bearer", "message": "Conta criada com sucesso!"}
-
-@app.get("/login")
-def login_page():
-    return FileResponse(os.path.join(STATIC_DIR, "index.html"))
-
-@app.get("/cadastro")
-def cadastro_page():
-    return FileResponse(os.path.join(STATIC_DIR, "index.html"))
 
 
 # PROTECTED API ENDPOINTS

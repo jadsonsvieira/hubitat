@@ -115,40 +115,8 @@ async function refreshAllData() {
     }
 }
 
-// AUTHENTICATION & ROUTING TABS
-window.switchAuthTab = function(tab) {
-    const loginView = document.getElementById("loginFormView");
-    const cadastroView = document.getElementById("cadastroFormView");
-    const tabLogin = document.getElementById("authTabLogin");
-    const tabCadastro = document.getElementById("authTabCadastro");
-
-    if (tab === "cadastro") {
-        if (loginView) loginView.style.display = "none";
-        if (cadastroView) cadastroView.style.display = "block";
-        if (tabLogin) tabLogin.classList.remove("active");
-        if (tabCadastro) tabCadastro.classList.add("active");
-        if (window.location.pathname !== "/cadastro") {
-            history.pushState(null, "", "/cadastro");
-        }
-    } else {
-        if (loginView) loginView.style.display = "block";
-        if (cadastroView) cadastroView.style.display = "none";
-        if (tabLogin) tabLogin.classList.add("active");
-        if (tabCadastro) tabCadastro.classList.remove("active");
-        if (window.location.pathname !== "/login") {
-            history.pushState(null, "", "/login");
-        }
-    }
-};
-
+// AUTHENTICATION HANDLERS
 function initAuthHandlers() {
-    // Initial Route check
-    if (window.location.pathname === "/cadastro") {
-        window.switchAuthTab("cadastro");
-    } else if (window.location.pathname === "/login") {
-        window.switchAuthTab("login");
-    }
-
     const loginForm = document.getElementById("loginForm");
     if (loginForm) {
         loginForm.addEventListener("submit", async (e) => {
@@ -171,49 +139,10 @@ function initAuthHandlers() {
                     if (overlay) overlay.classList.remove("active");
                     
                     showToast("Login realizado com sucesso!", "success");
-                    if (window.location.pathname !== "/") {
-                        history.pushState(null, "", "/");
-                    }
                     await refreshAllData();
                 } else {
                     const errorData = await response.json();
                     showToast(errorData.detail || "Credenciais incorretas.", "danger");
-                }
-            } catch (err) {
-                showToast("Erro ao conectar com o servidor.", "danger");
-            }
-        });
-    }
-
-    const cadastroForm = document.getElementById("cadastroForm");
-    if (cadastroForm) {
-        cadastroForm.addEventListener("submit", async (e) => {
-            e.preventDefault();
-            const name = document.getElementById("cadastroName").value;
-            const email = document.getElementById("cadastroEmail").value;
-            const condo = document.getElementById("cadastroCondo").value;
-            const password = document.getElementById("cadastroPassword").value;
-
-            try {
-                const response = await fetch(`${API_BASE}/api/cadastro`, {
-                    method: 'POST',
-                    headers: { 'Content-Type': 'application/json' },
-                    body: JSON.stringify({ name, email, condo, password })
-                });
-
-                if (response.ok) {
-                    const data = await response.json();
-                    localStorage.setItem("hubitat_token", data.access_token);
-                    const overlay = document.getElementById("loginOverlay");
-                    if (overlay) overlay.classList.remove("active");
-                    showToast(data.message || "Conta criada com sucesso!", "success");
-                    if (window.location.pathname !== "/") {
-                        history.pushState(null, "", "/");
-                    }
-                    await refreshAllData();
-                } else {
-                    const errorData = await response.json();
-                    showToast(errorData.detail || "Erro ao realizar cadastro.", "danger");
                 }
             } catch (err) {
                 showToast("Erro ao conectar com o servidor.", "danger");
@@ -229,24 +158,21 @@ function initAuthHandlers() {
         });
     }
 
-    // Social login handlers (Google, Facebook, Microsoft)
+    // Social login handlers
     const handleSocialLogin = async (provider) => {
         localStorage.setItem("hubitat_token", "hubitat-jwt-secret-session-token");
         const overlay = document.getElementById("loginOverlay");
         if (overlay) overlay.classList.remove("active");
         showToast(`Conectado com sucesso via ${provider}!`, "success");
-        if (window.location.pathname !== "/") {
-            history.pushState(null, "", "/");
-        }
         await refreshAllData();
     };
 
     const googleBtn = document.getElementById("socialGoogleBtn");
-    const facebookBtn = document.getElementById("socialFacebookBtn");
+    const appleBtn = document.getElementById("socialAppleBtn");
     const microsoftBtn = document.getElementById("socialMicrosoftBtn");
 
     if (googleBtn) googleBtn.onclick = () => handleSocialLogin("Google");
-    if (facebookBtn) facebookBtn.onclick = () => handleSocialLogin("Facebook");
+    if (appleBtn) appleBtn.onclick = () => handleSocialLogin("Apple");
     if (microsoftBtn) microsoftBtn.onclick = () => handleSocialLogin("Microsoft");
 }
 
@@ -254,7 +180,6 @@ function logout() {
     localStorage.removeItem("hubitat_token");
     const overlay = document.getElementById("loginOverlay");
     if (overlay) overlay.classList.add("active");
-    if (window.switchAuthTab) window.switchAuthTab("login");
 
     // Clear local state UI
     state.ordensServico = [];

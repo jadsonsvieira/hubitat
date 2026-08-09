@@ -533,7 +533,7 @@
     <!-- TOAST NOTIFICATION -->
     <div class="toast-container" id="toastContainer"></div>
 
-    <!-- LOGIN / CADASTRO SCREEN OVERLAY -->
+    <!-- LOGIN SCREEN OVERLAY -->
     <div class="login-overlay active" id="loginOverlay">
         <div class="login-card glass shadow-lg">
             <div class="login-header">
@@ -543,58 +543,19 @@
                 <h2>Hubitat</h2>
                 <p class="login-subtitle">by Frame [IA] • Gestão Condominial</p>
             </div>
-
-            <!-- Auth Switcher Tabs -->
-            <div class="auth-tabs">
-                <button type="button" class="auth-tab-btn active" id="authTabLogin" onclick="switchAuthTab('login')">
-                    <i class="fa-solid fa-right-to-bracket"></i> Entrar
+            <form id="loginForm">
+                <div class="form-group">
+                    <label><i class="fa-solid fa-user"></i> Usuário Admin</label>
+                    <input type="text" id="loginUsername" placeholder="Ex: admin" required autocomplete="username">
+                </div>
+                <div class="form-group margin-top-sm">
+                    <label><i class="fa-solid fa-lock"></i> Senha de Acesso</label>
+                    <input type="password" id="loginPassword" placeholder="Digite sua senha" required autocomplete="current-password">
+                </div>
+                <button type="submit" class="action-btn primary wide margin-top-lg">
+                    <i class="fa-solid fa-right-to-bracket"></i> Acessar Sistema
                 </button>
-                <button type="button" class="auth-tab-btn" id="authTabCadastro" onclick="switchAuthTab('cadastro')">
-                    <i class="fa-solid fa-user-plus"></i> Criar Conta
-                </button>
-            </div>
-
-            <!-- LOGIN FORM VIEW -->
-            <div id="loginFormView">
-                <form id="loginForm">
-                    <div class="form-group">
-                        <label><i class="fa-solid fa-user"></i> Usuário Admin</label>
-                        <input type="text" id="loginUsername" placeholder="Ex: admin" required autocomplete="username">
-                    </div>
-                    <div class="form-group margin-top-sm">
-                        <label><i class="fa-solid fa-lock"></i> Senha de Acesso</label>
-                        <input type="password" id="loginPassword" placeholder="Digite sua senha" required autocomplete="current-password">
-                    </div>
-                    <button type="submit" class="action-btn primary wide margin-top-lg">
-                        <i class="fa-solid fa-right-to-bracket"></i> Acessar Sistema
-                    </button>
-                </form>
-            </div>
-
-            <!-- CADASTRO FORM VIEW -->
-            <div id="cadastroFormView" style="display: none;">
-                <form id="cadastroForm">
-                    <div class="form-group">
-                        <label><i class="fa-solid fa-user"></i> Nome Completo</label>
-                        <input type="text" id="cadastroName" placeholder="Seu nome ou Razão Social" required>
-                    </div>
-                    <div class="form-group margin-top-sm">
-                        <label><i class="fa-solid fa-envelope"></i> E-mail Corporativo</label>
-                        <input type="email" id="cadastroEmail" placeholder="seuemail@condominio.com" required>
-                    </div>
-                    <div class="form-group margin-top-sm">
-                        <label><i class="fa-solid fa-building"></i> Condomínio / Cidade</label>
-                        <input type="text" id="cadastroCondo" placeholder="Ex: Alphaville Eusébio" required>
-                    </div>
-                    <div class="form-group margin-top-sm">
-                        <label><i class="fa-solid fa-lock"></i> Criar Senha</label>
-                        <input type="password" id="cadastroPassword" placeholder="Sua senha secreta" required>
-                    </div>
-                    <button type="submit" class="action-btn primary wide margin-top-lg">
-                        <i class="fa-solid fa-user-plus"></i> Criar Minha Conta
-                    </button>
-                </form>
-            </div>
+            </form>
 
             <div class="social-login-divider">
                 <span>ou entrar com</span>
@@ -604,9 +565,9 @@
                     <i class="fa-brands fa-google"></i>
                     <span>Google</span>
                 </button>
-                <button type="button" class="social-btn" id="socialFacebookBtn" title="Entrar com Facebook">
-                    <i class="fa-brands fa-facebook"></i>
-                    <span>Facebook</span>
+                <button type="button" class="social-btn" id="socialAppleBtn" title="Entrar com Apple">
+                    <i class="fa-brands fa-apple"></i>
+                    <span>Apple</span>
                 </button>
                 <button type="button" class="social-btn" id="socialMicrosoftBtn" title="Entrar com Microsoft">
                     <i class="fa-brands fa-microsoft"></i>
