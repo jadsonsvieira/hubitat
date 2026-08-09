@@ -56,21 +56,38 @@ document.addEventListener('DOMContentLoaded', async () => {
     initCondoSelector();
     initAuthHandlers();
     
-    // Check local authentication state
-    const token = localStorage.getItem("hubitat_token");
-    if (token) {
-        const overlay = document.getElementById("loginOverlay");
-        if (overlay) overlay.classList.remove("active");
-        await refreshAllData();
-    } else {
-        const overlay = document.getElementById("loginOverlay");
-        if (overlay) overlay.classList.add("active");
-    }
-
+    await checkAuthAndLoadData();
     renderEspacos();
     initForms();
     initQuickOSPreventiva();
 });
+
+// CHECK AUTHENTICATION AND LANDING PAGE ROUTING
+async function checkAuthAndLoadData() {
+    const token = localStorage.getItem("hubitat_token");
+    const landingPage = document.getElementById("landingPage");
+    const appContainer = document.querySelector(".app-container");
+    const loginOverlay = document.getElementById("loginOverlay");
+    const path = window.location.pathname;
+
+    if (token) {
+        if (landingPage) landingPage.style.display = "none";
+        if (appContainer) appContainer.style.display = "flex";
+        if (loginOverlay) loginOverlay.classList.remove("active");
+        await refreshAllData();
+    } else {
+        if (appContainer) appContainer.style.display = "none";
+        if (path === "/login" || path === "/cadastro") {
+            if (landingPage) landingPage.style.display = "none";
+            if (loginOverlay) loginOverlay.classList.add("active");
+            if (window.switchAuthTab) window.switchAuthTab(path === "/cadastro" ? "cadastro" : "login");
+        } else {
+            // Root URL / -> Exibe Landing Page
+            if (landingPage) landingPage.style.display = "block";
+            if (loginOverlay) loginOverlay.classList.remove("active");
+        }
+    }
+}
 
 // SECURE API FETCH WRAPPER
 async function apiFetch(url, options = {}) {
@@ -139,6 +156,18 @@ window.switchAuthTab = function(tab) {
             history.pushState(null, "", "/login");
         }
     }
+};
+
+window.openAuthModal = function(tab) {
+    const landingPage = document.getElementById("landingPage");
+    const loginOverlay = document.getElementById("loginOverlay");
+    if (landingPage) landingPage.style.display = "none";
+    if (loginOverlay) loginOverlay.classList.add("active");
+    if (window.switchAuthTab) window.switchAuthTab(tab);
+};
+
+window.toggleFaq = function(element) {
+    element.classList.toggle("active");
 };
 
 function initAuthHandlers() {
