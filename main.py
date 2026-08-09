@@ -371,6 +371,14 @@ def login_page():
 def cadastro_page():
     return FileResponse(os.path.join(STATIC_DIR, "index.html"))
 
+@app.get("/api/config")
+def get_public_config():
+    return {
+        "google_client_id": os.getenv("GOOGLE_CLIENT_ID", "71269651978-gp165jo1i5r6mgmb22u8s82g0jsdh5v0.apps.googleusercontent.com"),
+        "microsoft_client_id": os.getenv("MICROSOFT_CLIENT_ID", "138269ce-38e6-4c1e-bc6a-b5292e877a24"),
+        "facebook_app_id": os.getenv("FACEBOOK_APP_ID", "2263040147842797")
+    }
+
 
 # PROTECTED API ENDPOINTS
 

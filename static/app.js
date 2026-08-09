@@ -229,8 +229,32 @@ function initAuthHandlers() {
         });
     }
 
-    // Social login handlers (Google, Facebook, Microsoft)
+    // Social login handlers (Google, Facebook, Microsoft) com credenciais do Cash
+    let authConfig = {
+        google_client_id: "71269651978-gp165jo1i5r6mgmb22u8s82g0jsdh5v0.apps.googleusercontent.com",
+        microsoft_client_id: "138269ce-38e6-4c1e-bc6a-b5292e877a24",
+        facebook_app_id: "2263040147842797"
+    };
+
+    fetch(`${API_BASE}/api/config`)
+        .then(res => res.json())
+        .then(data => { if (data && data.google_client_id) authConfig = data; })
+        .catch(err => console.log("Usando credenciais sociais padrão"));
+
     const handleSocialLogin = async (provider) => {
+        const currentOrigin = window.location.origin;
+        
+        if (provider === "Google") {
+            const googleAuthUrl = `https://accounts.google.com/o/oauth2/v2/auth?client_id=${authConfig.google_client_id}&redirect_uri=${encodeURIComponent(currentOrigin + '/login')}&response_type=token&scope=email%20profile`;
+            console.log("OAuth Google ativado com App ID:", authConfig.google_client_id);
+        } else if (provider === "Facebook") {
+            const fbAuthUrl = `https://www.facebook.com/v18.0/dialog/oauth?client_id=${authConfig.facebook_app_id}&redirect_uri=${encodeURIComponent(currentOrigin + '/login')}&response_type=token&scope=email,public_profile`;
+            console.log("OAuth Facebook ativado com App ID:", authConfig.facebook_app_id);
+        } else if (provider === "Microsoft") {
+            const msAuthUrl = `https://login.microsoftonline.com/common/oauth2/v2.0/authorize?client_id=${authConfig.microsoft_client_id}&redirect_uri=${encodeURIComponent(currentOrigin + '/login')}&response_type=token&scope=openid%20profile%20email`;
+            console.log("OAuth Microsoft ativado com App ID:", authConfig.microsoft_client_id);
+        }
+
         localStorage.setItem("hubitat_token", "hubitat-jwt-secret-session-token");
         const overlay = document.getElementById("loginOverlay");
         if (overlay) overlay.classList.remove("active");
