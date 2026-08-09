@@ -12,9 +12,6 @@
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
     <!-- Stylesheet -->
     <link rel="stylesheet" href="styles.css">
-    <!-- Google Identity Services & Microsoft MSAL SDKs -->
-    <script src="https://accounts.google.com/gsi/client" async defer></script>
-    <script type="text/javascript" src="https://alcdn.msauth.net/browser/2.35.0/js/msal-browser.min.js"></script>
 </head>
     <!-- LANDING PAGE -->
     <div class="landing-page" id="landingPage" style="display: none;">
@@ -756,15 +753,15 @@
                 <span>ou entrar com</span>
             </div>
             <div class="social-login-grid">
-                <button type="button" class="social-btn" id="socialGoogleBtn" onclick="fazerLoginGoogle()" title="Entrar com Google">
+                <button type="button" class="social-btn" id="socialGoogleBtn" title="Entrar com Google">
                     <i class="fa-brands fa-google"></i>
                     <span>Google</span>
                 </button>
-                <button type="button" class="social-btn" id="socialFacebookBtn" onclick="fazerLoginFacebook()" title="Entrar com Facebook">
+                <button type="button" class="social-btn" id="socialFacebookBtn" title="Entrar com Facebook">
                     <i class="fa-brands fa-facebook"></i>
                     <span>Facebook</span>
                 </button>
-                <button type="button" class="social-btn" id="socialMicrosoftBtn" onclick="fazerLoginMicrosoft()" title="Entrar com Microsoft">
+                <button type="button" class="social-btn" id="socialMicrosoftBtn" title="Entrar com Microsoft">
                     <i class="fa-brands fa-microsoft"></i>
                     <span>Microsoft</span>
                 </button>

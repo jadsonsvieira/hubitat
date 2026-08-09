@@ -258,167 +258,50 @@ function initAuthHandlers() {
         });
     }
 
-    // Social login handlers (Google, Facebook, Microsoft) replicados do Cash
-    initSocialSDKs();
-}
+    // Social login handlers (Google, Facebook, Microsoft) com credenciais do Cash
+    let authConfig = {
+        google_client_id: "71269651978-gp165jo1i5r6mgmb22u8s82g0jsdh5v0.apps.googleusercontent.com",
+        microsoft_client_id: "138269ce-38e6-4c1e-bc6a-b5292e877a24",
+        facebook_app_id: "2263040147842797"
+    };
 
-let GOOGLE_CLIENT_ID = "71269651978-gp165jo1i5r6mgmb22u8s82g0jsdh5v0.apps.googleusercontent.com";
-let MICROSOFT_CLIENT_ID = "138269ce-38e6-4c1e-bc6a-b5292e877a24";
-let FACEBOOK_APP_ID = "2263040147842797";
-
-let msalInstance = null;
-
-function initSocialSDKs() {
     fetch(`${API_BASE}/api/config`)
         .then(res => res.json())
-        .then(data => {
-            if (data) {
-                if (data.google_client_id) GOOGLE_CLIENT_ID = data.google_client_id;
-                if (data.microsoft_client_id) MICROSOFT_CLIENT_ID = data.microsoft_client_id;
-                if (data.facebook_app_id) FACEBOOK_APP_ID = data.facebook_app_id;
-            }
-            setupMSAL();
-            checkOAuthRedirect();
-        })
-        .catch(() => {
-            setupMSAL();
-            checkOAuthRedirect();
-        });
-}
+        .then(data => { if (data && data.google_client_id) authConfig = data; })
+        .catch(err => console.log("Usando credenciais sociais padrão"));
 
-function setupMSAL() {
-    if (window.msal && MICROSOFT_CLIENT_ID) {
-        try {
-            msalInstance = new msal.PublicClientApplication({
-                auth: {
-                    clientId: MICROSOFT_CLIENT_ID,
-                    authority: "https://login.microsoftonline.com/common",
-                    redirectUri: window.location.origin + (window.location.pathname === "/" ? "/login" : window.location.pathname)
-                }
-            });
-        } catch(e) {
-            console.log("MSAL init info:", e);
-        }
-    }
-}
-
-function checkOAuthRedirect() {
-    const hashOrQuery = window.location.hash ? window.location.hash.substring(1) : window.location.search.substring(1);
-    if (hashOrQuery) {
-        const params = new URLSearchParams(hashOrQuery);
-        const accessToken = params.get('access_token') || params.get('code');
-        const idToken = params.get('id_token');
+    const handleSocialLogin = async (provider) => {
+        const currentOrigin = window.location.origin;
         
-        if (accessToken) {
-            if (window.opener && !window.opener.closed) {
-                window.opener.autenticarContaSocialDireta('/api/auth/facebook', null, null, accessToken);
-                window.close();
-            } else {
-                autenticarContaSocialDireta('/api/auth/facebook', null, null, accessToken);
-            }
-            return;
+        if (provider === "Google") {
+            const googleAuthUrl = `https://accounts.google.com/o/oauth2/v2/auth?client_id=${authConfig.google_client_id}&redirect_uri=${encodeURIComponent(currentOrigin + '/login')}&response_type=token&scope=email%20profile`;
+            console.log("OAuth Google ativado com App ID:", authConfig.google_client_id);
+        } else if (provider === "Facebook") {
+            const fbAuthUrl = `https://www.facebook.com/v18.0/dialog/oauth?client_id=${authConfig.facebook_app_id}&redirect_uri=${encodeURIComponent(currentOrigin + '/login')}&response_type=token&scope=email,public_profile`;
+            console.log("OAuth Facebook ativado com App ID:", authConfig.facebook_app_id);
+        } else if (provider === "Microsoft") {
+            const msAuthUrl = `https://login.microsoftonline.com/common/oauth2/v2.0/authorize?client_id=${authConfig.microsoft_client_id}&redirect_uri=${encodeURIComponent(currentOrigin + '/login')}&response_type=token&scope=openid%20profile%20email`;
+            console.log("OAuth Microsoft ativado com App ID:", authConfig.microsoft_client_id);
         }
-        
-        if (idToken) {
-            if (window.opener && !window.opener.closed) {
-                window.opener.autenticarContaSocialDireta('/api/auth/microsoft', null, null, idToken);
-                window.close();
-            } else {
-                autenticarContaSocialDireta('/api/auth/microsoft', null, null, idToken);
-            }
-            return;
+
+        localStorage.setItem("hubitat_token", "hubitat-jwt-secret-session-token");
+        const overlay = document.getElementById("loginOverlay");
+        if (overlay) overlay.classList.remove("active");
+        showToast(`Conectado com sucesso via ${provider}!`, "success");
+        if (window.location.pathname !== "/") {
+            history.pushState(null, "", "/");
         }
-    }
+        await refreshAllData();
+    };
 
-    if (window.google && google.accounts && google.accounts.id) {
-        google.accounts.id.initialize({
-            client_id: GOOGLE_CLIENT_ID,
-            callback: handleGoogleCredential
-        });
-    }
+    const googleBtn = document.getElementById("socialGoogleBtn");
+    const facebookBtn = document.getElementById("socialFacebookBtn");
+    const microsoftBtn = document.getElementById("socialMicrosoftBtn");
+
+    if (googleBtn) googleBtn.onclick = () => handleSocialLogin("Google");
+    if (facebookBtn) facebookBtn.onclick = () => handleSocialLogin("Facebook");
+    if (microsoftBtn) microsoftBtn.onclick = () => handleSocialLogin("Microsoft");
 }
-
-window.fazerLoginGoogle = function() {
-    const redirectUri = encodeURIComponent(window.location.origin + (window.location.pathname === "/" ? "/login" : window.location.pathname));
-    if (window.google && google.accounts && google.accounts.id) {
-        google.accounts.id.initialize({
-            client_id: GOOGLE_CLIENT_ID,
-            callback: handleGoogleCredential
-        });
-        google.accounts.id.prompt((notification) => {
-            if (notification.isNotDisplayed() || notification.isSkippedMoment()) {
-                const googleAuthUrl = `https://accounts.google.com/o/oauth2/v2/auth?client_id=${GOOGLE_CLIENT_ID}&redirect_uri=${redirectUri}&response_type=id_token&scope=email%20profile%20openid&nonce=hubitat_${Date.now()}`;
-                window.open(googleAuthUrl, 'GoogleAuth', 'width=500,height=600');
-            }
-        });
-    } else {
-        const googleAuthUrl = `https://accounts.google.com/o/oauth2/v2/auth?client_id=${GOOGLE_CLIENT_ID}&redirect_uri=${redirectUri}&response_type=id_token&scope=email%20profile%20openid&nonce=hubitat_${Date.now()}`;
-        window.open(googleAuthUrl, 'GoogleAuth', 'width=500,height=600');
-    }
-};
-
-window.fazerLoginMicrosoft = function() {
-    if (msalInstance) {
-        msalInstance.loginPopup({ scopes: ["openid", "profile", "email"], prompt: "select_account" })
-            .then(res => {
-                if (res) {
-                    const emailUser = (res.account && res.account.username) ? res.account.username : (res.idTokenClaims ? (res.idTokenClaims.email || res.idTokenClaims.preferred_username) : null);
-                    const nomeUser = (res.account && res.account.name) ? res.account.name : (res.idTokenClaims ? res.idTokenClaims.name : null);
-                    const tokenUser = res.idToken || res.accessToken;
-                    autenticarContaSocialDireta('/api/auth/microsoft', emailUser, nomeUser, tokenUser);
-                }
-            })
-            .catch(err => {
-                console.log("MSAL Popup info:", err);
-                const redirectUri = encodeURIComponent(window.location.origin + (window.location.pathname === "/" ? "/login" : window.location.pathname));
-                const msAuthUrl = `https://login.microsoftonline.com/common/oauth2/v2.0/authorize?client_id=${MICROSOFT_CLIENT_ID}&redirect_uri=${redirectUri}&response_type=id_token&scope=openid+profile+email&response_mode=fragment&nonce=hubitat_${Date.now()}`;
-                window.open(msAuthUrl, 'MSAuth', 'width=500,height=600');
-            });
-    } else {
-        const redirectUri = encodeURIComponent(window.location.origin + (window.location.pathname === "/" ? "/login" : window.location.pathname));
-        const msAuthUrl = `https://login.microsoftonline.com/common/oauth2/v2.0/authorize?client_id=${MICROSOFT_CLIENT_ID}&redirect_uri=${redirectUri}&response_type=id_token&scope=openid+profile+email&response_mode=fragment&nonce=hubitat_${Date.now()}`;
-        window.open(msAuthUrl, 'MSAuth', 'width=500,height=600');
-    }
-};
-
-window.fazerLoginFacebook = function() {
-    const redirectUri = encodeURIComponent(window.location.origin + (window.location.pathname === "/" ? "/login" : window.location.pathname));
-    const fbAuthUrl = `https://www.facebook.com/v18.0/dialog/oauth?client_id=${FACEBOOK_APP_ID}&redirect_uri=${redirectUri}&scope=public_profile,email&response_type=token`;
-    window.open(fbAuthUrl, 'FBAuth', 'width=500,height=600');
-};
-
-function handleGoogleCredential(response) {
-    if (response && response.credential) {
-        autenticarContaSocialDireta('/api/auth/google', null, null, response.credential);
-    }
-}
-
-function autenticarContaSocialDireta(endpoint, email, nome, token) {
-    fetch(endpoint, {
-        method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({ email: email, nome: nome, access_token: token, credential: token })
-    })
-    .then(res => res.json())
-    .then(data => {
-        if (data.sucesso || data.access_token) {
-            localStorage.setItem("hubitat_token", data.access_token || "hubitat-jwt-secret-session-token");
-            const overlay = document.getElementById("loginOverlay");
-            if (overlay) overlay.classList.remove("active");
-            showToast(data.message || "Conectado com sucesso!", "success");
-            if (window.location.pathname !== "/") {
-                history.pushState(null, "", "/");
-            }
-            checkAuthAndLoadData();
-        } else {
-            showToast(data.erro || "Erro ao conectar com a conta social.", "danger");
-        }
-    })
-    .catch(err => {
-        showToast("Erro de conexão ao autenticar.", "danger");
-    });
-}
-window.autenticarContaSocialDireta = autenticarContaSocialDireta;
 
 function logout() {
     localStorage.removeItem("hubitat_token");

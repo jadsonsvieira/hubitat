@@ -12,178 +12,19 @@
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
     <!-- Stylesheet -->
     <link rel="stylesheet" href="styles.css">
-    <!-- Google Identity Services & Microsoft MSAL SDKs -->
-    <script src="https://accounts.google.com/gsi/client" async defer></script>
-    <script type="text/javascript" src="https://alcdn.msauth.net/browser/2.35.0/js/msal-browser.min.js"></script>
 </head>
-    <!-- LANDING PAGE -->
-    <div class="landing-page" id="landingPage" style="display: none;">
-        <!-- Landing Navbar -->
-        <nav class="landing-nav">
-            <img src="logo.png" alt="Hubitat by Frame [IA]" class="landing-nav-logo">
-            <ul class="landing-nav-links">
-                <li><a href="#recursos">Recursos</a></li>
-                <li><a href="#planos">Planos</a></li>
-                <li><a href="#faq">FAQ</a></li>
-            </ul>
-            <div class="landing-nav-actions">
-                <button type="button" class="action-btn primary" onclick="openAuthModal('login')">
-                    <i class="fa-solid fa-right-to-bracket"></i> Entrar
-                </button>
-                <button type="button" class="action-btn emerald" onclick="openAuthModal('cadastro')">
-                    <i class="fa-solid fa-user-plus"></i> Criar Conta
-                </button>
-            </div>
-        </nav>
-
-        <!-- Hero Section -->
-        <header class="landing-hero">
-            <div class="landing-hero-badge">
-                <i class="fa-solid fa-sparkles"></i> Gestão Condominial de Alto Padrão • Eusébio & Fortaleza
-            </div>
-            <h1 class="landing-hero-title">
-                A Plataforma Inteligente que Transforma a <span>Gestão do seu Condomínio</span>
-            </h1>
-            <p class="landing-hero-subtitle">
-                Controle de portaria com QR Code Express, gestão integrada de Ordens de Serviço, agendamento de áreas comuns e Inteligência Artificial residencial em uma única experiência fluida.
-            </p>
-            <div class="landing-hero-ctas">
-                <button type="button" class="action-btn primary" style="padding: 0.95rem 2rem; font-size: 1rem;" onclick="openAuthModal('cadastro')">
-                    <i class="fa-solid fa-rocket"></i> Testar Gratuitamente <i class="fa-solid fa-arrow-right"></i>
-                </button>
-                <button type="button" class="action-btn emerald" style="padding: 0.95rem 2rem; font-size: 1rem;" onclick="openAuthModal('login')">
-                    <i class="fa-solid fa-shield-halved"></i> Acessar Painel
-                </button>
-            </div>
-        </header>
-
-        <!-- Features Grid -->
-        <section class="landing-section" id="recursos">
-            <div class="section-header">
-                <h2>Tecnologia de Ponta para Síndicos e Moradores</h2>
-                <p>Desenvolvido para condomínios horizontais e verticais com altíssima exigência operacional</p>
-            </div>
-
-            <div class="features-grid">
-                <div class="feature-card">
-                    <div class="feature-icon"><i class="fa-solid fa-qrcode"></i></div>
-                    <h3>Portaria Express & QR Code</h3>
-                    <p>Liberação rápida para visitantes e prestadores de serviço com avisos em tempo real via WhatsApp e App.</p>
-                </div>
-
-                <div class="feature-card">
-                    <div class="feature-icon"><i class="fa-solid fa-wrench"></i></div>
-                    <h3>Gestão de Manutenção & O.S.</h3>
-                    <p>Acompanhamento de Ordens de Serviço com fornecedores homologados, prazos e controle orçamentário.</p>
-                </div>
-
-                <div class="feature-card">
-                    <div class="feature-icon"><i class="fa-solid fa-calendar-check"></i></div>
-                    <h3>Reservas Inteligentes</h3>
-                    <p>Agendamento simplificado de Decks, Quadras e Salões com taxas automáticas e verificação de regras.</p>
-                </div>
-
-                <div class="feature-card">
-                    <div class="feature-icon"><i class="fa-solid fa-robot"></i></div>
-                    <h3>Copilot IA Condominial</h3>
-                    <p>Assistente com inteligência artificial para redação de comunicados, consulta ao regimento interno e relatórios.</p>
-                </div>
-            </div>
-        </section>
-
-        <!-- Pricing Section -->
-        <section class="landing-section" id="planos">
-            <div class="section-header">
-                <h2>Planos Sob Medida para o seu Condomínio</h2>
-                <p>Transparência e previsibilidade financeira para a administração</p>
-            </div>
-
-            <div class="pricing-grid">
-                <div class="price-card">
-                    <div class="price-header">
-                        <h3>Essencial</h3>
-                        <p>Para condomínios de até 50 unidades</p>
-                    </div>
-                    <div class="price-amount">R$ 290<span>/mês</span></div>
-                    <ul class="price-features">
-                        <li><i class="fa-solid fa-check"></i> Portaria & Cadastro de Visitantes</li>
-                        <li><i class="fa-solid fa-check"></i> Gestão de O.S. Básica</li>
-                        <li><i class="fa-solid fa-check"></i> Reservas de até 2 Áreas Comuns</li>
-                        <li><i class="fa-solid fa-check"></i> Suporte por E-mail</li>
-                    </ul>
-                    <button type="button" class="action-btn primary wide" onclick="openAuthModal('cadastro')">Começar Agora</button>
-                </div>
-
-                <div class="price-card popular">
-                    <div class="popular-tag">Mais Escolhido</div>
-                    <div class="price-header">
-                        <h3>Premium Pro</h3>
-                        <p>Condomínios residenciais de médio e grande porte</p>
-                    </div>
-                    <div class="price-amount">R$ 590<span>/mês</span></div>
-                    <ul class="price-features">
-                        <li><i class="fa-solid fa-check"></i> Tudo do plano Essencial</li>
-                        <li><i class="fa-solid fa-check"></i> Copilot IA com Inteligência Ativa</li>
-                        <li><i class="fa-solid fa-check"></i> QR Code Express Ilimitado</li>
-                        <li><i class="fa-solid fa-check"></i> Gestão de O.S. Avançada + Alertas</li>
-                        <li><i class="fa-solid fa-check"></i> Suporte Prioritário 24/7</li>
-                    </ul>
-                    <button type="button" class="action-btn emerald wide" onclick="openAuthModal('cadastro')">Contratar Premium</button>
-                </div>
-            </div>
-        </section>
-
-        <!-- FAQ Section -->
-        <section class="landing-section" id="faq">
-            <div class="section-header">
-                <h2>Perguntas Frequentes</h2>
-                <p>Tire suas dúvidas sobre a implantação do Hubitat no seu condomínio</p>
-            </div>
-
-            <div class="faq-list">
-                <div class="faq-item" onclick="toggleFaq(this)">
-                    <div class="faq-question">
-                        <span>Como funciona o banco de dados e a segurança das informações?</span>
-                        <i class="fa-solid fa-chevron-down"></i>
-                    </div>
-                    <div class="faq-answer">
-                        O Hubitat opera em servidor MySQL exclusivo e dedicado com criptografia de ponta a ponta e backups automáticos na VPS.
-                    </div>
-                </div>
-
-                <div class="faq-item" onclick="toggleFaq(this)">
-                    <div class="faq-question">
-                        <span>Como os moradores acessam o sistema?</span>
-                        <i class="fa-solid fa-chevron-down"></i>
-                    </div>
-                    <div class="faq-answer">
-                        Os moradores podem utilizar o navegador web ou o aplicativo com suporte a login rápido via Google, Facebook ou Microsoft.
-                    </div>
-                </div>
-
-                <div class="faq-item" onclick="toggleFaq(this)">
-                    <div class="faq-question">
-                        <span>É possível migrar os dados de um sistema antigo?</span>
-                        <i class="fa-solid fa-chevron-down"></i>
-                    </div>
-                    <div class="faq-answer">
-                        Sim, nossa equipe oferece suporte para importação de moradores, veículos e cadastros prévios sem custos adicionais no plano Pro.
-                    </div>
-                </div>
-            </div>
-        </section>
-
-        <!-- Footer -->
-        <footer class="landing-footer">
-            <p>© 2026 Hubitat by Frame [IA] • Gestão Condominial Inteligente. Todos os direitos reservados.</p>
-        </footer>
-    </div>
-
+<body class="dark-theme">
     <div class="app-container">
         <!-- Sidebar -->
         <aside class="sidebar">
             <div class="brand">
-                <img src="logo.png" alt="Hubitat by Frame [IA]" class="sidebar-logo-img">
+                <div class="brand-icon">
+                    <i class="fa-solid fa-building-shield"></i>
+                </div>
+                <div class="brand-text">
+                    <span class="brand-name">Hubitat</span>
+                    <span class="brand-tag">by Frame [IA]</span>
+                </div>
             </div>
 
             <!-- Condo Selector -->
@@ -692,79 +533,43 @@
     <!-- TOAST NOTIFICATION -->
     <div class="toast-container" id="toastContainer"></div>
 
-    <!-- LOGIN / CADASTRO SCREEN OVERLAY -->
+    <!-- LOGIN SCREEN OVERLAY -->
     <div class="login-overlay active" id="loginOverlay">
         <div class="login-card glass shadow-lg">
             <div class="login-header">
-                <img src="logo.png" alt="Hubitat by Frame [IA]" class="login-logo-img">
+                <div class="login-brand-icon">
+                    <i class="fa-solid fa-building-shield"></i>
+                </div>
+                <h2>Hubitat</h2>
                 <p class="login-subtitle">by Frame [IA] • Gestão Condominial</p>
             </div>
-
-            <!-- Auth Switcher Tabs -->
-            <div class="auth-tabs">
-                <button type="button" class="auth-tab-btn active" id="authTabLogin" onclick="switchAuthTab('login')">
-                    <i class="fa-solid fa-right-to-bracket"></i> Entrar
+            <form id="loginForm">
+                <div class="form-group">
+                    <label><i class="fa-solid fa-user"></i> Usuário Admin</label>
+                    <input type="text" id="loginUsername" placeholder="Ex: admin" required autocomplete="username">
+                </div>
+                <div class="form-group margin-top-sm">
+                    <label><i class="fa-solid fa-lock"></i> Senha de Acesso</label>
+                    <input type="password" id="loginPassword" placeholder="Digite sua senha" required autocomplete="current-password">
+                </div>
+                <button type="submit" class="action-btn primary wide margin-top-lg">
+                    <i class="fa-solid fa-right-to-bracket"></i> Acessar Sistema
                 </button>
-                <button type="button" class="auth-tab-btn" id="authTabCadastro" onclick="switchAuthTab('cadastro')">
-                    <i class="fa-solid fa-user-plus"></i> Criar Conta
-                </button>
-            </div>
-
-            <!-- LOGIN FORM VIEW -->
-            <div id="loginFormView">
-                <form id="loginForm">
-                    <div class="form-group">
-                        <label><i class="fa-solid fa-user"></i> Usuário Admin</label>
-                        <input type="text" id="loginUsername" placeholder="Ex: admin" required autocomplete="username">
-                    </div>
-                    <div class="form-group margin-top-sm">
-                        <label><i class="fa-solid fa-lock"></i> Senha de Acesso</label>
-                        <input type="password" id="loginPassword" placeholder="Digite sua senha" required autocomplete="current-password">
-                    </div>
-                    <button type="submit" class="action-btn primary wide margin-top-lg">
-                        <i class="fa-solid fa-right-to-bracket"></i> Acessar Sistema
-                    </button>
-                </form>
-            </div>
-
-            <!-- CADASTRO FORM VIEW -->
-            <div id="cadastroFormView" style="display: none;">
-                <form id="cadastroForm">
-                    <div class="form-group">
-                        <label><i class="fa-solid fa-user"></i> Nome Completo</label>
-                        <input type="text" id="cadastroName" placeholder="Seu nome ou Razão Social" required>
-                    </div>
-                    <div class="form-group margin-top-sm">
-                        <label><i class="fa-solid fa-envelope"></i> E-mail Corporativo</label>
-                        <input type="email" id="cadastroEmail" placeholder="seuemail@condominio.com" required>
-                    </div>
-                    <div class="form-group margin-top-sm">
-                        <label><i class="fa-solid fa-building"></i> Condomínio / Cidade</label>
-                        <input type="text" id="cadastroCondo" placeholder="Ex: Alphaville Eusébio" required>
-                    </div>
-                    <div class="form-group margin-top-sm">
-                        <label><i class="fa-solid fa-lock"></i> Criar Senha</label>
-                        <input type="password" id="cadastroPassword" placeholder="Sua senha secreta" required>
-                    </div>
-                    <button type="submit" class="action-btn primary wide margin-top-lg">
-                        <i class="fa-solid fa-user-plus"></i> Criar Minha Conta
-                    </button>
-                </form>
-            </div>
+            </form>
 
             <div class="social-login-divider">
                 <span>ou entrar com</span>
             </div>
             <div class="social-login-grid">
-                <button type="button" class="social-btn" id="socialGoogleBtn" onclick="fazerLoginGoogle()" title="Entrar com Google">
+                <button type="button" class="social-btn" id="socialGoogleBtn" title="Entrar com Google">
                     <i class="fa-brands fa-google"></i>
                     <span>Google</span>
                 </button>
-                <button type="button" class="social-btn" id="socialFacebookBtn" onclick="fazerLoginFacebook()" title="Entrar com Facebook">
-                    <i class="fa-brands fa-facebook"></i>
-                    <span>Facebook</span>
+                <button type="button" class="social-btn" id="socialAppleBtn" title="Entrar com Apple">
+                    <i class="fa-brands fa-apple"></i>
+                    <span>Apple</span>
                 </button>
-                <button type="button" class="social-btn" id="socialMicrosoftBtn" onclick="fazerLoginMicrosoft()" title="Entrar com Microsoft">
+                <button type="button" class="social-btn" id="socialMicrosoftBtn" title="Entrar com Microsoft">
                     <i class="fa-brands fa-microsoft"></i>
                     <span>Microsoft</span>
                 </button>
