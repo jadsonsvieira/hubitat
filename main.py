@@ -7,6 +7,12 @@ from fastapi.middleware.cors import CORSMiddleware
 from fastapi.staticfiles import StaticFiles
 from fastapi.security import HTTPBearer, HTTPAuthorizationCredentials
 import uvicorn
+from dotenv import load_dotenv
+import mysql.connector
+from mysql.connector import Error
+
+# Load environment configuration (.env)
+load_dotenv()
 
 app = FastAPI(title="Hubitat by Frame IA - Backend")
 
@@ -85,7 +91,7 @@ class CopilotQuery(BaseModel):
     prompt: str
     condo: str
 
-# Default Initial Data (LGPD-compliant mocks or clean defaults)
+# Default Initial Data (Fallback)
 DEFAULT_DATA = {
     "ordensServico": [
         {
@@ -190,7 +196,137 @@ DEFAULT_DATA = {
     ]
 }
 
-def load_data() -> dict:
+# DATABASE INITIALIZATION AND HELPER METHODS
+
+USE_DB = False
+
+def get_db_connection():
+    if not USE_DB:
+        return None
+    return mysql.connector.connect(
+        host=os.getenv("DB_HOST"),
+        user=os.getenv("DB_USER"),
+        password=os.getenv("DB_PASS"),
+        database=os.getenv("DB_NAME")
+    )
+
+def init_db():
+    global USE_DB
+    host = os.getenv("DB_HOST")
+    user = os.getenv("DB_USER")
+    password = os.getenv("DB_PASS")
+    database = os.getenv("DB_NAME")
+    
+    if not all([host, user, password, database]):
+        print("Configurações do banco de dados não encontradas no .env. Utilizando JSON local.")
+        return
+
+    try:
+        conn = mysql.connector.connect(
+            host=host,
+            user=user,
+            password=password,
+            database=database
+        )
+        if conn.is_connected():
+            cursor = conn.cursor()
+            
+            # Create OS table
+            cursor.execute("""
+                CREATE TABLE IF NOT EXISTS hubitat_os (
+                    id VARCHAR(50) PRIMARY KEY,
+                    title VARCHAR(255) NOT NULL,
+                    location VARCHAR(255) NOT NULL,
+                    category VARCHAR(100) NOT NULL,
+                    priority VARCHAR(50) NOT NULL,
+                    status VARCHAR(50) NOT NULL,
+                    date VARCHAR(50) NOT NULL,
+                    assignee VARCHAR(255) NOT NULL,
+                    description TEXT NOT NULL
+                );
+            """)
+            
+            # Create Reservas table
+            cursor.execute("""
+                CREATE TABLE IF NOT EXISTS hubitat_reservas (
+                    id VARCHAR(50) PRIMARY KEY,
+                    espaco VARCHAR(255) NOT NULL,
+                    morador VARCHAR(255) NOT NULL,
+                    unidade VARCHAR(255) NOT NULL,
+                    data VARCHAR(50) NOT NULL,
+                    turno VARCHAR(100) NOT NULL,
+                    convidados INT NOT NULL,
+                    taxa VARCHAR(50) NOT NULL,
+                    status VARCHAR(50) NOT NULL
+                );
+            """)
+            
+            # Create Visitantes table
+            cursor.execute("""
+                CREATE TABLE IF NOT EXISTS hubitat_visitantes (
+                    id VARCHAR(50) PRIMARY KEY,
+                    name VARCHAR(255) NOT NULL,
+                    doc VARCHAR(50) NOT NULL,
+                    type VARCHAR(100) NOT NULL,
+                    plate VARCHAR(50),
+                    unit VARCHAR(255) NOT NULL,
+                    time VARCHAR(100) NOT NULL,
+                    status VARCHAR(50) NOT NULL
+                );
+            """)
+            
+            # Create Atividades table
+            cursor.execute("""
+                CREATE TABLE IF NOT EXISTS hubitat_atividades (
+                    id INT AUTO_INCREMENT PRIMARY KEY,
+                    icon VARCHAR(50) NOT NULL,
+                    title VARCHAR(255) NOT NULL,
+                    desc_text VARCHAR(255) NOT NULL,
+                    time_text VARCHAR(50) NOT NULL
+                );
+            """)
+            
+            # Seed default data if empty
+            cursor.execute("SELECT COUNT(*) FROM hubitat_os;")
+            if cursor.fetchone()[0] == 0:
+                for os_item in DEFAULT_DATA["ordensServico"]:
+                    cursor.execute("""
+                        INSERT INTO hubitat_os (id, title, location, category, priority, status, date, assignee, description)
+                        VALUES (%s, %s, %s, %s, %s, %s, %s, %s, %s);
+                    """, (os_item["id"], os_item["title"], os_item["location"], os_item["category"], os_item["priority"], os_item["status"], os_item["date"], os_item["assignee"], os_item["description"]))
+                
+                for res_item in DEFAULT_DATA["reservas"]:
+                    cursor.execute("""
+                        INSERT INTO hubitat_reservas (id, espaco, morador, unidade, data, turno, convidados, taxa, status)
+                        VALUES (%s, %s, %s, %s, %s, %s, %s, %s, %s);
+                    """, (res_item["id"], res_item["espaco"], res_item["morador"], res_item["unidade"], res_item["data"], res_item["turno"], res_item["convidados"], res_item["taxa"], res_item["status"]))
+                    
+                for vis_item in DEFAULT_DATA["visitantes"]:
+                    cursor.execute("""
+                        INSERT INTO hubitat_visitantes (id, name, doc, type, plate, unit, time, status)
+                        VALUES (%s, %s, %s, %s, %s, %s, %s, %s);
+                    """, (vis_item["id"], vis_item["name"], vis_item["doc"], vis_item["type"], vis_item["plate"], vis_item["unit"], vis_item["time"], vis_item["status"]))
+                    
+                for act_item in DEFAULT_DATA["atividades"]:
+                    cursor.execute("""
+                        INSERT INTO hubitat_atividades (icon, title, desc_text, time_text)
+                        VALUES (%s, %s, %s, %s);
+                    """, (act_item["icon"], act_item["title"], act_item["desc"], act_item["time"]))
+            
+            conn.commit()
+            cursor.close()
+            conn.close()
+            USE_DB = True
+            print("SUCESSO: Conectado ao banco de dados MySQL na Hostinger!")
+    except Error as e:
+        print(f"Alerta de Conexão: Não foi possível conectar à Hostinger ({e}). Utilizando fallback local JSON.")
+
+@app.on_event("startup")
+def startup_event():
+    init_db()
+
+# JSON File Fallback Helpers
+def load_json_data() -> dict:
     if not os.path.exists(DATA_FILE):
         with open(DATA_FILE, "w", encoding="utf-8") as f:
             json.dump(DEFAULT_DATA, f, ensure_ascii=False, indent=4)
@@ -201,7 +337,7 @@ def load_data() -> dict:
     except Exception:
         return DEFAULT_DATA
 
-def save_data(data: dict):
+def save_json_data(data: dict):
     with open(DATA_FILE, "w", encoding="utf-8") as f:
         json.dump(data, f, ensure_ascii=False, indent=4)
 
@@ -215,106 +351,245 @@ def login(request: LoginRequest):
     raise HTTPException(status_code=401, detail="Usuário ou senha incorretos")
 
 
-# PROTECTED API ENDPOINTS (Require verify_token)
+# PROTECTED API ENDPOINTS
 
 @app.get("/api/os", response_model=List[OrdemServico])
 def get_os(token: str = Depends(verify_token)):
-    data = load_data()
-    return data.get("ordensServico", [])
+    if not USE_DB:
+        return load_json_data().get("ordensServico", [])
+    
+    try:
+        conn = get_db_connection()
+        cursor = conn.cursor(dictionary=True)
+        cursor.execute("SELECT * FROM hubitat_os;")
+        res = cursor.fetchall()
+        cursor.close()
+        conn.close()
+        return res
+    except Error as e:
+        raise HTTPException(status_code=500, detail=f"Erro de Banco de Dados: {e}")
 
 @app.post("/api/os", response_model=OrdemServico)
 def create_os(os_item: OrdemServico, token: str = Depends(verify_token)):
-    data = load_data()
-    data["ordensServico"].insert(0, os_item.dict())
-    
-    # Adicionar atividade
-    activity = {
-        "icon": "fa-wrench",
-        "title": "Nova O.S. Cadastrada",
-        "desc": f"{os_item.title} ({os_item.location})",
-        "time": "Agora"
-    }
-    data["atividades"].insert(0, activity)
-    save_data(data)
-    return os_item
+    if not USE_DB:
+        data = load_json_data()
+        data["ordensServico"].insert(0, os_item.dict())
+        data["atividades"].insert(0, {
+            "icon": "fa-wrench",
+            "title": "Nova O.S. Cadastrada",
+            "desc": f"{os_item.title} ({os_item.location})",
+            "time": "Agora"
+        })
+        save_json_data(data)
+        return os_item
+
+    try:
+        conn = get_db_connection()
+        cursor = conn.cursor()
+        
+        # Save OS
+        cursor.execute("""
+            INSERT INTO hubitat_os (id, title, location, category, priority, status, date, assignee, description)
+            VALUES (%s, %s, %s, %s, %s, %s, %s, %s, %s);
+        """, (os_item.id, os_item.title, os_item.location, os_item.category, os_item.priority, os_item.status, os_item.date, os_item.assignee, os_item.description))
+        
+        # Add Activity
+        cursor.execute("""
+            INSERT INTO hubitat_atividades (icon, title, desc_text, time_text)
+            VALUES (%s, %s, %s, %s);
+        """, ("fa-wrench", "Nova O.S. Cadastrada", f"{os_item.title} ({os_item.location})", "Agora"))
+        
+        conn.commit()
+        cursor.close()
+        conn.close()
+        return os_item
+    except Error as e:
+        raise HTTPException(status_code=500, detail=f"Erro de Banco de Dados: {e}")
 
 @app.put("/api/os/{os_id}/status", response_model=OrdemServico)
 def toggle_os_status(os_id: str, token: str = Depends(verify_token)):
-    data = load_data()
-    for os_item in data["ordensServico"]:
-        if os_item["id"] == os_id:
-            current = os_item["status"]
-            if current == "Pendente":
-                os_item["status"] = "Em Andamento"
-            elif current == "Em Andamento":
-                os_item["status"] = "Concluída"
-            else:
-                os_item["status"] = "Pendente"
-                
-            save_data(data)
-            return os_item
-    raise HTTPException(status_code=404, detail="Ordem de serviço não encontrada")
+    if not USE_DB:
+        data = load_json_data()
+        for os_item in data["ordensServico"]:
+            if os_item["id"] == os_id:
+                current = os_item["status"]
+                os_item["status"] = "Em Andamento" if current == "Pendente" else ("Concluída" if current == "Em Andamento" else "Pendente")
+                save_json_data(data)
+                return os_item
+        raise HTTPException(status_code=404, detail="Ordem de serviço não encontrada")
+
+    try:
+        conn = get_db_connection()
+        cursor = conn.cursor(dictionary=True)
+        cursor.execute("SELECT * FROM hubitat_os WHERE id = %s;", (os_id,))
+        os_item = cursor.fetchone()
+        
+        if not os_item:
+            cursor.close()
+            conn.close()
+            raise HTTPException(status_code=404, detail="Ordem de serviço não encontrada")
+            
+        current = os_item["status"]
+        new_status = "Em Andamento" if current == "Pendente" else ("Concluída" if current == "Em Andamento" else "Pendente")
+        
+        cursor.execute("UPDATE hubitat_os SET status = %s WHERE id = %s;", (new_status, os_id))
+        conn.commit()
+        cursor.close()
+        conn.close()
+        os_item["status"] = new_status
+        return os_item
+    except Error as e:
+        raise HTTPException(status_code=500, detail=f"Erro de Banco de Dados: {e}")
 
 @app.get("/api/reservas", response_model=List[Reserva])
 def get_reservas(token: str = Depends(verify_token)):
-    data = load_data()
-    return data.get("reservas", [])
+    if not USE_DB:
+        return load_json_data().get("reservas", [])
+    
+    try:
+        conn = get_db_connection()
+        cursor = conn.cursor(dictionary=True)
+        cursor.execute("SELECT * FROM hubitat_reservas;")
+        res = cursor.fetchall()
+        cursor.close()
+        conn.close()
+        return res
+    except Error as e:
+        raise HTTPException(status_code=500, detail=f"Erro de Banco de Dados: {e}")
 
 @app.post("/api/reservas", response_model=Reserva)
 def create_reserva(reserva: Reserva, token: str = Depends(verify_token)):
-    data = load_data()
-    data["reservas"].insert(0, reserva.dict())
-    activity = {
-        "icon": "fa-calendar-check",
-        "title": "Nova reserva efetuada",
-        "desc": f"{reserva.espaco} por {reserva.morador}",
-        "time": "Agora"
-    }
-    data["atividades"].insert(0, activity)
-    save_data(data)
-    return reserva
+    if not USE_DB:
+        data = load_json_data()
+        data["reservas"].insert(0, reserva.dict())
+        data["atividades"].insert(0, {
+            "icon": "fa-calendar-check",
+            "title": "Nova reserva efetuada",
+            "desc": f"{reserva.espaco} por {reserva.morador}",
+            "time": "Agora"
+        })
+        save_json_data(data)
+        return reserva
+
+    try:
+        conn = get_db_connection()
+        cursor = conn.cursor()
+        cursor.execute("""
+            INSERT INTO hubitat_reservas (id, espaco, morador, unidade, data, turno, convidados, taxa, status)
+            VALUES (%s, %s, %s, %s, %s, %s, %s, %s, %s);
+        """, (reserva.id, reserva.espaco, reserva.morador, reserva.unidade, reserva.data, reserva.turno, reserva.convidados, reserva.taxa, reserva.status))
+        
+        cursor.execute("""
+            INSERT INTO hubitat_atividades (icon, title, desc_text, time_text)
+            VALUES (%s, %s, %s, %s);
+        """, ("fa-calendar-check", "Nova reserva efetuada", f"{reserva.espaco} por {reserva.morador}", "Agora"))
+        
+        conn.commit()
+        cursor.close()
+        conn.close()
+        return reserva
+    except Error as e:
+        raise HTTPException(status_code=500, detail=f"Erro de Banco de Dados: {e}")
 
 @app.delete("/api/reservas/{res_id}")
 def delete_reserva(res_id: str, token: str = Depends(verify_token)):
-    data = load_data()
-    initial_len = len(data["reservas"])
-    data["reservas"] = [r for r in data["reservas"] if r["id"] != res_id]
-    if len(data["reservas"]) == initial_len:
-        raise HTTPException(status_code=404, detail="Reserva não encontrada")
-    
-    activity = {
-        "icon": "fa-trash",
-        "title": "Reserva cancelada",
-        "desc": f"Identificador de reserva: {res_id}",
-        "time": "Agora"
-    }
-    data["atividades"].insert(0, activity)
-    save_data(data)
-    return {"status": "success", "message": "Reserva cancelada"}
+    if not USE_DB:
+        data = load_json_data()
+        initial_len = len(data["reservas"])
+        data["reservas"] = [r for r in data["reservas"] if r["id"] != res_id]
+        if len(data["reservas"]) == initial_len:
+            raise HTTPException(status_code=404, detail="Reserva não encontrada")
+        data["atividades"].insert(0, {
+            "icon": "fa-trash",
+            "title": "Reserva cancelada",
+            "desc": f"Identificador de reserva: {res_id}",
+            "time": "Agora"
+        })
+        save_json_data(data)
+        return {"status": "success", "message": "Reserva cancelada"}
+
+    try:
+        conn = get_db_connection()
+        cursor = conn.cursor()
+        cursor.execute("DELETE FROM hubitat_reservas WHERE id = %s;", (res_id,))
+        
+        cursor.execute("""
+            INSERT INTO hubitat_atividades (icon, title, desc_text, time_text)
+            VALUES (%s, %s, %s, %s);
+        """, ("fa-trash", "Reserva cancelada", f"Identificador de reserva: {res_id}", "Agora"))
+        
+        conn.commit()
+        cursor.close()
+        conn.close()
+        return {"status": "success", "message": "Reserva cancelada"}
+    except Error as e:
+        raise HTTPException(status_code=500, detail=f"Erro de Banco de Dados: {e}")
 
 @app.get("/api/visitantes", response_model=List[Visitante])
 def get_visitantes(token: str = Depends(verify_token)):
-    data = load_data()
-    return data.get("visitantes", [])
+    if not USE_DB:
+        return load_json_data().get("visitantes", [])
+    
+    try:
+        conn = get_db_connection()
+        cursor = conn.cursor(dictionary=True)
+        cursor.execute("SELECT * FROM hubitat_visitantes;")
+        res = cursor.fetchall()
+        cursor.close()
+        conn.close()
+        return res
+    except Error as e:
+        raise HTTPException(status_code=500, detail=f"Erro de Banco de Dados: {e}")
 
 @app.post("/api/visitantes", response_model=Visitante)
 def create_visitante(vis: Visitante, token: str = Depends(verify_token)):
-    data = load_data()
-    data["visitantes"].insert(0, vis.dict())
-    activity = {
-        "icon": "fa-qrcode",
-        "title": "Convite Express Gerado",
-        "desc": f"{vis.name} para a unidade {vis.unit}",
-        "time": "Agora"
-    }
-    data["atividades"].insert(0, activity)
-    save_data(data)
-    return vis
+    if not USE_DB:
+        data = load_json_data()
+        data["visitantes"].insert(0, vis.dict())
+        data["atividades"].insert(0, {
+            "icon": "fa-qrcode",
+            "title": "Convite Express Gerado",
+            "desc": f"{vis.name} para a unidade {vis.unit}",
+            "time": "Agora"
+        })
+        save_json_data(data)
+        return vis
+
+    try:
+        conn = get_db_connection()
+        cursor = conn.cursor()
+        cursor.execute("""
+            INSERT INTO hubitat_visitantes (id, name, doc, type, plate, unit, time, status)
+            VALUES (%s, %s, %s, %s, %s, %s, %s, %s);
+        """, (vis.id, vis.name, vis.doc, vis.type, vis.plate, vis.unit, vis.time, vis.status))
+        
+        cursor.execute("""
+            INSERT INTO hubitat_atividades (icon, title, desc_text, time_text)
+            VALUES (%s, %s, %s, %s);
+        """, ("fa-qrcode", "Convite Express Gerado", f"{vis.name} para a unidade {vis.unit}", "Agora"))
+        
+        conn.commit()
+        cursor.close()
+        conn.close()
+        return vis
+    except Error as e:
+        raise HTTPException(status_code=500, detail=f"Erro de Banco de Dados: {e}")
 
 @app.get("/api/atividades", response_model=List[Activity])
 def get_activities(token: str = Depends(verify_token)):
-    data = load_data()
-    return data.get("atividades", [])
+    if not USE_DB:
+        return load_json_data().get("atividades", [])
+    
+    try:
+        conn = get_db_connection()
+        cursor = conn.cursor(dictionary=True)
+        cursor.execute("SELECT icon, title, desc_text as `desc`, time_text as `time` FROM hubitat_atividades ORDER BY id DESC LIMIT 50;")
+        res = cursor.fetchall()
+        cursor.close()
+        conn.close()
+        return res
+    except Error as e:
+        raise HTTPException(status_code=500, detail=f"Erro de Banco de Dados: {e}")
 
 @app.post("/api/copilot")
 def query_copilot(query: CopilotQuery, token: str = Depends(verify_token)):
@@ -347,15 +622,14 @@ def query_copilot(query: CopilotQuery, token: str = Depends(verify_token)):
             f"3. <strong>Áreas de Lazer:</strong> Uso de caixas de som permitidos até 85dB até as 22h, conforme Lei Municipal de Ruídos Urbanos."
         )
     elif "resumo" in prompt_lower or "o.s." in prompt_lower or "ordens" in prompt_lower:
-        data = load_data()
-        os_list = data.get("ordensServico", [])
-        active_os = [o for o in os_list if o["status"] != "Concluída"]
+        os_list = get_os(token)
+        active_os = [o for o in os_list if o.status != "Concluída"]
         response = (
             f"<strong>📊 Diagnóstico Operacional de Manutenção no {condo_friendly}:</strong><br><br>"
             f"No momento temos <strong>{len(active_os)} ordens de serviço ativas</strong> no sistema:<br>"
         )
         for o in active_os[:3]:
-            response += f"- <strong>{o['priority']} ({o['status']}):</strong> {o['title']} em {o['location']}.<br>"
+            response += f"- <strong>{o.priority} ({o.status}):</strong> {o.title} em {o.location}.<br>"
         response += f"<br><em>Sugestão Frame IA: Agendar revisão dos geradores antes do próximo ciclo de chuvas no Eusébio/Fortaleza.</em>"
     else:
         response = (
@@ -365,13 +639,18 @@ def query_copilot(query: CopilotQuery, token: str = Depends(verify_token)):
     return {"response": response}
 
 
-# Mount ONLY the static directory, protecting main.py and data.json
+# Mount static files folder
 if not os.path.exists(STATIC_DIR):
     os.makedirs(STATIC_DIR)
 
 app.mount("/", StaticFiles(directory=STATIC_DIR, html=True), name="static")
 
 if __name__ == "__main__":
-    print("Iniciando o servidor seguro do Hubitat by Frame IA na porta 5002...")
-    print("Acesse: http://localhost:5002")
-    uvicorn.run("main:app", host="127.0.0.1", port=5002, reload=True)
+    # Initialize the database on startup
+    init_db()
+    
+    # Read custom port from .env or default to 5002
+    port = int(os.getenv("PORT", 5002))
+    print(f"Iniciando o servidor seguro do Hubitat by Frame IA na porta {port}...")
+    print(f"Acesse: http://localhost:{port}")
+    uvicorn.run("main:app", host="127.0.0.1", port=port, reload=True)
