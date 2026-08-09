@@ -74,6 +74,7 @@ async function checkAuthAndLoadData() {
         if (landingPage) landingPage.style.display = "none";
         if (appContainer) appContainer.style.display = "flex";
         if (loginOverlay) loginOverlay.classList.remove("active");
+        switchTab(state.activeTab || "dashboard");
         await refreshAllData();
     } else {
         if (appContainer) appContainer.style.display = "none";
@@ -196,14 +197,11 @@ function initAuthHandlers() {
                     const data = await response.json();
                     localStorage.setItem("hubitat_token", data.access_token);
                     
-                    const overlay = document.getElementById("loginOverlay");
-                    if (overlay) overlay.classList.remove("active");
-                    
                     showToast("Login realizado com sucesso!", "success");
                     if (window.location.pathname !== "/") {
                         history.pushState(null, "", "/");
                     }
-                    await refreshAllData();
+                    await checkAuthAndLoadData();
                 } else {
                     const errorData = await response.json();
                     showToast(errorData.detail || "Credenciais incorretas.", "danger");
@@ -233,13 +231,11 @@ function initAuthHandlers() {
                 if (response.ok) {
                     const data = await response.json();
                     localStorage.setItem("hubitat_token", data.access_token);
-                    const overlay = document.getElementById("loginOverlay");
-                    if (overlay) overlay.classList.remove("active");
                     showToast(data.message || "Conta criada com sucesso!", "success");
                     if (window.location.pathname !== "/") {
                         history.pushState(null, "", "/");
                     }
-                    await refreshAllData();
+                    await checkAuthAndLoadData();
                 } else {
                     const errorData = await response.json();
                     showToast(errorData.detail || "Erro ao realizar cadastro.", "danger");
@@ -422,9 +418,10 @@ window.autenticarContaSocialDireta = autenticarContaSocialDireta;
 
 function logout() {
     localStorage.removeItem("hubitat_token");
-    const overlay = document.getElementById("loginOverlay");
-    if (overlay) overlay.classList.add("active");
-    if (window.switchAuthTab) window.switchAuthTab("login");
+    if (window.location.pathname !== "/login") {
+        history.pushState(null, "", "/login");
+    }
+    checkAuthAndLoadData();
 
     // Clear local state UI
     state.ordensServico = [];
