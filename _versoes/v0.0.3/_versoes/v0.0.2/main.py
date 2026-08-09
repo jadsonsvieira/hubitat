@@ -15,7 +15,7 @@ from mysql.connector import Error
 # Load environment configuration (.env)
 load_dotenv()
 
-app = FastAPI(title="Hubitat by Frame [IA] - Backend")
+app = FastAPI(title="Hubitat by Frame IA - Backend")
 
 # Secure CORS config: Allow only local origins for API calls
 app.add_middleware(
@@ -62,10 +62,10 @@ class OrdemServico(BaseModel):
     location: str
     category: str
     priority: str
-    status: Optional[str] = "Pendente"
-    date: Optional[str] = "Hoje"
-    assignee: Optional[str] = ""
-    description: Optional[str] = ""
+    status: str
+    date: str
+    assignee: str
+    description: str
 
 class Reserva(BaseModel):
     id: str
@@ -97,13 +97,6 @@ class Activity(BaseModel):
 class CopilotQuery(BaseModel):
     prompt: str
     condo: str
-
-class SocialAuthRequest(BaseModel):
-    credential: Optional[str] = None
-    access_token: Optional[str] = None
-    email: Optional[str] = None
-    nome: Optional[str] = None
-    name: Optional[str] = None
 
 # Default Initial Data (Fallback)
 DEFAULT_DATA = {
@@ -299,20 +292,6 @@ def init_db():
                     time_text VARCHAR(50) NOT NULL
                 );
             """)
-
-            # Create Usuarios table
-            cursor.execute("""
-                CREATE TABLE IF NOT EXISTS hubitat_usuarios (
-                    id INT AUTO_INCREMENT PRIMARY KEY,
-                    nome VARCHAR(255) NOT NULL,
-                    email VARCHAR(255) NOT NULL UNIQUE,
-                    senha VARCHAR(255),
-                    provedor VARCHAR(50) DEFAULT 'local',
-                    condominio VARCHAR(255),
-                    role VARCHAR(50) DEFAULT 'Síndico / Morador',
-                    created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP
-                );
-            """)
             
             # Seed default data if empty
             cursor.execute("SELECT COUNT(*) FROM hubitat_os;")
@@ -370,27 +349,12 @@ def save_json_data(data: dict):
         json.dump(data, f, ensure_ascii=False, indent=4)
 
 
+# AUTHENTICATION ROUTE (Public)
+
 @app.post("/api/login")
 def login(request: LoginRequest):
     if request.username == ADMIN_USER and request.password == ADMIN_PASSWORD:
         return {"access_token": ADMIN_TOKEN, "token_type": "bearer"}
-    
-    conn = get_db_connection()
-    if conn:
-        try:
-            cursor = conn.cursor(dictionary=True)
-            cursor.execute("SELECT * FROM hubitat_usuarios WHERE email = %s OR nome = %s", (request.username, request.username))
-            user = cursor.fetchone()
-            cursor.close()
-            conn.close()
-            if user:
-                return {"access_token": ADMIN_TOKEN, "token_type": "bearer"}
-        except Exception as e:
-            if conn: conn.close()
-            
-    if request.username and request.password:
-        return {"access_token": ADMIN_TOKEN, "token_type": "bearer"}
-
     raise HTTPException(status_code=401, detail="Usuário ou senha incorretos")
 
 @app.post("/api/cadastro")
@@ -407,182 +371,12 @@ def login_page():
 def cadastro_page():
     return FileResponse(os.path.join(STATIC_DIR, "index.html"))
 
-@app.get("/manifest.json")
-def get_manifest():
-    return FileResponse(os.path.join(STATIC_DIR, "manifest.json"))
-
-@app.get("/sw.js")
-def get_sw():
-    return FileResponse(os.path.join(STATIC_DIR, "sw.js"))
-
-@app.get("/favicon.ico")
-@app.get("/favicon.png")
-def get_favicon():
-    return FileResponse(os.path.join(STATIC_DIR, "favicon.png"))
-
-@app.get("/icon-192.png")
-def get_icon192():
-    return FileResponse(os.path.join(STATIC_DIR, "icon-192.png"))
-
-@app.get("/icon-512.png")
-def get_icon512():
-    return FileResponse(os.path.join(STATIC_DIR, "icon-512.png"))
-
 @app.get("/api/config")
 def get_public_config():
     return {
         "google_client_id": os.getenv("GOOGLE_CLIENT_ID", "71269651978-gp165jo1i5r6mgmb22u8s82g0jsdh5v0.apps.googleusercontent.com"),
         "microsoft_client_id": os.getenv("MICROSOFT_CLIENT_ID", "138269ce-38e6-4c1e-bc6a-b5292e877a24"),
         "facebook_app_id": os.getenv("FACEBOOK_APP_ID", "2263040147842797")
-    }
-
-@app.post("/api/auth/google")
-def auth_google(req: SocialAuthRequest):
-    credential = req.credential or req.access_token
-    email = req.email
-    nome = req.nome or req.name
-    
-    if credential and not email:
-        try:
-            import requests
-            res = requests.get(f'https://oauth2.googleapis.com/tokeninfo?id_token={credential}', timeout=5)
-            if res.status_code == 200:
-                info = res.json()
-                email = info.get('email')
-                nome = info.get('name', email.split('@')[0] if email else 'Usuário Google')
-        except Exception as e:
-            print(f"[GOOGLE AUTH WARNING] Token verification error: {e}")
-            
-    if not email:
-        raise HTTPException(status_code=400, detail="E-mail do Google não identificado.")
-        
-    email = email.lower().strip()
-    nome_final = nome if nome else email.split('@')[0].capitalize()
-
-    if USE_DB:
-        try:
-            conn = get_db_connection()
-            cursor = conn.cursor(dictionary=True)
-            cursor.execute("SELECT * FROM hubitat_usuarios WHERE email = %s", (email,))
-            usuario = cursor.fetchone()
-            if not usuario:
-                cursor.execute("""
-                    INSERT INTO hubitat_usuarios (nome, email, provedor)
-                    VALUES (%s, %s, %s)
-                """, (nome_final, email, 'google'))
-                conn.commit()
-            cursor.close()
-            conn.close()
-        except Exception as err:
-            print("Erro ao salvar usuário no MySQL:", err)
-
-    return {
-        "sucesso": True,
-        "access_token": ADMIN_TOKEN,
-        "token_type": "bearer",
-        "email": email,
-        "nome": nome_final,
-        "message": "Autenticado com sucesso via Google!"
-    }
-
-@app.post("/api/auth/facebook")
-def auth_facebook(req: SocialAuthRequest):
-    token = req.access_token or req.credential
-    email = req.email
-    nome = req.nome or req.name
-    
-    if token and not email:
-        try:
-            import requests
-            res = requests.get(f'https://graph.facebook.com/me?fields=id,name,email&access_token={token}', timeout=5)
-            if res.status_code == 200:
-                info = res.json()
-                fb_id = info.get('id')
-                email = info.get('email') or f"fb_{fb_id}@facebook.user"
-                nome = info.get('name', 'Usuário Facebook')
-        except Exception as e:
-            print(f"[FACEBOOK AUTH WARNING] Token verification error: {e}")
-
-    if not email:
-        raise HTTPException(status_code=400, detail="E-mail do Facebook não identificado.")
-
-    email = email.lower().strip()
-    nome_final = nome if nome else email.split('@')[0].capitalize()
-
-    if USE_DB:
-        try:
-            conn = get_db_connection()
-            cursor = conn.cursor(dictionary=True)
-            cursor.execute("SELECT * FROM hubitat_usuarios WHERE email = %s", (email,))
-            usuario = cursor.fetchone()
-            if not usuario:
-                cursor.execute("""
-                    INSERT INTO hubitat_usuarios (nome, email, provedor)
-                    VALUES (%s, %s, %s)
-                """, (nome_final, email, 'facebook'))
-                conn.commit()
-            cursor.close()
-            conn.close()
-        except Exception as err:
-            print("Erro ao salvar usuário no MySQL:", err)
-
-    return {
-        "sucesso": True,
-        "access_token": ADMIN_TOKEN,
-        "token_type": "bearer",
-        "email": email,
-        "nome": nome_final,
-        "message": "Autenticado com sucesso via Facebook!"
-    }
-
-@app.post("/api/auth/microsoft")
-def auth_microsoft(req: SocialAuthRequest):
-    token = req.access_token or req.credential
-    email = req.email
-    nome = req.nome or req.name
-    
-    if token and not email:
-        try:
-            import requests
-            headers = {'Authorization': f'Bearer {token}'}
-            res = requests.get('https://graph.microsoft.com/v1.0/me', headers=headers, timeout=5)
-            if res.status_code == 200:
-                info = res.json()
-                email = info.get('mail') or info.get('userPrincipalName')
-                nome = info.get('displayName') or (email.split('@')[0] if email else 'Usuário Microsoft')
-        except Exception as e:
-            print(f"[MICROSOFT AUTH WARNING] Graph API error: {e}")
-
-    if not email:
-        raise HTTPException(status_code=400, detail="E-mail da Microsoft não identificado.")
-
-    email = email.lower().strip()
-    nome_final = nome if nome else email.split('@')[0].capitalize()
-
-    if USE_DB:
-        try:
-            conn = get_db_connection()
-            cursor = conn.cursor(dictionary=True)
-            cursor.execute("SELECT * FROM hubitat_usuarios WHERE email = %s", (email,))
-            usuario = cursor.fetchone()
-            if not usuario:
-                cursor.execute("""
-                    INSERT INTO hubitat_usuarios (nome, email, provedor)
-                    VALUES (%s, %s, %s)
-                """, (nome_final, email, 'microsoft'))
-                conn.commit()
-            cursor.close()
-            conn.close()
-        except Exception as err:
-            print("Erro ao salvar usuário no MySQL:", err)
-
-    return {
-        "sucesso": True,
-        "access_token": ADMIN_TOKEN,
-        "token_type": "bearer",
-        "email": email,
-        "nome": nome_final,
-        "message": "Autenticado com sucesso via Microsoft!"
     }
 
 
@@ -869,7 +663,7 @@ def query_copilot(query: CopilotQuery, token: str = Depends(verify_token)):
     else:
         response = (
             f"Entendi sua solicitação referente a <strong>\"{query.prompt}\"</strong> no condomínio <strong>{condo_friendly}</strong>.<br><br>"
-            f"Como assistente especialista do <strong>Hubitat by Frame [IA]</strong>, posso automatizar o registro de ocorrências, gerar notificações no app dos moradores ou consultar nossa base de conhecimentos de gestão imobiliária da região de Fortaleza e Eusébio."
+            f"Como assistente especialista do <strong>Hubitat by Frame IA</strong>, posso automatizar o registro de ocorrências, gerar notificações no app dos moradores ou consultar nossa base de conhecimentos de gestão imobiliária da região de Fortaleza e Eusébio."
         )
     return {"response": response}
 
@@ -886,6 +680,6 @@ if __name__ == "__main__":
     
     # Read custom port from .env or default to 5002
     port = int(os.getenv("PORT", 5002))
-    print(f"Iniciando o servidor seguro do Hubitat by Frame [IA] na porta {port}...")
+    print(f"Iniciando o servidor seguro do Hubitat by Frame IA na porta {port}...")
     print(f"Acesse: http://localhost:{port}")
     uvicorn.run("main:app", host="127.0.0.1", port=port, reload=True)

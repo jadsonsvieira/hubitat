@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Hubitat by Frame [IA] | Gestão Inteligente de Condomínios</title>
+    <title>Hubitat by Frame IA | Gestão Inteligente de Condomínios</title>
     <!-- Google Fonts -->
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
@@ -12,198 +12,19 @@
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
     <!-- Stylesheet -->
     <link rel="stylesheet" href="styles.css">
-    <!-- Favicon & PWA App Setup -->
-    <link rel="icon" type="image/png" href="/favicon.png">
-    <link rel="shortcut icon" type="image/png" href="/favicon.png">
-    <link rel="apple-touch-icon" href="/icon-192.png">
-    <link rel="manifest" href="/manifest.json">
-    <meta name="theme-color" content="#8b5cf6">
-    <meta name="apple-mobile-web-app-capable" content="yes">
-    <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
-    <meta name="apple-mobile-web-app-title" content="Hubitat">
-
-    <!-- Service Worker PWA Registration -->
-    <script>
-        if ('serviceWorker' in navigator) {
-            window.addEventListener('load', () => {
-                navigator.serviceWorker.register('/sw.js')
-                    .then(reg => console.log('PWA Hubitat ativado com sucesso:', reg))
-                    .catch(err => console.log('Erro ao registrar PWA:', err));
-            });
-        }
-    </script>
-    <!-- Google Identity Services & Microsoft MSAL SDKs -->
-    <script src="https://accounts.google.com/gsi/client" async defer></script>
-    <script type="text/javascript" src="https://alcdn.msauth.net/browser/2.35.0/js/msal-browser.min.js"></script>
 </head>
-    <!-- LANDING PAGE -->
-    <div class="landing-page" id="landingPage" style="display: none;">
-        <!-- Landing Navbar -->
-        <nav class="landing-nav">
-            <img src="logo.png" alt="Hubitat by Frame [IA]" class="landing-nav-logo">
-            <ul class="landing-nav-links">
-                <li><a href="#recursos">Recursos</a></li>
-                <li><a href="#planos">Planos</a></li>
-                <li><a href="#faq">FAQ</a></li>
-            </ul>
-            <div class="landing-nav-actions">
-                <button type="button" class="action-btn primary" onclick="openAuthModal('login')">
-                    <i class="fa-solid fa-right-to-bracket"></i> Entrar
-                </button>
-                <button type="button" class="action-btn emerald" onclick="openAuthModal('cadastro')">
-                    <i class="fa-solid fa-user-plus"></i> Criar Conta
-                </button>
-            </div>
-        </nav>
-
-        <!-- Hero Section -->
-        <header class="landing-hero">
-            <div class="landing-hero-badge">
-                <i class="fa-solid fa-sparkles"></i> Gestão Condominial de Alto Padrão • Eusébio & Fortaleza
-            </div>
-            <h1 class="landing-hero-title">
-                A Plataforma Inteligente que Transforma a <span>Gestão do seu Condomínio</span>
-            </h1>
-            <p class="landing-hero-subtitle">
-                Controle de portaria com QR Code Express, gestão integrada de Ordens de Serviço, agendamento de áreas comuns e Inteligência Artificial residencial em uma única experiência fluida.
-            </p>
-            <div class="landing-hero-ctas">
-                <button type="button" class="action-btn primary" style="padding: 0.95rem 2rem; font-size: 1rem;" onclick="openAuthModal('cadastro')">
-                    <i class="fa-solid fa-rocket"></i> Testar Gratuitamente <i class="fa-solid fa-arrow-right"></i>
-                </button>
-                <button type="button" class="action-btn emerald" style="padding: 0.95rem 2rem; font-size: 1rem;" onclick="openAuthModal('login')">
-                    <i class="fa-solid fa-shield-halved"></i> Acessar Painel
-                </button>
-            </div>
-        </header>
-
-        <!-- Features Grid: Os 4 Pilares Fundamentais -->
-        <section class="landing-section" id="recursos">
-            <div class="section-header">
-                <h2>Pilares Fundamentais da Plataforma Hubitat</h2>
-                <p>Estrutura completa e de alta performance dividida em 4 eixos essenciais para condomínios modernos</p>
-            </div>
-
-            <div class="features-grid">
-                <div class="feature-card">
-                    <div class="feature-icon"><i class="fa-solid fa-comments"></i></div>
-                    <h3>🏢 1. Comunicação & Convivência</h3>
-                    <p>Mural de avisos digital com confirmação de leitura, agendamento de áreas comuns com taxas e livro de ocorrências transparente para os moradores.</p>
-                </div>
-
-                <div class="feature-card">
-                    <div class="feature-icon"><i class="fa-solid fa-shield-halved"></i></div>
-                    <h3>🔐 2. Controle de Acesso & Segurança</h3>
-                    <p>Liberação de visitantes via QR Code temporário, avisos automáticos de recebimento de encomendas na portaria e integração com portarias remotas.</p>
-                </div>
-
-                <div class="feature-card">
-                    <div class="feature-icon"><i class="fa-solid fa-calculator"></i></div>
-                    <h3>💵 3. Gestão Operacional & Financeira</h3>
-                    <p>Calendário de manutenção preventiva (caixa d'água, elevadores, bombeiros), prestação de contas com balancetes e emissão de 2ª via de boletos.</p>
-                </div>
-
-                <div class="feature-card">
-                    <div class="feature-icon"><i class="fa-solid fa-mobile-screen-button"></i></div>
-                    <h3>📲 4. Experiência dos Usuários (Apps / Web)</h3>
-                    <p>Painel do Síndico/Admin centralizado, App do Morador PWA ágil e Portal da Portaria otimizado em tempo real para tablets e recepções.</p>
-                </div>
-            </div>
-        </section>
-
-        <!-- Pricing Section -->
-        <section class="landing-section" id="planos">
-            <div class="section-header">
-                <h2>Planos Sob Medida para o seu Condomínio</h2>
-                <p>Transparência e previsibilidade financeira para a administração</p>
-            </div>
-
-            <div class="pricing-grid">
-                <div class="price-card">
-                    <div class="price-header">
-                        <h3>Essencial</h3>
-                        <p>Para condomínios de até 50 unidades</p>
-                    </div>
-                    <div class="price-amount">R$ 290<span>/mês</span></div>
-                    <ul class="price-features">
-                        <li><i class="fa-solid fa-check"></i> Portaria & Cadastro de Visitantes</li>
-                        <li><i class="fa-solid fa-check"></i> Gestão de O.S. Básica</li>
-                        <li><i class="fa-solid fa-check"></i> Reservas de até 2 Áreas Comuns</li>
-                        <li><i class="fa-solid fa-check"></i> Suporte por E-mail</li>
-                    </ul>
-                    <button type="button" class="action-btn primary wide" onclick="openAuthModal('cadastro')">Começar Agora</button>
-                </div>
-
-                <div class="price-card popular">
-                    <div class="popular-tag">Mais Escolhido</div>
-                    <div class="price-header">
-                        <h3>Premium Pro</h3>
-                        <p>Condomínios residenciais de médio e grande porte</p>
-                    </div>
-                    <div class="price-amount">R$ 590<span>/mês</span></div>
-                    <ul class="price-features">
-                        <li><i class="fa-solid fa-check"></i> Tudo do plano Essencial</li>
-                        <li><i class="fa-solid fa-check"></i> Copilot IA com Inteligência Ativa</li>
-                        <li><i class="fa-solid fa-check"></i> QR Code Express Ilimitado</li>
-                        <li><i class="fa-solid fa-check"></i> Gestão de O.S. Avançada + Alertas</li>
-                        <li><i class="fa-solid fa-check"></i> Suporte Prioritário 24/7</li>
-                    </ul>
-                    <button type="button" class="action-btn emerald wide" onclick="openAuthModal('cadastro')">Contratar Premium</button>
-                </div>
-            </div>
-        </section>
-
-        <!-- FAQ Section -->
-        <section class="landing-section" id="faq">
-            <div class="section-header">
-                <h2>Perguntas Frequentes</h2>
-                <p>Tire suas dúvidas sobre a implantação do Hubitat no seu condomínio</p>
-            </div>
-
-            <div class="faq-list">
-                <div class="faq-item" onclick="toggleFaq(this)">
-                    <div class="faq-question">
-                        <span>Como funciona o banco de dados e a segurança das informações?</span>
-                        <i class="fa-solid fa-chevron-down"></i>
-                    </div>
-                    <div class="faq-answer">
-                        O Hubitat opera em servidor MySQL exclusivo e dedicado com criptografia de ponta a ponta e backups automáticos na VPS.
-                    </div>
-                </div>
-
-                <div class="faq-item" onclick="toggleFaq(this)">
-                    <div class="faq-question">
-                        <span>Como os moradores acessam o sistema?</span>
-                        <i class="fa-solid fa-chevron-down"></i>
-                    </div>
-                    <div class="faq-answer">
-                        Os moradores podem utilizar o navegador web ou o aplicativo com suporte a login rápido via Google, Facebook ou Microsoft.
-                    </div>
-                </div>
-
-                <div class="faq-item" onclick="toggleFaq(this)">
-                    <div class="faq-question">
-                        <span>É possível migrar os dados de um sistema antigo?</span>
-                        <i class="fa-solid fa-chevron-down"></i>
-                    </div>
-                    <div class="faq-answer">
-                        Sim, nossa equipe oferece suporte para importação de moradores, veículos e cadastros prévios sem custos adicionais no plano Pro.
-                    </div>
-                </div>
-            </div>
-        </section>
-
-        <!-- Footer -->
-        <footer class="landing-footer">
-            <p>© 2026 Hubitat by Frame [IA] • Gestão Condominial Inteligente. Todos os direitos reservados.</p>
-        </footer>
-    </div>
-
+<body class="dark-theme">
     <div class="app-container">
         <!-- Sidebar -->
         <aside class="sidebar">
             <div class="brand">
-                <img src="logo.png" alt="Hubitat by Frame [IA]" class="sidebar-logo-img">
+                <div class="brand-icon">
+                    <i class="fa-solid fa-building-shield"></i>
+                </div>
+                <div class="brand-text">
+                    <span class="brand-name">Hubitat</span>
+                    <span class="brand-tag">by Frame [IA]</span>
+                </div>
             </div>
 
             <!-- Condo Selector -->
@@ -608,25 +429,17 @@
     <div class="modal-overlay" id="osModal">
         <div class="modal-card glass shadow-lg">
             <div class="modal-header">
-                <div class="modal-header-title">
-                    <div class="modal-header-icon">
-                        <i class="fa-solid fa-wrench"></i>
-                    </div>
-                    <div>
-                        <h3>Abrir Nova Ordem de Serviço</h3>
-                        <p class="modal-subtitle">Registre a manutenção preventiva ou corretiva do condomínio</p>
-                    </div>
-                </div>
-                <button type="button" class="close-btn" onclick="closeModal('osModal')"><i class="fa-solid fa-xmark"></i></button>
+                <h3><i class="fa-solid fa-wrench"></i> Abrir Nova Ordem de Serviço</h3>
+                <button class="close-btn" onclick="closeModal('osModal')"><i class="fa-solid fa-xmark"></i></button>
             </div>
             <form id="newOSForm">
                 <div class="form-group">
-                    <label><i class="fa-solid fa-heading color-primary"></i> Título da O.S.</label>
+                    <label>Título da O.S.</label>
                     <input type="text" id="osTitle" placeholder="Ex: Substituição de refletor LED na quadra de beach tennis" required>
                 </div>
                 <div class="form-group-row">
                     <div class="form-group">
-                        <label><i class="fa-solid fa-layer-group color-primary"></i> Categoria</label>
+                        <label>Categoria</label>
                         <select id="osCategory" required>
                             <option value="Elétrica">Elétrica</option>
                             <option value="Hidráulica">Hidráulica</option>
@@ -636,13 +449,13 @@
                         </select>
                     </div>
                     <div class="form-group">
-                        <label><i class="fa-solid fa-location-dot color-primary"></i> Localização / Área</label>
+                        <label>Localização / Área</label>
                         <input type="text" id="osLocation" placeholder="Ex: Alameda das Mangueiras, Lote 14" required>
                     </div>
                 </div>
                 <div class="form-group-row">
                     <div class="form-group">
-                        <label><i class="fa-solid fa-shield-cat color-primary"></i> Prioridade</label>
+                        <label>Prioridade</label>
                         <select id="osPriority">
                             <option value="Baixa">Baixa</option>
                             <option value="Média" selected>Média</option>
@@ -651,12 +464,12 @@
                         </select>
                     </div>
                     <div class="form-group">
-                        <label><i class="fa-solid fa-user-gear color-primary"></i> Prestador / Responsável</label>
+                        <label>Prestador / Responsável</label>
                         <input type="text" id="osAssignee" placeholder="Ex: Eusébio ServElétrica Ltda">
                     </div>
                 </div>
                 <div class="form-group">
-                    <label><i class="fa-solid fa-align-left color-primary"></i> Descrição Detalhada do Problema</label>
+                    <label>Descrição Detalhada do Problema</label>
                     <textarea id="osDescription" rows="3" placeholder="Descreva os detalhes da solicitação..." required></textarea>
                 </div>
                 <div class="modal-footer">
@@ -671,40 +484,32 @@
     <div class="modal-overlay" id="reservaModal">
         <div class="modal-card glass shadow-lg">
             <div class="modal-header">
-                <div class="modal-header-title">
-                    <div class="modal-header-icon" style="background: linear-gradient(135deg, rgba(16, 185, 129, 0.25), rgba(52, 211, 153, 0.1)); border-color: rgba(16, 185, 129, 0.4); color: #34d399;">
-                        <i class="fa-solid fa-calendar-plus"></i>
-                    </div>
-                    <div>
-                        <h3>Reservar Área de Lazer</h3>
-                        <p class="modal-subtitle">Agende um espaço comum de acordo com o estatuto do condomínio</p>
-                    </div>
-                </div>
-                <button type="button" class="close-btn" onclick="closeModal('reservaModal')"><i class="fa-solid fa-xmark"></i></button>
+                <h3><i class="fa-solid fa-calendar-plus"></i> Reservar Área de Lazer</h3>
+                <button class="close-btn" onclick="closeModal('reservaModal')"><i class="fa-solid fa-xmark"></i></button>
             </div>
             <form id="newReservaForm">
                 <input type="hidden" id="modalSpaceId">
                 <div class="form-group">
-                    <label><i class="fa-solid fa-house-user color-emerald"></i> Espaço Selecionado</label>
+                    <label>Espaço Selecionado</label>
                     <input type="text" id="modalSpaceName" readonly class="readonly-input">
                 </div>
                 <div class="form-group-row">
                     <div class="form-group">
-                        <label><i class="fa-solid fa-user color-emerald"></i> Nome do Morador</label>
+                        <label>Nome do Morador</label>
                         <input type="text" id="reservaMorador" placeholder="Nome do titular" required>
                     </div>
                     <div class="form-group">
-                        <label><i class="fa-solid fa-building-user color-emerald"></i> Unidade / Casa</label>
+                        <label>Unidade / Casa</label>
                         <input type="text" id="reservaUnidade" placeholder="Ex: Casa 18 - Alameda Flamboyant" required>
                     </div>
                 </div>
                 <div class="form-group-row">
                     <div class="form-group">
-                        <label><i class="fa-solid fa-calendar-day color-emerald"></i> Data da Reserva</label>
+                        <label>Data da Reserva</label>
                         <input type="date" id="reservaData" required>
                     </div>
                     <div class="form-group">
-                        <label><i class="fa-solid fa-clock color-emerald"></i> Turno / Horário</label>
+                        <label>Turno / Horário</label>
                         <select id="reservaTurno">
                             <option value="Manhã (08h às 13h)">Manhã (08h às 13h)</option>
                             <option value="Tarde (13h às 18h)">Tarde (13h às 18h)</option>
@@ -714,7 +519,7 @@
                     </div>
                 </div>
                 <div class="form-group">
-                    <label><i class="fa-solid fa-users color-emerald"></i> Estimativa de Convidados</label>
+                    <label>Estimativa de Convidados</label>
                     <input type="number" id="reservaConvidados" min="1" max="100" value="15" required>
                 </div>
                 <div class="modal-footer">
@@ -728,79 +533,43 @@
     <!-- TOAST NOTIFICATION -->
     <div class="toast-container" id="toastContainer"></div>
 
-    <!-- LOGIN / CADASTRO SCREEN OVERLAY -->
+    <!-- LOGIN SCREEN OVERLAY -->
     <div class="login-overlay active" id="loginOverlay">
         <div class="login-card glass shadow-lg">
             <div class="login-header">
-                <img src="logo.png" alt="Hubitat by Frame [IA]" class="login-logo-img">
+                <div class="login-brand-icon">
+                    <i class="fa-solid fa-building-shield"></i>
+                </div>
+                <h2>Hubitat</h2>
                 <p class="login-subtitle">by Frame [IA] • Gestão Condominial</p>
             </div>
-
-            <!-- Auth Switcher Tabs -->
-            <div class="auth-tabs">
-                <button type="button" class="auth-tab-btn active" id="authTabLogin" onclick="switchAuthTab('login')">
-                    <i class="fa-solid fa-right-to-bracket"></i> Entrar
+            <form id="loginForm">
+                <div class="form-group">
+                    <label><i class="fa-solid fa-user"></i> Usuário Admin</label>
+                    <input type="text" id="loginUsername" placeholder="Ex: admin" required autocomplete="username">
+                </div>
+                <div class="form-group margin-top-sm">
+                    <label><i class="fa-solid fa-lock"></i> Senha de Acesso</label>
+                    <input type="password" id="loginPassword" placeholder="Digite sua senha" required autocomplete="current-password">
+                </div>
+                <button type="submit" class="action-btn primary wide margin-top-lg">
+                    <i class="fa-solid fa-right-to-bracket"></i> Acessar Sistema
                 </button>
-                <button type="button" class="auth-tab-btn" id="authTabCadastro" onclick="switchAuthTab('cadastro')">
-                    <i class="fa-solid fa-user-plus"></i> Criar Conta
-                </button>
-            </div>
-
-            <!-- LOGIN FORM VIEW -->
-            <div id="loginFormView">
-                <form id="loginForm">
-                    <div class="form-group">
-                        <label><i class="fa-solid fa-user"></i> Usuário Admin</label>
-                        <input type="text" id="loginUsername" placeholder="Ex: admin" required autocomplete="username">
-                    </div>
-                    <div class="form-group margin-top-sm">
-                        <label><i class="fa-solid fa-lock"></i> Senha de Acesso</label>
-                        <input type="password" id="loginPassword" placeholder="Digite sua senha" required autocomplete="current-password">
-                    </div>
-                    <button type="submit" class="action-btn primary wide margin-top-lg">
-                        <i class="fa-solid fa-right-to-bracket"></i> Acessar Sistema
-                    </button>
-                </form>
-            </div>
-
-            <!-- CADASTRO FORM VIEW -->
-            <div id="cadastroFormView" style="display: none;">
-                <form id="cadastroForm">
-                    <div class="form-group">
-                        <label><i class="fa-solid fa-user"></i> Nome Completo</label>
-                        <input type="text" id="cadastroName" placeholder="Seu nome ou Razão Social" required>
-                    </div>
-                    <div class="form-group margin-top-sm">
-                        <label><i class="fa-solid fa-envelope"></i> E-mail Corporativo</label>
-                        <input type="email" id="cadastroEmail" placeholder="seuemail@condominio.com" required>
-                    </div>
-                    <div class="form-group margin-top-sm">
-                        <label><i class="fa-solid fa-building"></i> Condomínio / Cidade</label>
-                        <input type="text" id="cadastroCondo" placeholder="Ex: Alphaville Eusébio" required>
-                    </div>
-                    <div class="form-group margin-top-sm">
-                        <label><i class="fa-solid fa-lock"></i> Criar Senha</label>
-                        <input type="password" id="cadastroPassword" placeholder="Sua senha secreta" required>
-                    </div>
-                    <button type="submit" class="action-btn primary wide margin-top-lg">
-                        <i class="fa-solid fa-user-plus"></i> Criar Minha Conta
-                    </button>
-                </form>
-            </div>
+            </form>
 
             <div class="social-login-divider">
                 <span>ou entrar com</span>
             </div>
             <div class="social-login-grid">
-                <button type="button" class="social-btn" id="socialGoogleBtn" onclick="fazerLoginGoogle()" title="Entrar com Google">
+                <button type="button" class="social-btn" id="socialGoogleBtn" title="Entrar com Google">
                     <i class="fa-brands fa-google"></i>
                     <span>Google</span>
                 </button>
-                <button type="button" class="social-btn" id="socialFacebookBtn" onclick="fazerLoginFacebook()" title="Entrar com Facebook">
-                    <i class="fa-brands fa-facebook"></i>
-                    <span>Facebook</span>
+                <button type="button" class="social-btn" id="socialAppleBtn" title="Entrar com Apple">
+                    <i class="fa-brands fa-apple"></i>
+                    <span>Apple</span>
                 </button>
-                <button type="button" class="social-btn" id="socialMicrosoftBtn" onclick="fazerLoginMicrosoft()" title="Entrar com Microsoft">
+                <button type="button" class="social-btn" id="socialMicrosoftBtn" title="Entrar com Microsoft">
                     <i class="fa-brands fa-microsoft"></i>
                     <span>Microsoft</span>
                 </button>

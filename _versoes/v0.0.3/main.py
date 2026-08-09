@@ -15,7 +15,7 @@ from mysql.connector import Error
 # Load environment configuration (.env)
 load_dotenv()
 
-app = FastAPI(title="Hubitat by Frame [IA] - Backend")
+app = FastAPI(title="Hubitat by Frame IA - Backend")
 
 # Secure CORS config: Allow only local origins for API calls
 app.add_middleware(
@@ -869,7 +869,7 @@ def query_copilot(query: CopilotQuery, token: str = Depends(verify_token)):
     else:
         response = (
             f"Entendi sua solicitação referente a <strong>\"{query.prompt}\"</strong> no condomínio <strong>{condo_friendly}</strong>.<br><br>"
-            f"Como assistente especialista do <strong>Hubitat by Frame [IA]</strong>, posso automatizar o registro de ocorrências, gerar notificações no app dos moradores ou consultar nossa base de conhecimentos de gestão imobiliária da região de Fortaleza e Eusébio."
+            f"Como assistente especialista do <strong>Hubitat by Frame IA</strong>, posso automatizar o registro de ocorrências, gerar notificações no app dos moradores ou consultar nossa base de conhecimentos de gestão imobiliária da região de Fortaleza e Eusébio."
         )
     return {"response": response}
 
@@ -886,6 +886,6 @@ if __name__ == "__main__":
     
     # Read custom port from .env or default to 5002
     port = int(os.getenv("PORT", 5002))
-    print(f"Iniciando o servidor seguro do Hubitat by Frame [IA] na porta {port}...")
+    print(f"Iniciando o servidor seguro do Hubitat by Frame IA na porta {port}...")
     print(f"Acesse: http://localhost:{port}")
     uvicorn.run("main:app", host="127.0.0.1", port=port, reload=True)
