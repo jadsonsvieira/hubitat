@@ -104,6 +104,8 @@ class SocialAuthRequest(BaseModel):
     email: Optional[str] = None
     nome: Optional[str] = None
     name: Optional[str] = None
+    foto_url: Optional[str] = None
+    picture: Optional[str] = None
 
 # Default Initial Data (Fallback)
 DEFAULT_DATA = {
@@ -308,11 +310,17 @@ def init_db():
                     email VARCHAR(255) NOT NULL UNIQUE,
                     senha VARCHAR(255),
                     provedor VARCHAR(50) DEFAULT 'local',
+                    foto_url TEXT,
                     condominio VARCHAR(255),
                     role VARCHAR(50) DEFAULT 'Síndico / Morador',
                     created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP
                 );
             """)
+            try:
+                cursor.execute("ALTER TABLE hubitat_usuarios ADD COLUMN foto_url TEXT;")
+                conn.commit()
+            except Exception:
+                pass
             
             # Seed default data if empty
             cursor.execute("SELECT COUNT(*) FROM hubitat_os;")
@@ -441,6 +449,7 @@ def auth_google(req: SocialAuthRequest):
     credential = req.credential or req.access_token
     email = req.email
     nome = req.nome or req.name
+    foto_url = req.foto_url or req.picture
     
     if credential and not email:
         try:
@@ -450,6 +459,8 @@ def auth_google(req: SocialAuthRequest):
                 info = res.json()
                 email = info.get('email')
                 nome = info.get('name', email.split('@')[0] if email else 'Usuário Google')
+                if not foto_url:
+                    foto_url = info.get('picture')
         except Exception as e:
             print(f"[GOOGLE AUTH WARNING] Token verification error: {e}")
             
@@ -458,6 +469,7 @@ def auth_google(req: SocialAuthRequest):
         
     email = email.lower().strip()
     nome_final = nome if nome else email.split('@')[0].capitalize()
+    foto_final = foto_url or "https://images.unsplash.com/photo-1534528741775-53994a69daeb?auto=format&fit=crop&w=120&q=80"
 
     if USE_DB:
         try:
@@ -467,9 +479,14 @@ def auth_google(req: SocialAuthRequest):
             usuario = cursor.fetchone()
             if not usuario:
                 cursor.execute("""
-                    INSERT INTO hubitat_usuarios (nome, email, provedor)
-                    VALUES (%s, %s, %s)
-                """, (nome_final, email, 'google'))
+                    INSERT INTO hubitat_usuarios (nome, email, provedor, foto_url)
+                    VALUES (%s, %s, %s, %s)
+                """, (nome_final, email, 'google', foto_final))
+                conn.commit()
+            elif foto_url and usuario.get('foto_url') != foto_url:
+                cursor.execute("""
+                    UPDATE hubitat_usuarios SET foto_url = %s, nome = %s WHERE email = %s
+                """, (foto_final, nome_final, email))
                 conn.commit()
             cursor.close()
             conn.close()
@@ -482,6 +499,13 @@ def auth_google(req: SocialAuthRequest):
         "token_type": "bearer",
         "email": email,
         "nome": nome_final,
+        "foto_url": foto_final,
+        "usuario": {
+            "email": email,
+            "nome": nome_final,
+            "foto_url": foto_final,
+            "provedor": "google"
+        },
         "message": "Autenticado com sucesso via Google!"
     }
 
@@ -490,16 +514,19 @@ def auth_facebook(req: SocialAuthRequest):
     token = req.access_token or req.credential
     email = req.email
     nome = req.nome or req.name
+    foto_url = req.foto_url or req.picture
     
     if token and not email:
         try:
             import requests
-            res = requests.get(f'https://graph.facebook.com/me?fields=id,name,email&access_token={token}', timeout=5)
+            res = requests.get(f'https://graph.facebook.com/me?fields=id,name,email,picture.type(large)&access_token={token}', timeout=5)
             if res.status_code == 200:
                 info = res.json()
                 fb_id = info.get('id')
                 email = info.get('email') or f"fb_{fb_id}@facebook.user"
                 nome = info.get('name', 'Usuário Facebook')
+                if not foto_url and 'picture' in info and 'data' in info['picture'] and 'url' in info['picture']['data']:
+                    foto_url = info['picture']['data']['url']
         except Exception as e:
             print(f"[FACEBOOK AUTH WARNING] Token verification error: {e}")
 
@@ -508,6 +535,7 @@ def auth_facebook(req: SocialAuthRequest):
 
     email = email.lower().strip()
     nome_final = nome if nome else email.split('@')[0].capitalize()
+    foto_final = foto_url or "https://images.unsplash.com/photo-1534528741775-53994a69daeb?auto=format&fit=crop&w=120&q=80"
 
     if USE_DB:
         try:
@@ -517,9 +545,14 @@ def auth_facebook(req: SocialAuthRequest):
             usuario = cursor.fetchone()
             if not usuario:
                 cursor.execute("""
-                    INSERT INTO hubitat_usuarios (nome, email, provedor)
-                    VALUES (%s, %s, %s)
-                """, (nome_final, email, 'facebook'))
+                    INSERT INTO hubitat_usuarios (nome, email, provedor, foto_url)
+                    VALUES (%s, %s, %s, %s)
+                """, (nome_final, email, 'facebook', foto_final))
+                conn.commit()
+            elif foto_url and usuario.get('foto_url') != foto_url:
+                cursor.execute("""
+                    UPDATE hubitat_usuarios SET foto_url = %s, nome = %s WHERE email = %s
+                """, (foto_final, nome_final, email))
                 conn.commit()
             cursor.close()
             conn.close()
@@ -532,6 +565,13 @@ def auth_facebook(req: SocialAuthRequest):
         "token_type": "bearer",
         "email": email,
         "nome": nome_final,
+        "foto_url": foto_final,
+        "usuario": {
+            "email": email,
+            "nome": nome_final,
+            "foto_url": foto_final,
+            "provedor": "facebook"
+        },
         "message": "Autenticado com sucesso via Facebook!"
     }
 
@@ -540,6 +580,7 @@ def auth_microsoft(req: SocialAuthRequest):
     token = req.access_token or req.credential
     email = req.email
     nome = req.nome or req.name
+    foto_url = req.foto_url or req.picture
     
     if token and not email:
         try:
@@ -558,6 +599,7 @@ def auth_microsoft(req: SocialAuthRequest):
 
     email = email.lower().strip()
     nome_final = nome if nome else email.split('@')[0].capitalize()
+    foto_final = foto_url or "https://images.unsplash.com/photo-1534528741775-53994a69daeb?auto=format&fit=crop&w=120&q=80"
 
     if USE_DB:
         try:
@@ -567,9 +609,14 @@ def auth_microsoft(req: SocialAuthRequest):
             usuario = cursor.fetchone()
             if not usuario:
                 cursor.execute("""
-                    INSERT INTO hubitat_usuarios (nome, email, provedor)
-                    VALUES (%s, %s, %s)
-                """, (nome_final, email, 'microsoft'))
+                    INSERT INTO hubitat_usuarios (nome, email, provedor, foto_url)
+                    VALUES (%s, %s, %s, %s)
+                """, (nome_final, email, 'microsoft', foto_final))
+                conn.commit()
+            elif foto_url and usuario.get('foto_url') != foto_url:
+                cursor.execute("""
+                    UPDATE hubitat_usuarios SET foto_url = %s, nome = %s WHERE email = %s
+                """, (foto_final, nome_final, email))
                 conn.commit()
             cursor.close()
             conn.close()
@@ -582,6 +629,13 @@ def auth_microsoft(req: SocialAuthRequest):
         "token_type": "bearer",
         "email": email,
         "nome": nome_final,
+        "foto_url": foto_final,
+        "usuario": {
+            "email": email,
+            "nome": nome_final,
+            "foto_url": foto_final,
+            "provedor": "microsoft"
+        },
         "message": "Autenticado com sucesso via Microsoft!"
     }
 

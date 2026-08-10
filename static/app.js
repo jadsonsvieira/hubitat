@@ -75,6 +75,7 @@ async function checkAuthAndLoadData() {
         if (appContainer) appContainer.style.display = "flex";
         if (loginOverlay) loginOverlay.classList.remove("active");
         switchTab(state.activeTab || "dashboard");
+        updateUserProfileUI();
         await refreshAllData();
     } else {
         if (appContainer) appContainer.style.display = "none";
@@ -87,6 +88,32 @@ async function checkAuthAndLoadData() {
             if (landingPage) landingPage.style.display = "block";
             if (loginOverlay) loginOverlay.classList.remove("active");
         }
+    }
+}
+
+function updateUserProfileUI() {
+    try {
+        const rawUser = localStorage.getItem("hubitat_user");
+        if (!rawUser) return;
+        const user = JSON.parse(rawUser);
+        
+        const avatarImg = document.getElementById("userAvatar");
+        const nameEl = document.getElementById("userName");
+        const roleEl = document.getElementById("userRole");
+
+        if (user) {
+            if (avatarImg && user.foto_url) {
+                avatarImg.src = user.foto_url;
+            }
+            if (nameEl && user.nome) {
+                nameEl.textContent = user.nome;
+            }
+            if (roleEl && (user.provedor || user.email)) {
+                roleEl.textContent = user.provedor ? `Autenticado via ${user.provedor.toUpperCase()}` : user.email;
+            }
+        }
+    } catch (err) {
+        console.warn("Não foi possível carregar o perfil do usuário:", err);
     }
 }
 
@@ -383,22 +410,49 @@ window.fazerLoginFacebook = function() {
     window.open(fbAuthUrl, 'FBAuth', 'width=500,height=600');
 };
 
-function handleGoogleCredential(response) {
-    if (response && response.credential) {
-        autenticarContaSocialDireta('/api/auth/google', null, null, response.credential);
+function parseJwt(token) {
+    try {
+        var base64Url = token.split('.')[1];
+        var base64 = base64Url.replace(/-/g, '+').replace(/_/g, '/');
+        var jsonPayload = decodeURIComponent(atob(base64).split('').map(function(c) {
+            return '%' + ('00' + c.charCodeAt(0).toString(16)).slice(-2);
+        }).join(''));
+        return JSON.parse(jsonPayload);
+    } catch (e) {
+        return null;
     }
 }
 
-function autenticarContaSocialDireta(endpoint, email, nome, token) {
+function handleGoogleCredential(response) {
+    if (response && response.credential) {
+        const payload = parseJwt(response.credential);
+        const picture = payload ? payload.picture : null;
+        const email = payload ? payload.email : null;
+        const name = payload ? payload.name : null;
+        autenticarContaSocialDireta('/api/auth/google', email, name, response.credential, picture);
+    }
+}
+
+function autenticarContaSocialDireta(endpoint, email, nome, token, fotoUrl = null) {
     fetch(endpoint, {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({ email: email, nome: nome, access_token: token, credential: token })
+        body: JSON.stringify({ email: email, nome: nome, access_token: token, credential: token, foto_url: fotoUrl, picture: fotoUrl })
     })
     .then(res => res.json())
     .then(data => {
         if (data.sucesso || data.access_token) {
             localStorage.setItem("hubitat_token", data.access_token || "hubitat-jwt-secret-session-token");
+            if (data.usuario) {
+                localStorage.setItem("hubitat_user", JSON.stringify(data.usuario));
+            } else if (email || nome || fotoUrl) {
+                localStorage.setItem("hubitat_user", JSON.stringify({
+                    nome: nome || (email ? email.split('@')[0] : "Usuário"),
+                    email: email,
+                    foto_url: fotoUrl || "https://images.unsplash.com/photo-1534528741775-53994a69daeb?auto=format&fit=crop&w=120&q=80",
+                    provedor: endpoint.split('/').pop()
+                }));
+            }
             const overlay = document.getElementById("loginOverlay");
             if (overlay) overlay.classList.remove("active");
             showToast(data.message || "Conectado com sucesso!", "success");
@@ -418,6 +472,7 @@ window.autenticarContaSocialDireta = autenticarContaSocialDireta;
 
 function logout() {
     localStorage.removeItem("hubitat_token");
+    localStorage.removeItem("hubitat_user");
     if (window.location.pathname !== "/login") {
         history.pushState(null, "", "/login");
     }
