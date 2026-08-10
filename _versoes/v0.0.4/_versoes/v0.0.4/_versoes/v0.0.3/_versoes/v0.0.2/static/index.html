@@ -1,0 +1,779 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Hubitat by Frame IA | Gestão Inteligente de Condomínios</title>
+    <!-- Google Fonts -->
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&family=Poppins:wght@300;400;500;600;700;800&display=swap" rel="stylesheet">
+    <!-- Font Awesome Icons -->
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <!-- Stylesheet -->
+    <link rel="stylesheet" href="styles.css">
+</head>
+    <!-- LANDING PAGE -->
+    <div class="landing-page" id="landingPage" style="display: none;">
+        <!-- Landing Navbar -->
+        <nav class="landing-nav">
+            <img src="logo.png" alt="Hubitat by Frame [IA]" class="landing-nav-logo">
+            <ul class="landing-nav-links">
+                <li><a href="#recursos">Recursos</a></li>
+                <li><a href="#planos">Planos</a></li>
+                <li><a href="#faq">FAQ</a></li>
+            </ul>
+            <div class="landing-nav-actions">
+                <button type="button" class="action-btn primary" onclick="openAuthModal('login')">
+                    <i class="fa-solid fa-right-to-bracket"></i> Entrar
+                </button>
+                <button type="button" class="action-btn emerald" onclick="openAuthModal('cadastro')">
+                    <i class="fa-solid fa-user-plus"></i> Criar Conta
+                </button>
+            </div>
+        </nav>
+
+        <!-- Hero Section -->
+        <header class="landing-hero">
+            <div class="landing-hero-badge">
+                <i class="fa-solid fa-sparkles"></i> Gestão Condominial de Alto Padrão • Eusébio & Fortaleza
+            </div>
+            <h1 class="landing-hero-title">
+                A Plataforma Inteligente que Transforma a <span>Gestão do seu Condomínio</span>
+            </h1>
+            <p class="landing-hero-subtitle">
+                Controle de portaria com QR Code Express, gestão integrada de Ordens de Serviço, agendamento de áreas comuns e Inteligência Artificial residencial em uma única experiência fluida.
+            </p>
+            <div class="landing-hero-ctas">
+                <button type="button" class="action-btn primary" style="padding: 0.95rem 2rem; font-size: 1rem;" onclick="openAuthModal('cadastro')">
+                    <i class="fa-solid fa-rocket"></i> Testar Gratuitamente <i class="fa-solid fa-arrow-right"></i>
+                </button>
+                <button type="button" class="action-btn emerald" style="padding: 0.95rem 2rem; font-size: 1rem;" onclick="openAuthModal('login')">
+                    <i class="fa-solid fa-shield-halved"></i> Acessar Painel
+                </button>
+            </div>
+        </header>
+
+        <!-- Features Grid -->
+        <section class="landing-section" id="recursos">
+            <div class="section-header">
+                <h2>Tecnologia de Ponta para Síndicos e Moradores</h2>
+                <p>Desenvolvido para condomínios horizontais e verticais com altíssima exigência operacional</p>
+            </div>
+
+            <div class="features-grid">
+                <div class="feature-card">
+                    <div class="feature-icon"><i class="fa-solid fa-qrcode"></i></div>
+                    <h3>Portaria Express & QR Code</h3>
+                    <p>Liberação rápida para visitantes e prestadores de serviço com avisos em tempo real via WhatsApp e App.</p>
+                </div>
+
+                <div class="feature-card">
+                    <div class="feature-icon"><i class="fa-solid fa-wrench"></i></div>
+                    <h3>Gestão de Manutenção & O.S.</h3>
+                    <p>Acompanhamento de Ordens de Serviço com fornecedores homologados, prazos e controle orçamentário.</p>
+                </div>
+
+                <div class="feature-card">
+                    <div class="feature-icon"><i class="fa-solid fa-calendar-check"></i></div>
+                    <h3>Reservas Inteligentes</h3>
+                    <p>Agendamento simplificado de Decks, Quadras e Salões com taxas automáticas e verificação de regras.</p>
+                </div>
+
+                <div class="feature-card">
+                    <div class="feature-icon"><i class="fa-solid fa-robot"></i></div>
+                    <h3>Copilot IA Condominial</h3>
+                    <p>Assistente com inteligência artificial para redação de comunicados, consulta ao regimento interno e relatórios.</p>
+                </div>
+            </div>
+        </section>
+
+        <!-- Pricing Section -->
+        <section class="landing-section" id="planos">
+            <div class="section-header">
+                <h2>Planos Sob Medida para o seu Condomínio</h2>
+                <p>Transparência e previsibilidade financeira para a administração</p>
+            </div>
+
+            <div class="pricing-grid">
+                <div class="price-card">
+                    <div class="price-header">
+                        <h3>Essencial</h3>
+                        <p>Para condomínios de até 50 unidades</p>
+                    </div>
+                    <div class="price-amount">R$ 290<span>/mês</span></div>
+                    <ul class="price-features">
+                        <li><i class="fa-solid fa-check"></i> Portaria & Cadastro de Visitantes</li>
+                        <li><i class="fa-solid fa-check"></i> Gestão de O.S. Básica</li>
+                        <li><i class="fa-solid fa-check"></i> Reservas de até 2 Áreas Comuns</li>
+                        <li><i class="fa-solid fa-check"></i> Suporte por E-mail</li>
+                    </ul>
+                    <button type="button" class="action-btn primary wide" onclick="openAuthModal('cadastro')">Começar Agora</button>
+                </div>
+
+                <div class="price-card popular">
+                    <div class="popular-tag">Mais Escolhido</div>
+                    <div class="price-header">
+                        <h3>Premium Pro</h3>
+                        <p>Condomínios residenciais de médio e grande porte</p>
+                    </div>
+                    <div class="price-amount">R$ 590<span>/mês</span></div>
+                    <ul class="price-features">
+                        <li><i class="fa-solid fa-check"></i> Tudo do plano Essencial</li>
+                        <li><i class="fa-solid fa-check"></i> Copilot IA com Inteligência Ativa</li>
+                        <li><i class="fa-solid fa-check"></i> QR Code Express Ilimitado</li>
+                        <li><i class="fa-solid fa-check"></i> Gestão de O.S. Avançada + Alertas</li>
+                        <li><i class="fa-solid fa-check"></i> Suporte Prioritário 24/7</li>
+                    </ul>
+                    <button type="button" class="action-btn emerald wide" onclick="openAuthModal('cadastro')">Contratar Premium</button>
+                </div>
+            </div>
+        </section>
+
+        <!-- FAQ Section -->
+        <section class="landing-section" id="faq">
+            <div class="section-header">
+                <h2>Perguntas Frequentes</h2>
+                <p>Tire suas dúvidas sobre a implantação do Hubitat no seu condomínio</p>
+            </div>
+
+            <div class="faq-list">
+                <div class="faq-item" onclick="toggleFaq(this)">
+                    <div class="faq-question">
+                        <span>Como funciona o banco de dados e a segurança das informações?</span>
+                        <i class="fa-solid fa-chevron-down"></i>
+                    </div>
+                    <div class="faq-answer">
+                        O Hubitat opera em servidor MySQL exclusivo e dedicado com criptografia de ponta a ponta e backups automáticos na VPS.
+                    </div>
+                </div>
+
+                <div class="faq-item" onclick="toggleFaq(this)">
+                    <div class="faq-question">
+                        <span>Como os moradores acessam o sistema?</span>
+                        <i class="fa-solid fa-chevron-down"></i>
+                    </div>
+                    <div class="faq-answer">
+                        Os moradores podem utilizar o navegador web ou o aplicativo com suporte a login rápido via Google, Facebook ou Microsoft.
+                    </div>
+                </div>
+
+                <div class="faq-item" onclick="toggleFaq(this)">
+                    <div class="faq-question">
+                        <span>É possível migrar os dados de um sistema antigo?</span>
+                        <i class="fa-solid fa-chevron-down"></i>
+                    </div>
+                    <div class="faq-answer">
+                        Sim, nossa equipe oferece suporte para importação de moradores, veículos e cadastros prévios sem custos adicionais no plano Pro.
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <!-- Footer -->
+        <footer class="landing-footer">
+            <p>© 2026 Hubitat by Frame [IA] • Gestão Condominial Inteligente. Todos os direitos reservados.</p>
+        </footer>
+    </div>
+
+    <div class="app-container">
+        <!-- Sidebar -->
+        <aside class="sidebar">
+            <div class="brand">
+                <img src="logo.png" alt="Hubitat by Frame [IA]" class="sidebar-logo-img">
+            </div>
+
+            <!-- Condo Selector -->
+            <div class="condo-selector-card">
+                <div class="condo-icon"><i class="fa-solid fa-location-dot"></i></div>
+                <div class="condo-info">
+                    <label>Condomínio Ativo</label>
+                    <select id="condoSelect">
+                        <option value="eusebio-alphaville">Alphaville Eusébio Res. 1</option>
+                        <option value="eusebio-jardins">Jardins do Eusébio Casas</option>
+                        <option value="fortaleza-meireles">Meireles Tower Residence</option>
+                        <option value="fortaleza-guararapes">Residencial Mansão Guararapes</option>
+                    </select>
+                </div>
+            </div>
+
+            <!-- Navigation Links -->
+            <nav class="nav-menu">
+                <a href="#" class="nav-item active" data-tab="dashboard">
+                    <i class="fa-solid fa-chart-pie"></i>
+                    <span>Dashboard Geral</span>
+                </a>
+                <a href="#" class="nav-item" data-tab="os">
+                    <i class="fa-solid fa-wrench"></i>
+                    <span>Ordens de Serviço</span>
+                    <span class="badge badge-warning" id="osBadgeCount">3</span>
+                </a>
+                <a href="#" class="nav-item" data-tab="reservas">
+                    <i class="fa-solid fa-calendar-check"></i>
+                    <span>Reservas & Espaços</span>
+                </a>
+                <a href="#" class="nav-item" data-tab="visitantes">
+                    <i class="fa-solid fa-id-card"></i>
+                    <span>Controle de Acesso</span>
+                </a>
+                <a href="#" class="nav-item" data-tab="copilot">
+                    <i class="fa-solid fa-wand-magic-sparkles"></i>
+                    <span>Frame IA Copilot</span>
+                    <span class="badge badge-pulse">AI</span>
+                </a>
+            </nav>
+
+            <!-- Regional Banner -->
+            <div class="regional-badge-card">
+                <div class="regional-icon"><i class="fa-solid fa-map-location-dot"></i></div>
+                <div class="regional-text">
+                    <strong>Região Eusébio & Fortaleza</strong>
+                    <span>Gestão Integrada Inteligente</span>
+                </div>
+            </div>
+
+            <!-- User Profile Summary -->
+            <div class="user-profile">
+                <img src="https://images.unsplash.com/photo-1534528741775-53994a69daeb?auto=format&fit=crop&w=120&q=80" alt="Avatar" class="avatar">
+                <div class="user-details">
+                    <span class="user-name">Juliana Costa</span>
+                    <span class="user-role">Síndica Profissional</span>
+                </div>
+                <button class="icon-btn" id="logoutBtn" title="Sair do Sistema"><i class="fa-solid fa-right-from-bracket"></i></button>
+            </div>
+        </aside>
+
+        <!-- Main Content Area -->
+        <main class="main-content">
+            <!-- Header -->
+            <header class="top-header">
+                <div class="header-left">
+                    <button class="mobile-toggle-btn" id="sidebarToggle">
+                        <i class="fa-solid fa-bars"></i>
+                    </button>
+                    <div class="header-title">
+                        <h1 id="pageTitle">Dashboard Geral</h1>
+                        <p class="subtitle" id="pageSubtitle">Visão executiva em tempo real e status operacional do condomínio</p>
+                    </div>
+                </div>
+                <div class="header-actions">
+                    <div class="search-box">
+                        <i class="fa-solid fa-magnifying-glass"></i>
+                        <input type="text" placeholder="Buscar morador, O.S., placa ou espaço...">
+                    </div>
+                    <button class="action-btn primary" id="quickActionBtn">
+                        <i class="fa-solid fa-plus"></i>
+                        <span>Nova Solicitação</span>
+                    </button>
+                    <div class="notification-wrapper">
+                        <button class="icon-btn notification-btn">
+                            <i class="fa-solid fa-bell"></i>
+                            <span class="dot"></span>
+                        </button>
+                    </div>
+                </div>
+            </header>
+
+            <!-- TAB 1: DASHBOARD GERAL -->
+            <section class="tab-content active" id="tab-dashboard">
+                <!-- Metrics Grid -->
+                <div class="metrics-grid">
+                    <div class="metric-card glass">
+                        <div class="metric-header">
+                            <span class="metric-title">O.S. em Aberto</span>
+                            <div class="metric-icon warning"><i class="fa-solid fa-triangle-exclamation"></i></div>
+                        </div>
+                        <div class="metric-value" id="metricOSCount">3</div>
+                        <div class="metric-footer">
+                            <span class="trend negative"><i class="fa-solid fa-arrow-up"></i> 1 preventiva hoje</span>
+                            <span class="subtext">Quadras & Piscina</span>
+                        </div>
+                    </div>
+
+                    <div class="metric-card glass">
+                        <div class="metric-header">
+                            <span class="metric-title">Adimplência do Mês</span>
+                            <div class="metric-icon success"><i class="fa-solid fa-sack-dollar"></i></div>
+                        </div>
+                        <div class="metric-value">96.8%</div>
+                        <div class="metric-footer">
+                            <span class="trend positive"><i class="fa-solid fa-arrow-up"></i> +1.4% vs mês anterior</span>
+                            <span class="subtext">242/250 unidades</span>
+                        </div>
+                    </div>
+
+                    <div class="metric-card glass">
+                        <div class="metric-header">
+                            <span class="metric-title">Reservas Confirmadas</span>
+                            <div class="metric-icon primary"><i class="fa-solid fa-calendar-day"></i></div>
+                        </div>
+                        <div class="metric-value" id="metricReservasCount">7</div>
+                        <div class="metric-footer">
+                            <span class="trend neutral">Deck Gourmet & Beach Tennis</span>
+                            <span class="subtext">Fim de Semana</span>
+                        </div>
+                    </div>
+
+                    <div class="metric-card glass">
+                        <div class="metric-header">
+                            <span class="metric-title">Visitantes Previstos (Hoje)</span>
+                            <div class="metric-icon info"><i class="fa-solid fa-user-check"></i></div>
+                        </div>
+                        <div class="metric-value" id="metricVisitantesCount">14</div>
+                        <div class="metric-footer">
+                            <span class="trend positive"><i class="fa-solid fa-qrcode"></i> 10 via QR Express</span>
+                            <span class="subtext">Portaria Principal</span>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Dashboard Content Grid -->
+                <div class="dashboard-grid">
+                    <!-- Critical Alert & OS Summary -->
+                    <div class="card glass shadow-sm">
+                        <div class="card-header">
+                            <div>
+                                <h3>Manutenções & O.S. Críticas</h3>
+                                <p class="card-subtitle">Acompanhamento preventivo e corretivo das instalações</p>
+                            </div>
+                            <button class="btn-text" onclick="switchTab('os')">Ver Todas <i class="fa-solid fa-chevron-right"></i></button>
+                        </div>
+                        <div class="os-mini-list" id="dashboardOSList">
+                            <!-- Injected by JS -->
+                        </div>
+                    </div>
+
+                    <!-- Space Occupancy & Quick Booking -->
+                    <div class="card glass shadow-sm">
+                        <div class="card-header">
+                            <div>
+                                <h3>Áreas de Lazer (Eusébio Premium)</h3>
+                                <p class="card-subtitle">Status de disponibilidade para este fim de semana</p>
+                            </div>
+                            <button class="btn-text" onclick="switchTab('reservas')">Reservar <i class="fa-solid fa-chevron-right"></i></button>
+                        </div>
+                        <div class="space-status-list">
+                            <div class="space-item">
+                                <div class="space-thumb" style="background-image: url('https://images.unsplash.com/photo-1540555700478-4be289fbecef?auto=format&fit=crop&w=150&q=80');"></div>
+                                <div class="space-details">
+                                    <strong>Deck & Churrasqueira Gourmet</strong>
+                                    <span>Capacidade: 40 pessoas • Climatizado</span>
+                                </div>
+                                <span class="badge badge-danger">Reservado Sábado</span>
+                            </div>
+                            <div class="space-item">
+                                <div class="space-thumb" style="background-image: url('https://images.unsplash.com/photo-1626248801379-51a0748a5f96?auto=format&fit=crop&w=150&q=80');"></div>
+                                <div class="space-details">
+                                    <strong>Quadra de Beach Tennis #1</strong>
+                                    <span>Piso de areia quartzosa de alta drenagem</span>
+                                </div>
+                                <span class="badge badge-success">Livre Sábado</span>
+                            </div>
+                            <div class="space-item">
+                                <div class="space-thumb" style="background-image: url('https://images.unsplash.com/photo-1519167758481-83f550bb49b3?auto=format&fit=crop&w=150&q=80');"></div>
+                                <div class="space-details">
+                                    <strong>Salão de Festas Master</strong>
+                                    <span>Som embutido & Iluminação cênica</span>
+                                </div>
+                                <span class="badge badge-success">Livre Domingo</span>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Activity Feed & AI Insights -->
+                <div class="dashboard-grid bottom">
+                    <div class="card glass shadow-sm">
+                        <div class="card-header">
+                            <h3><i class="fa-solid fa-rss color-primary"></i> Feed de Atividades do Condomínio</h3>
+                        </div>
+                        <div class="activity-timeline" id="activityFeed">
+                            <!-- Injected by JS -->
+                        </div>
+                    </div>
+
+                    <div class="card glass ai-insight-card">
+                        <div class="ai-header">
+                            <div class="ai-badge"><i class="fa-solid fa-brain"></i> Frame IA Insights</div>
+                            <span class="ai-status">Recomendação Automática</span>
+                        </div>
+                        <div class="ai-body">
+                            <h4>Manutenção Preventiva de Bombas de Drenagem</h4>
+                            <p>Detectamos previsão de chuvas intensas para a região do Eusébio nos próximos 5 dias. Recomendamos realizar o teste preventivo de flutuadores da estação elevatória de águas pluviais.</p>
+                            <div class="ai-actions">
+                                <button class="btn-secondary sm" id="btnGerarOSIA"><i class="fa-solid fa-plus"></i> Gerar O.S. Preventiva</button>
+                                <button class="btn-ghost sm" onclick="switchTab('copilot')">Consultar Copilot</button>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </section>
+
+            <!-- TAB 2: ORDENS DE SERVIÇO -->
+            <section class="tab-content" id="tab-os">
+                <div class="tab-header-actions">
+                    <div class="filter-group">
+                        <button class="filter-btn active" data-filter="all">Todas (3)</button>
+                        <button class="filter-btn" data-filter="pendente">Pendentes</button>
+                        <button class="filter-btn" data-filter="andamento">Em Andamento</button>
+                        <button class="filter-btn" data-filter="concluida">Concluídas</button>
+                    </div>
+                    <button class="action-btn primary" id="openNewOSModalBtn">
+                        <i class="fa-solid fa-plus"></i> Abrir Nova O.S.
+                    </button>
+                </div>
+
+                <div class="table-container glass shadow-sm">
+                    <table class="data-table">
+                        <thead>
+                            <tr>
+                                <th>Código & Título</th>
+                                <th>Localização / Bloco</th>
+                                <th>Categoria</th>
+                                <th>Prioridade</th>
+                                <th>Status</th>
+                                <th>Abertura</th>
+                                <th>Ações</th>
+                            </tr>
+                        </thead>
+                        <tbody id="osTableBody">
+                            <!-- Injected by JS -->
+                        </tbody>
+                    </table>
+                </div>
+            </section>
+
+            <!-- TAB 3: RESERVAS & ESPAÇOS -->
+            <section class="tab-content" id="tab-reservas">
+                <div class="spaces-grid" id="spacesGrid">
+                    <!-- Injected by JS -->
+                </div>
+
+                <div class="card glass shadow-sm margin-top-lg">
+                    <div class="card-header">
+                        <h3>Minhas Reservas & Agendamentos do Condomínio</h3>
+                        <span class="badge badge-info">Regras do Estatuto Aplicadas</span>
+                    </div>
+                    <div class="table-container">
+                        <table class="data-table">
+                            <thead>
+                                <tr>
+                                    <th>Espaço</th>
+                                    <th>Morador / Unidade</th>
+                                    <th>Data & Horário</th>
+                                    <th>Convidados</th>
+                                    <th>Taxa</th>
+                                    <th>Status</th>
+                                    <th>Ações</th>
+                                </tr>
+                            </thead>
+                            <tbody id="reservasTableBody">
+                                <!-- Injected by JS -->
+                            </tbody>
+                        </table>
+                    </div>
+                </div>
+            </section>
+
+            <!-- TAB 4: CONTROLE DE ACESSO -->
+            <section class="tab-content" id="tab-visitantes">
+                <div class="dashboard-grid">
+                    <!-- Formulário Express -->
+                    <div class="card glass shadow-sm">
+                        <div class="card-header">
+                            <h3><i class="fa-solid fa-qrcode color-emerald"></i> Gerar Convite Express / QR Code</h3>
+                            <p class="card-subtitle">Pré-autorize a entrada de familiares, entregadores ou prestadores</p>
+                        </div>
+                        <form id="visitorForm" class="form-grid">
+                            <div class="form-group">
+                                <label>Nome Completo do Visitante</label>
+                                <input type="text" id="visitorName" placeholder="Ex: Carlos Eduardo Silva" required>
+                            </div>
+                            <div class="form-group">
+                                <label>CPF ou RG</label>
+                                <input type="text" id="visitorDoc" placeholder="000.000.000-00" required>
+                            </div>
+                            <div class="form-group">
+                                <label>Tipo de Acesso</label>
+                                <select id="visitorType">
+                                    <option value="Familiar / Amigo">Familiar / Amigo</option>
+                                    <option value="Prestador de Serviço">Prestador de Serviço</option>
+                                    <option value="Entregador / Delivery">Entregador / Delivery</option>
+                                </select>
+                            </div>
+                            <div class="form-group">
+                                <label>Placa do Veículo (Opcional)</label>
+                                <input type="text" id="visitorPlate" placeholder="Ex: PNV-8920">
+                            </div>
+                            <div class="form-group">
+                                <label>Data Prevista</label>
+                                <input type="date" id="visitorDate" required>
+                            </div>
+                            <div class="form-group">
+                                <label>Unidade de Destino</label>
+                                <input type="text" id="visitorUnit" value="Casa 42 - Al. Ipês" required>
+                            </div>
+                            <div class="form-actions full-width">
+                                <button type="submit" class="action-btn emerald wide">
+                                    <i class="fa-solid fa-wand-magic-sparkles"></i> Gerar Passe QR Code & Copiar Link WhatsApp
+                                </button>
+                            </div>
+                        </form>
+                    </div>
+
+                    <!-- Portaria Live Stream & Recent Visitors -->
+                    <div class="card glass shadow-sm">
+                        <div class="card-header">
+                            <h3><i class="fa-solid fa-shield-halved color-info"></i> Registros da Portaria em Tempo Real</h3>
+                            <span class="badge badge-success">Portaria Conectada</span>
+                        </div>
+                        <div class="visitor-list" id="visitorList">
+                            <!-- Injected by JS -->
+                        </div>
+                    </div>
+                </div>
+            </section>
+
+            <!-- TAB 5: FRAME IA COPILOT -->
+            <section class="tab-content" id="tab-copilot">
+                <div class="copilot-container glass shadow-sm">
+                    <div class="copilot-sidebar">
+                        <div class="copilot-brand">
+                            <i class="fa-solid fa-brain"></i>
+                            <div>
+                                <strong>Frame IA Copilot</strong>
+                                <span>Assistente Especialista Condominial</span>
+                            </div>
+                        </div>
+                        <div class="prompt-suggestions">
+                            <label>Sugestões de Comandos Rápidos:</label>
+                            <button class="prompt-chip" onclick="sendPresetPrompt('Criar um comunicado formal sobre obras na piscina do bloco B')">
+                                <i class="fa-solid fa-bullhorn"></i> Redigir comunicado de obras
+                            </button>
+                            <button class="prompt-chip" onclick="sendPresetPrompt('Quais são as regras de barulho e horários para condomínios no Eusébio?')">
+                                <i class="fa-solid fa-gavel"></i> Regras de convenção & barulho
+                            </button>
+                            <button class="prompt-chip" onclick="sendPresetPrompt('Fazer um resumo das ordens de serviço pendentes este mês')">
+                                <i class="fa-solid fa-list-check"></i> Resumo de O.S. pendentes
+                            </button>
+                        </div>
+                    </div>
+
+                    <div class="copilot-chat-area">
+                        <div class="chat-messages" id="chatMessages">
+                            <div class="chat-message bot">
+                                <div class="bot-avatar"><i class="fa-solid fa-robot"></i></div>
+                                <div class="message-bubble">
+                                    Olá, Juliana! Sou o <strong>Frame IA Copilot</strong>, seu assistente inteligente para a gestão do <strong>Alphaville Eusébio Res. 1</strong>.
+                                    <br><br>
+                                    Como posso te ajudar hoje? Posso analisar relatórios de manutenção, redigir comunicados para os moradores, consultar a convenção do condomínio ou verificar previsões operacionais.
+                                </div>
+                            </div>
+                        </div>
+
+                        <div class="chat-input-wrapper">
+                            <input type="text" id="chatInput" placeholder="Digite sua pergunta ou solicitação para a IA do Hubitat..." onkeypress="handleChatKeyPress(event)">
+                            <button class="action-btn primary icon-only" onclick="sendMessage()"><i class="fa-solid fa-paper-plane"></i></button>
+                        </div>
+                    </div>
+                </div>
+            </section>
+        </main>
+    </div>
+
+    <!-- MODAL: NOVA ORDEM DE SERVIÇO -->
+    <div class="modal-overlay" id="osModal">
+        <div class="modal-card glass shadow-lg">
+            <div class="modal-header">
+                <h3><i class="fa-solid fa-wrench"></i> Abrir Nova Ordem de Serviço</h3>
+                <button class="close-btn" onclick="closeModal('osModal')"><i class="fa-solid fa-xmark"></i></button>
+            </div>
+            <form id="newOSForm">
+                <div class="form-group">
+                    <label>Título da O.S.</label>
+                    <input type="text" id="osTitle" placeholder="Ex: Substituição de refletor LED na quadra de beach tennis" required>
+                </div>
+                <div class="form-group-row">
+                    <div class="form-group">
+                        <label>Categoria</label>
+                        <select id="osCategory" required>
+                            <option value="Elétrica">Elétrica</option>
+                            <option value="Hidráulica">Hidráulica</option>
+                            <option value="Segurança / Portaria">Segurança / Portaria</option>
+                            <option value="Áreas Verdes / Jardim">Áreas Verdes / Jardim</option>
+                            <option value="Estrutural / Pintura">Estrutural / Pintura</option>
+                        </select>
+                    </div>
+                    <div class="form-group">
+                        <label>Localização / Área</label>
+                        <input type="text" id="osLocation" placeholder="Ex: Alameda das Mangueiras, Lote 14" required>
+                    </div>
+                </div>
+                <div class="form-group-row">
+                    <div class="form-group">
+                        <label>Prioridade</label>
+                        <select id="osPriority">
+                            <option value="Baixa">Baixa</option>
+                            <option value="Média" selected>Média</option>
+                            <option value="Alta">Alta</option>
+                            <option value="Urgente">Urgente (Risco Operacional)</option>
+                        </select>
+                    </div>
+                    <div class="form-group">
+                        <label>Prestador / Responsável</label>
+                        <input type="text" id="osAssignee" placeholder="Ex: Eusébio ServElétrica Ltda">
+                    </div>
+                </div>
+                <div class="form-group">
+                    <label>Descrição Detalhada do Problema</label>
+                    <textarea id="osDescription" rows="3" placeholder="Descreva os detalhes da solicitação..." required></textarea>
+                </div>
+                <div class="modal-footer">
+                    <button type="button" class="btn-secondary" onclick="closeModal('osModal')">Cancelar</button>
+                    <button type="submit" class="action-btn primary"><i class="fa-solid fa-check"></i> Cadastrar Ordem de Serviço</button>
+                </div>
+            </form>
+        </div>
+    </div>
+
+    <!-- MODAL: RESERVA DE ESPAÇO -->
+    <div class="modal-overlay" id="reservaModal">
+        <div class="modal-card glass shadow-lg">
+            <div class="modal-header">
+                <h3><i class="fa-solid fa-calendar-plus"></i> Reservar Área de Lazer</h3>
+                <button class="close-btn" onclick="closeModal('reservaModal')"><i class="fa-solid fa-xmark"></i></button>
+            </div>
+            <form id="newReservaForm">
+                <input type="hidden" id="modalSpaceId">
+                <div class="form-group">
+                    <label>Espaço Selecionado</label>
+                    <input type="text" id="modalSpaceName" readonly class="readonly-input">
+                </div>
+                <div class="form-group-row">
+                    <div class="form-group">
+                        <label>Nome do Morador</label>
+                        <input type="text" id="reservaMorador" placeholder="Nome do titular" required>
+                    </div>
+                    <div class="form-group">
+                        <label>Unidade / Casa</label>
+                        <input type="text" id="reservaUnidade" placeholder="Ex: Casa 18 - Alameda Flamboyant" required>
+                    </div>
+                </div>
+                <div class="form-group-row">
+                    <div class="form-group">
+                        <label>Data da Reserva</label>
+                        <input type="date" id="reservaData" required>
+                    </div>
+                    <div class="form-group">
+                        <label>Turno / Horário</label>
+                        <select id="reservaTurno">
+                            <option value="Manhã (08h às 13h)">Manhã (08h às 13h)</option>
+                            <option value="Tarde (13h às 18h)">Tarde (13h às 18h)</option>
+                            <option value="Noite (18h às 23h)" selected>Noite (18h às 23h)</option>
+                            <option value="Dia Inteiro (08h às 22h)">Dia Inteiro (08h às 22h)</option>
+                        </select>
+                    </div>
+                </div>
+                <div class="form-group">
+                    <label>Estimativa de Convidados</label>
+                    <input type="number" id="reservaConvidados" min="1" max="100" value="15" required>
+                </div>
+                <div class="modal-footer">
+                    <button type="button" class="btn-secondary" onclick="closeModal('reservaModal')">Cancelar</button>
+                    <button type="submit" class="action-btn success"><i class="fa-solid fa-check"></i> Confirmar Agendamento</button>
+                </div>
+            </form>
+        </div>
+    </div>
+
+    <!-- TOAST NOTIFICATION -->
+    <div class="toast-container" id="toastContainer"></div>
+
+    <!-- LOGIN / CADASTRO SCREEN OVERLAY -->
+    <div class="login-overlay active" id="loginOverlay">
+        <div class="login-card glass shadow-lg">
+            <div class="login-header">
+                <img src="logo.png" alt="Hubitat by Frame [IA]" class="login-logo-img">
+                <p class="login-subtitle">by Frame [IA] • Gestão Condominial</p>
+            </div>
+
+            <!-- Auth Switcher Tabs -->
+            <div class="auth-tabs">
+                <button type="button" class="auth-tab-btn active" id="authTabLogin" onclick="switchAuthTab('login')">
+                    <i class="fa-solid fa-right-to-bracket"></i> Entrar
+                </button>
+                <button type="button" class="auth-tab-btn" id="authTabCadastro" onclick="switchAuthTab('cadastro')">
+                    <i class="fa-solid fa-user-plus"></i> Criar Conta
+                </button>
+            </div>
+
+            <!-- LOGIN FORM VIEW -->
+            <div id="loginFormView">
+                <form id="loginForm">
+                    <div class="form-group">
+                        <label><i class="fa-solid fa-user"></i> Usuário Admin</label>
+                        <input type="text" id="loginUsername" placeholder="Ex: admin" required autocomplete="username">
+                    </div>
+                    <div class="form-group margin-top-sm">
+                        <label><i class="fa-solid fa-lock"></i> Senha de Acesso</label>
+                        <input type="password" id="loginPassword" placeholder="Digite sua senha" required autocomplete="current-password">
+                    </div>
+                    <button type="submit" class="action-btn primary wide margin-top-lg">
+                        <i class="fa-solid fa-right-to-bracket"></i> Acessar Sistema
+                    </button>
+                </form>
+            </div>
+
+            <!-- CADASTRO FORM VIEW -->
+            <div id="cadastroFormView" style="display: none;">
+                <form id="cadastroForm">
+                    <div class="form-group">
+                        <label><i class="fa-solid fa-user"></i> Nome Completo</label>
+                        <input type="text" id="cadastroName" placeholder="Seu nome ou Razão Social" required>
+                    </div>
+                    <div class="form-group margin-top-sm">
+                        <label><i class="fa-solid fa-envelope"></i> E-mail Corporativo</label>
+                        <input type="email" id="cadastroEmail" placeholder="seuemail@condominio.com" required>
+                    </div>
+                    <div class="form-group margin-top-sm">
+                        <label><i class="fa-solid fa-building"></i> Condomínio / Cidade</label>
+                        <input type="text" id="cadastroCondo" placeholder="Ex: Alphaville Eusébio" required>
+                    </div>
+                    <div class="form-group margin-top-sm">
+                        <label><i class="fa-solid fa-lock"></i> Criar Senha</label>
+                        <input type="password" id="cadastroPassword" placeholder="Sua senha secreta" required>
+                    </div>
+                    <button type="submit" class="action-btn primary wide margin-top-lg">
+                        <i class="fa-solid fa-user-plus"></i> Criar Minha Conta
+                    </button>
+                </form>
+            </div>
+
+            <div class="social-login-divider">
+                <span>ou entrar com</span>
+            </div>
+            <div class="social-login-grid">
+                <button type="button" class="social-btn" id="socialGoogleBtn" title="Entrar com Google">
+                    <i class="fa-brands fa-google"></i>
+                    <span>Google</span>
+                </button>
+                <button type="button" class="social-btn" id="socialFacebookBtn" title="Entrar com Facebook">
+                    <i class="fa-brands fa-facebook"></i>
+                    <span>Facebook</span>
+                </button>
+                <button type="button" class="social-btn" id="socialMicrosoftBtn" title="Entrar com Microsoft">
+                    <i class="fa-brands fa-microsoft"></i>
+                    <span>Microsoft</span>
+                </button>
+            </div>
+
+            <div class="login-footer">
+                <span>Eusébio & Fortaleza Premium</span>
+            </div>
+        </div>
+    </div>
+
+    <!-- JavaScript Script -->
+    <script src="app.js"></script>
+</body>
+</html>
