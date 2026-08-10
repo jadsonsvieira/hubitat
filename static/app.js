@@ -117,6 +117,102 @@ function updateUserProfileUI() {
     }
 }
 
+window.openProfileModal = function() {
+    const rawUser = localStorage.getItem("hubitat_user");
+    let user = {
+        nome: "Juliana Costa",
+        email: "juliana.sindica@hubitat.com.br",
+        condominio: "Alphaville Eusébio Res. 1",
+        foto_url: "https://images.unsplash.com/photo-1534528741775-53994a69daeb?auto=format&fit=crop&w=120&q=80"
+    };
+    
+    if (rawUser) {
+        try {
+            user = { ...user, ...JSON.parse(rawUser) };
+        } catch (e) {}
+    }
+    
+    document.getElementById("profileNameInput").value = user.nome || "";
+    document.getElementById("profileEmailInput").value = user.email || "";
+    document.getElementById("profileCondoInput").value = user.condominio || "Alphaville Eusébio Res. 1";
+    document.getElementById("profilePhotoUrlInput").value = user.foto_url && !user.foto_url.startsWith("data:") ? user.foto_url : "";
+    
+    const preview = document.getElementById("profileModalAvatarPreview");
+    if (preview && user.foto_url) {
+        preview.src = user.foto_url;
+    }
+    
+    openModal("profileModal");
+};
+
+window.previewProfilePhotoUrl = function(url) {
+    if (url && url.trim()) {
+        const preview = document.getElementById("profileModalAvatarPreview");
+        if (preview) preview.src = url.trim();
+    }
+};
+
+window.handleProfilePhotoUpload = function(event) {
+    const file = event.target.files[0];
+    if (file) {
+        if (file.size > 5 * 1024 * 1024) {
+            showToast("A imagem deve ter no máximo 5MB.", "warning");
+            return;
+        }
+        const reader = new FileReader();
+        reader.onload = function(e) {
+            const base64Data = e.target.result;
+            const preview = document.getElementById("profileModalAvatarPreview");
+            if (preview) preview.src = base64Data;
+        };
+        reader.readAsDataURL(file);
+    }
+};
+
+window.saveUserProfile = async function(event) {
+    event.preventDefault();
+    const name = document.getElementById("profileNameInput").value;
+    const email = document.getElementById("profileEmailInput").value;
+    const condo = document.getElementById("profileCondoInput").value;
+    const photoPreview = document.getElementById("profileModalAvatarPreview");
+    const fotoUrl = photoPreview ? photoPreview.src : null;
+
+    try {
+        const response = await fetch(`${API_BASE}/api/usuario/perfil`, {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify({ email, nome: name, condominio: condo, foto_url: fotoUrl })
+        });
+        
+        if (response.ok) {
+            const data = await response.json();
+            const updatedUser = {
+                nome: name,
+                email: email,
+                condominio: condo,
+                foto_url: fotoUrl
+            };
+            localStorage.setItem("hubitat_user", JSON.stringify(updatedUser));
+            updateUserProfileUI();
+            closeModal("profileModal");
+            showToast("Perfil e foto atualizados com sucesso!", "success");
+        } else {
+            showToast("Erro ao atualizar perfil.", "danger");
+        }
+    } catch (err) {
+        const updatedUser = {
+            nome: name,
+            email: email,
+            condominio: condo,
+            foto_url: fotoUrl
+        };
+        localStorage.setItem("hubitat_user", JSON.stringify(updatedUser));
+        updateUserProfileUI();
+        closeModal("profileModal");
+        showToast("Perfil e foto atualizados localmente!", "success");
+    }
+};
+
 // SECURE API FETCH WRAPPER
 async function apiFetch(url, options = {}) {
     const token = localStorage.getItem("hubitat_token");

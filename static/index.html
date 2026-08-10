@@ -256,13 +256,13 @@
             </div>
 
             <!-- User Profile Summary -->
-            <div class="user-profile">
+            <div class="user-profile" onclick="openProfileModal()" style="cursor: pointer;" title="Clique para editar seu perfil e foto">
                 <img src="https://images.unsplash.com/photo-1534528741775-53994a69daeb?auto=format&fit=crop&w=120&q=80" alt="Avatar" class="avatar" id="userAvatar" onerror="this.src='https://images.unsplash.com/photo-1534528741775-53994a69daeb?auto=format&fit=crop&w=120&q=80'">
                 <div class="user-details">
                     <span class="user-name" id="userName">Juliana Costa</span>
                     <span class="user-role" id="userRole">Síndica Profissional</span>
                 </div>
-                <button class="icon-btn" id="logoutBtn" title="Sair do Sistema"><i class="fa-solid fa-right-from-bracket"></i></button>
+                <button class="icon-btn" id="logoutBtn" title="Sair do Sistema" onclick="event.stopPropagation(); logout();"><i class="fa-solid fa-right-from-bracket"></i></button>
             </div>
         </aside>
 
@@ -720,6 +720,58 @@
                 <div class="modal-footer">
                     <button type="button" class="btn-secondary" onclick="closeModal('reservaModal')">Cancelar</button>
                     <button type="submit" class="action-btn success"><i class="fa-solid fa-check"></i> Confirmar Agendamento</button>
+                </div>
+            </form>
+        </div>
+    </div>
+
+    <!-- MODAL: MEU PERFIL & EDITAR FOTO -->
+    <div class="modal-overlay" id="profileModal">
+        <div class="modal-card glass shadow-lg">
+            <div class="modal-header">
+                <div class="modal-header-title">
+                    <div class="modal-header-icon" style="background: linear-gradient(135deg, rgba(139, 92, 246, 0.25), rgba(192, 132, 252, 0.1)); color: #c084fc;">
+                        <i class="fa-solid fa-user-gear"></i>
+                    </div>
+                    <div>
+                        <h3>Meu Perfil & Foto de Perfil</h3>
+                        <p class="modal-subtitle">Personalize sua foto de avatar e informações da conta</p>
+                    </div>
+                </div>
+                <button type="button" class="close-btn" onclick="closeModal('profileModal')"><i class="fa-solid fa-xmark"></i></button>
+            </div>
+            <form id="profileForm" onsubmit="saveUserProfile(event)">
+                <div class="profile-photo-preview-wrapper" style="text-align: center; margin-bottom: 1.5rem;">
+                    <div style="position: relative; display: inline-block;">
+                        <img src="https://images.unsplash.com/photo-1534528741775-53994a69daeb?auto=format&fit=crop&w=120&q=80" id="profileModalAvatarPreview" style="width: 96px; height: 96px; border-radius: 50%; object-fit: cover; border: 3px solid #8b5cf6; box-shadow: 0 0 20px rgba(139,92,246,0.35);">
+                        <button type="button" onclick="document.getElementById('profileFileInput').click()" style="position: absolute; bottom: 0; right: 0; background: #8b5cf6; color: #fff; border: none; width: 32px; height: 32px; border-radius: 50%; cursor: pointer; display: flex; align-items: center; justify-content: center; box-shadow: 0 2px 8px rgba(0,0,0,0.5);" title="Escolher Foto do Computador/Celular">
+                            <i class="fa-solid fa-camera" style="font-size: 0.85rem;"></i>
+                        </button>
+                    </div>
+                    <input type="file" id="profileFileInput" accept="image/*" style="display: none;" onchange="handleProfilePhotoUpload(event)">
+                    <div style="margin-top: 0.5rem; font-size: 0.78rem; color: #a1a1aa;">Clique no ícone da câmera para enviar uma foto do seu dispositivo</div>
+                </div>
+                <div class="form-group">
+                    <label><i class="fa-solid fa-link color-primary"></i> Link da Foto (URL Externa)</label>
+                    <input type="url" id="profilePhotoUrlInput" placeholder="https://exemplo.com/sua-foto.jpg" oninput="previewProfilePhotoUrl(this.value)">
+                </div>
+                <div class="form-group-row">
+                    <div class="form-group">
+                        <label><i class="fa-solid fa-user color-primary"></i> Nome Completo</label>
+                        <input type="text" id="profileNameInput" placeholder="Seu nome" required>
+                    </div>
+                    <div class="form-group">
+                        <label><i class="fa-solid fa-envelope color-primary"></i> E-mail (Identificador)</label>
+                        <input type="email" id="profileEmailInput" readonly class="readonly-input">
+                    </div>
+                </div>
+                <div class="form-group">
+                    <label><i class="fa-solid fa-building-user color-primary"></i> Condomínio Principal</label>
+                    <input type="text" id="profileCondoInput" placeholder="Ex: Alphaville Eusébio Res. 1">
+                </div>
+                <div class="modal-footer">
+                    <button type="button" class="btn-secondary" onclick="closeModal('profileModal')">Cancelar</button>
+                    <button type="submit" class="action-btn primary"><i class="fa-solid fa-floppy-disk"></i> Salvar Perfil & Foto</button>
                 </div>
             </form>
         </div>

@@ -107,6 +107,12 @@ class SocialAuthRequest(BaseModel):
     foto_url: Optional[str] = None
     picture: Optional[str] = None
 
+class UpdateProfileRequest(BaseModel):
+    email: str
+    nome: Optional[str] = None
+    foto_url: Optional[str] = None
+    condominio: Optional[str] = None
+
 # Default Initial Data (Fallback)
 DEFAULT_DATA = {
     "ordensServico": [
@@ -639,6 +645,52 @@ def auth_microsoft(req: SocialAuthRequest):
         "message": "Autenticado com sucesso via Microsoft!"
     }
 
+@app.post("/api/usuario/perfil")
+def update_user_profile(req: UpdateProfileRequest):
+    if not req.email:
+        raise HTTPException(status_code=400, detail="E-mail é obrigatório.")
+    
+    email = req.email.lower().strip()
+    nome = req.nome
+    foto_url = req.foto_url
+    condo = req.condominio
+    
+    if USE_DB:
+        try:
+            conn = get_db_connection()
+            cursor = conn.cursor(dictionary=True)
+            cursor.execute("SELECT * FROM hubitat_usuarios WHERE email = %s", (email,))
+            usuario = cursor.fetchone()
+            if usuario:
+                cursor.execute("""
+                    UPDATE hubitat_usuarios 
+                    SET nome = COALESCE(%s, nome), 
+                        foto_url = COALESCE(%s, foto_url), 
+                        condominio = COALESCE(%s, condominio)
+                    WHERE email = %s
+                """, (nome, foto_url, condo, email))
+                conn.commit()
+            else:
+                cursor.execute("""
+                    INSERT INTO hubitat_usuarios (nome, email, foto_url, condominio, provedor)
+                    VALUES (%s, %s, %s, %s, %s)
+                """, (nome or email.split('@')[0], email, foto_url, condo, 'custom'))
+                conn.commit()
+            cursor.close()
+            conn.close()
+        except Exception as e:
+            print("Erro ao atualizar perfil do usuário no MySQL:", e)
+            
+    return {
+        "sucesso": True,
+        "message": "Perfil atualizado com sucesso!",
+        "usuario": {
+            "email": email,
+            "nome": nome,
+            "foto_url": foto_url,
+            "condominio": condo
+        }
+    }
 
 # PROTECTED API ENDPOINTS
 
