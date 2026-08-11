@@ -1,0 +1,28 @@
+{
+  "name": "Hubitat by Frame IA",
+  "short_name": "Hubitat",
+  "description": "Gestão inteligente de condomínios, residências e apartamentos by Frame [IA]",
+  "start_url": "/",
+  "display": "standalone",
+  "background_color": "#09090b",
+  "theme_color": "#8b5cf6",
+  "icons": [
+    {
+      "src": "/favicon.png",
+      "sizes": "64x64 32x32 24x24 16x16",
+      "type": "image/png"
+    },
+    {
+      "src": "/icon-192.png",
+      "sizes": "192x192",
+      "type": "image/png",
+      "purpose": "any maskable"
+    },
+    {
+      "src": "/icon-512.png",
+      "sizes": "512x512",
+      "type": "image/png",
+      "purpose": "any maskable"
+    }
+  ]
+}

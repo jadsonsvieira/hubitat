@@ -47,6 +47,10 @@ const state = {
     ],
     reservas: [],
     visitantes: [],
+    comunicados: [],
+    ocorrencias: [],
+    encomendas: [],
+    manutencoes: [],
     atividades: []
 };
 
@@ -234,22 +238,34 @@ async function apiFetch(url, options = {}) {
 // FETCH ALL DATA FROM PYTHON BACKEND
 async function refreshAllData() {
     try {
-        const [osRes, resRes, visRes, actRes] = await Promise.all([
+        const [osRes, resRes, visRes, actRes, comRes, ocoRes, encRes, manRes] = await Promise.all([
             apiFetch(`${API_BASE}/api/os`),
             apiFetch(`${API_BASE}/api/reservas`),
             apiFetch(`${API_BASE}/api/visitantes`),
-            apiFetch(`${API_BASE}/api/atividades`)
+            apiFetch(`${API_BASE}/api/atividades`),
+            apiFetch(`${API_BASE}/api/comunicados`),
+            apiFetch(`${API_BASE}/api/ocorrencias`),
+            apiFetch(`${API_BASE}/api/encomendas`),
+            apiFetch(`${API_BASE}/api/manutencoes`)
         ]);
 
         state.ordensServico = await osRes.json();
         state.reservas = await resRes.json();
         state.visitantes = await visRes.json();
         state.atividades = await actRes.json();
+        state.comunicados = await comRes.json();
+        state.ocorrencias = await ocoRes.json();
+        state.encomendas = await encRes.json();
+        state.manutencoes = await manRes.json();
 
         renderDashboard();
         renderOS();
         renderReservas();
         renderVisitantes();
+        renderComunicados();
+        renderOcorrencias();
+        renderEncomendas();
+        renderManutencoes();
         updateCounters();
     } catch (err) {
         console.error("Erro ao carregar dados do servidor Python:", err);
@@ -1105,3 +1121,345 @@ async function sendMessage() {
     
     messageContainer.scrollTop = messageContainer.scrollHeight;
 }
+
+// --- 4 PILARES: RENDERERS, MODALS & INTERFACE ROLE SWITCHER ---
+
+// 1. Role View Switcher (Síndico, Portaria, Morador)
+function changeRoleView(role) {
+    document.body.classList.remove('kiosk-mode');
+    
+    if (role === 'portaria') {
+        document.body.classList.add('kiosk-mode');
+        switchTab('visitantes');
+        showToast("Interface alternada para Modo Portaria / Kiosk Recepção 🚪", "info");
+    } else if (role === 'morador') {
+        switchTab('comunicacao');
+        showToast("Interface alternada para Modo Morador / App PWA 📲", "info");
+    } else {
+        switchTab('dashboard');
+        showToast("Interface alternada para Modo Síndico / Gestão Executiva 👑", "success");
+    }
+}
+window.changeRoleView = changeRoleView;
+
+// 2. Render Comunicados
+function renderComunicados() {
+    const container = document.getElementById('comunicadosList');
+    if (!container) return;
+    
+    const items = state.comunicados || [];
+    if (items.length === 0) {
+        container.innerHTML = `<div class="empty-state">Nenhum comunicado oficial publicado.</div>`;
+        return;
+    }
+    
+    container.innerHTML = items.map(c => `
+        <div class="comunicado-card">
+            <div class="comunicado-header">
+                <span class="comunicado-title">${c.title}</span>
+                <span class="badge ${c.priority === 'Urgente' ? 'badge-danger' : 'badge-info'}">${c.priority}</span>
+            </div>
+            <p class="comunicado-content">${c.content}</p>
+            <div class="comunicado-footer">
+                <span><i class="fa-solid fa-calendar"></i> ${c.date} • ${c.category}</span>
+                <div class="read-progress">
+                    <span>${c.readRate || '88% Confirmado'}</span>
+                    <div class="read-progress-bar">
+                        <div class="read-progress-fill" style="width: 88%;"></div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    `).join('');
+}
+window.renderComunicados = renderComunicados;
+
+// 3. Render Ocorrências
+function renderOcorrencias() {
+    const tbody = document.getElementById('ocorrenciasTableBody');
+    if (!tbody) return;
+    
+    const items = state.ocorrencias || [];
+    if (items.length === 0) {
+        tbody.innerHTML = `<tr><td colspan="5" class="text-center text-muted">Nenhuma ocorrência registrada.</td></tr>`;
+        return;
+    }
+    
+    tbody.innerHTML = items.map(o => `
+        <tr>
+            <td><strong>${o.id}</strong> • ${o.type}</td>
+            <td>${o.unit}</td>
+            <td>${o.desc}</td>
+            <td><span class="badge ${o.status === 'Resolvido' ? 'badge-success' : 'badge-warning'}">${o.status}</span></td>
+            <td>${o.time}</td>
+        </tr>
+    `).join('');
+}
+window.renderOcorrencias = renderOcorrencias;
+
+// 4. Render Encomendas
+function renderEncomendas() {
+    const tbody = document.getElementById('encomendasTableBody');
+    if (!tbody) return;
+    
+    const items = state.encomendas || [];
+    if (items.length === 0) {
+        tbody.innerHTML = `<tr><td colspan="5" class="text-center text-muted">Nenhuma encomenda pendente na portaria.</td></tr>`;
+        return;
+    }
+    
+    tbody.innerHTML = items.map(e => `
+        <tr>
+            <td><strong>${e.code}</strong><br><span class="text-muted" style="font-size:0.75rem;">${e.courier}</span></td>
+            <td>${e.recipient}<br><span class="text-muted" style="font-size:0.75rem;">${e.unit}</span></td>
+            <td>${e.receivedAt}</td>
+            <td><span class="badge ${e.status === 'Entregue ao Morador' ? 'badge-success' : 'badge-warning'}">${e.status}</span></td>
+            <td>
+                ${e.status !== 'Entregue ao Morador' ? 
+                `<button class="btn-text sm color-emerald" onclick="deliverEncomenda('${e.id}')"><i class="fa-solid fa-check"></i> Dar Baixa</button>` : 
+                `<span class="text-muted" style="font-size:0.75rem;"><i class="fa-solid fa-check-double"></i> Entregue</span>`}
+            </td>
+        </tr>
+    `).join('');
+}
+window.renderEncomendas = renderEncomendas;
+
+// 5. Render Manutenções
+function renderManutencoes() {
+    const tbody = document.getElementById('manutencaoTableBody');
+    if (!tbody) return;
+    
+    const items = state.manutencoes || [];
+    if (items.length === 0) {
+        tbody.innerHTML = `<tr><td colspan="5" class="text-center text-muted">Nenhuma manutenção agendada.</td></tr>`;
+        return;
+    }
+    
+    tbody.innerHTML = items.map(m => `
+        <tr>
+            <td><strong>${m.system}</strong></td>
+            <td>${m.frequency}</td>
+            <td>${m.nextDate}</td>
+            <td>${m.responsible}</td>
+            <td><span class="badge ${m.status === 'Em Dia' ? 'badge-success' : (m.status === 'Agendado' ? 'badge-info' : 'badge-warning')}">${m.status}</span></td>
+        </tr>
+    `).join('');
+}
+window.renderManutencoes = renderManutencoes;
+
+// 6. QR Code Canvas Generator
+function generateQRCodeCanvas(text) {
+    const canvas = document.getElementById('qrCanvas');
+    if (!canvas) return;
+    const ctx = canvas.getContext('2d');
+    ctx.fillStyle = '#ffffff';
+    ctx.fillRect(0, 0, 200, 200);
+    
+    ctx.fillStyle = '#09090b';
+    ctx.fillRect(15, 15, 50, 50);
+    ctx.fillRect(135, 15, 50, 50);
+    ctx.fillRect(15, 135, 50, 50);
+    
+    ctx.fillStyle = '#ffffff';
+    ctx.fillRect(25, 25, 30, 30);
+    ctx.fillRect(145, 25, 30, 30);
+    ctx.fillRect(25, 145, 30, 30);
+    
+    ctx.fillStyle = '#10b981';
+    ctx.fillRect(33, 33, 14, 14);
+    ctx.fillRect(153, 33, 14, 14);
+    ctx.fillRect(33, 153, 14, 14);
+    
+    // Matrix simulation
+    ctx.fillStyle = '#09090b';
+    for (let i = 0; i < 60; i++) {
+        const x = (Math.floor(Math.random() * 16) + 2) * 10;
+        const y = (Math.floor(Math.random() * 16) + 2) * 10;
+        if (!((x < 70 && y < 70) || (x > 120 && y < 70) || (x < 70 && y > 120))) {
+            ctx.fillRect(x, y, 8, 8);
+        }
+    }
+}
+window.generateQRCodeCanvas = generateQRCodeCanvas;
+
+function shareQRWhatsApp() {
+    const visitor = document.getElementById('qrVisitorNameDisplay').innerText;
+    const text = `Passe de Acesso QR Code Express para ${visitor} no Hubitat by Frame [IA]. Apresente este QR Code na portaria: https://hubitat.frameia.com.br/pass/express`;
+    window.open(`https://api.whatsapp.com/send?text=${encodeURIComponent(text)}`, '_blank');
+}
+window.shareQRWhatsApp = shareQRWhatsApp;
+
+function downloadQRCode() {
+    const canvas = document.getElementById('qrCanvas');
+    if (!canvas) return;
+    const link = document.createElement('a');
+    link.download = 'Passe_QR_Hubitat.png';
+    link.href = canvas.toDataURL();
+    link.click();
+    showToast("QR Code baixado com sucesso!", "success");
+}
+window.downloadQRCode = downloadQRCode;
+
+// 7. Modals & Actions
+function openComunicadoModal() { openModal('comunicadoModal'); }
+function openOcorrenciaModal() { openModal('ocorrenciaModal'); }
+function openEncomendaModal() { openModal('encomendaModal'); }
+function openManutencaoModal() { openModal('manutencaoModal'); }
+function openBoletoModal() { openModal('boletoModal'); }
+
+window.openComunicadoModal = openComunicadoModal;
+window.openOcorrenciaModal = openOcorrenciaModal;
+window.openEncomendaModal = openEncomendaModal;
+window.openManutencaoModal = openManutencaoModal;
+window.openBoletoModal = openBoletoModal;
+
+async function saveComunicado(e) {
+    e.preventDefault();
+    const newCom = {
+        id: 'COM-' + Math.floor(100 + Math.random() * 900),
+        title: document.getElementById('comTitle').value,
+        category: document.getElementById('comCategory').value,
+        priority: document.getElementById('comPriority').value,
+        date: new Date().toLocaleDateString('pt-BR'),
+        readRate: '100% Confirmado',
+        content: document.getElementById('comContent').value
+    };
+    
+    try {
+        await apiFetch(`${API_BASE}/api/comunicados`, {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify(newCom)
+        });
+        state.comunicados.unshift(newCom);
+        renderComunicados();
+        closeModal('comunicadoModal');
+        showToast("Comunicado publicado no mural com sucesso!", "success");
+    } catch (err) {
+        state.comunicados.unshift(newCom);
+        renderComunicados();
+        closeModal('comunicadoModal');
+        showToast("Comunicado registrado localmente!", "success");
+    }
+}
+window.saveComunicado = saveComunicado;
+
+async function saveOcorrencia(e) {
+    e.preventDefault();
+    const newOco = {
+        id: 'OCO-' + Math.floor(100 + Math.random() * 900),
+        unit: document.getElementById('ocoUnit').value,
+        type: document.getElementById('ocoType').value,
+        desc: document.getElementById('ocoDesc').value,
+        status: 'Pendente',
+        time: 'Agora'
+    };
+    
+    try {
+        await apiFetch(`${API_BASE}/api/ocorrencias`, {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify(newOco)
+        });
+        state.ocorrencias.unshift(newOco);
+        renderOcorrencias();
+        closeModal('ocorrenciaModal');
+        showToast("Ocorrência gravada no livro transparente!", "warning");
+    } catch (err) {
+        state.ocorrencias.unshift(newOco);
+        renderOcorrencias();
+        closeModal('ocorrenciaModal');
+        showToast("Ocorrência gravada localmente!", "warning");
+    }
+}
+window.saveOcorrencia = saveOcorrencia;
+
+async function saveEncomenda(e) {
+    e.preventDefault();
+    const newEnc = {
+        id: 'ENC-' + Math.floor(100 + Math.random() * 900),
+        unit: document.getElementById('encUnit').value,
+        recipient: document.getElementById('encRecipient').value,
+        courier: document.getElementById('encCourier').value,
+        code: document.getElementById('encCode').value,
+        status: 'Aguardando Retirada',
+        receivedAt: 'Agora'
+    };
+    
+    try {
+        await apiFetch(`${API_BASE}/api/encomendas`, {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify(newEnc)
+        });
+        state.encomendas.unshift(newEnc);
+        renderEncomendas();
+        closeModal('encomendaModal');
+        showToast("Encomenda registrada e morador notificado!", "info");
+    } catch (err) {
+        state.encomendas.unshift(newEnc);
+        renderEncomendas();
+        closeModal('encomendaModal');
+        showToast("Encomenda registrada localmente!", "info");
+    }
+}
+window.saveEncomenda = saveEncomenda;
+
+async function deliverEncomenda(encId) {
+    try {
+        await apiFetch(`${API_BASE}/api/encomendas/${encId}/status`, { method: 'PUT' });
+        const enc = state.encomendas.find(e => e.id === encId);
+        if (enc) enc.status = 'Entregue ao Morador';
+        renderEncomendas();
+        showToast("Baixa de entrega registrada!", "success");
+    } catch (err) {
+        const enc = state.encomendas.find(e => e.id === encId);
+        if (enc) enc.status = 'Entregue ao Morador';
+        renderEncomendas();
+        showToast("Baixa registrada localmente!", "success");
+    }
+}
+window.deliverEncomenda = deliverEncomenda;
+
+async function saveManutencao(e) {
+    e.preventDefault();
+    const newMan = {
+        id: 'MAN-' + Math.floor(100 + Math.random() * 900),
+        system: document.getElementById('manSystem').value,
+        frequency: document.getElementById('manFrequency').value,
+        nextDate: document.getElementById('manNextDate').value,
+        responsible: document.getElementById('manResponsible').value,
+        status: 'Agendado'
+    };
+    
+    try {
+        await apiFetch(`${API_BASE}/api/manutencoes`, {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify(newMan)
+        });
+        state.manutencoes.unshift(newMan);
+        renderManutencoes();
+        closeModal('manutencaoModal');
+        showToast("Preventiva agendada no calendário!", "success");
+    } catch (err) {
+        state.manutencoes.unshift(newMan);
+        renderManutencoes();
+        closeModal('manutencaoModal');
+        showToast("Preventiva registrada localmente!", "success");
+    }
+}
+window.saveManutencao = saveManutencao;
+
+function copyBoletoCode() {
+    navigator.clipboard.writeText("34191.09008 61200.001027 00042.910005 1 98010000058000");
+    showToast("Código PIX / Copia e Cola copiado!", "success");
+}
+window.copyBoletoCode = copyBoletoCode;
+
+function handleGlobalSearch(query) {
+    if (!query || query.trim() === "") return;
+    query = query.toLowerCase().trim();
+    console.log("Pesquisando globalmente:", query);
+}
+window.handleGlobalSearch = handleGlobalSearch;

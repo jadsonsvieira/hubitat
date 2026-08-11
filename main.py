@@ -113,6 +113,40 @@ class UpdateProfileRequest(BaseModel):
     foto_url: Optional[str] = None
     condominio: Optional[str] = None
 
+class Comunicado(BaseModel):
+    id: str
+    title: str
+    category: str
+    priority: str
+    date: str
+    readRate: str
+    content: str
+
+class Ocorrencia(BaseModel):
+    id: str
+    unit: str
+    type: str
+    desc: str
+    status: str
+    time: str
+
+class Encomenda(BaseModel):
+    id: str
+    unit: str
+    recipient: str
+    courier: str
+    code: str
+    status: str
+    receivedAt: str
+
+class Manutencao(BaseModel):
+    id: str
+    system: str
+    frequency: str
+    nextDate: str
+    status: str
+    responsible: str
+
 # Default Initial Data (Fallback)
 DEFAULT_DATA = {
     "ordensServico": [
@@ -196,6 +230,90 @@ DEFAULT_DATA = {
             "status": "Pendente"
         }
     ],
+    "comunicados": [
+        {
+            "id": "COM-101",
+            "title": "Limpeza Anual das Caixas D'Água",
+            "category": "Manutenção Geral",
+            "priority": "Urgente",
+            "date": "10/08/2026",
+            "readRate": "88% Confirmado",
+            "content": "Avisamos que no próximo sábado das 08h às 12h será realizada a higienização dos reservatórios de água. Pedimos aos moradores que armazenem água para consumo."
+        },
+        {
+            "id": "COM-102",
+            "title": "Assembléia Geral Ordinária de Condôminos",
+            "category": "Comunicado Oficial",
+            "priority": "Oficial",
+            "date": "08/08/2026",
+            "readRate": "94% Confirmado",
+            "content": "Convocação oficial para a prestação de contas do semestre e aprovação da melhoria na iluminação de LED do complexo esportivo."
+        }
+    ],
+    "ocorrencias": [
+        {
+            "id": "OCO-201",
+            "unit": "Casa 18 - Al. Flamboyant",
+            "type": "Som Alto / Convivência",
+            "desc": "Som com volume elevado na área de lazer privativa após as 22:00h no último sábado.",
+            "status": "Em Tratativa",
+            "time": "Ontem, 22:45"
+        },
+        {
+            "id": "OCO-202",
+            "unit": "Casa 42 - Al. Ipês",
+            "type": "Vaga de Garagem",
+            "desc": "Veículo visitante estacionado ocupando parte do acesso à Alameda.",
+            "status": "Resolvido",
+            "time": "Há 2 dias"
+        }
+    ],
+    "encomendas": [
+        {
+            "id": "ENC-301",
+            "unit": "Casa 102 - Al. Flamboyant",
+            "recipient": "Dr. Roberto Vasconcelos",
+            "courier": "Mercado Livre / Express",
+            "code": "ML-99201",
+            "status": "Aguardando Retirada",
+            "receivedAt": "Hoje, 10:30"
+        },
+        {
+            "id": "ENC-302",
+            "unit": "Casa 45 - Al. Palmeiras",
+            "recipient": "Mariana Holanda",
+            "courier": "Amazon Prime Delivery",
+            "code": "AMZ-88102",
+            "status": "Entregue ao Morador",
+            "receivedAt": "Hoje, 08:15"
+        }
+    ],
+    "manutencoes": [
+        {
+            "id": "MAN-401",
+            "system": "Elevadores Sociais & Serviço",
+            "frequency": "Mensal",
+            "nextDate": "2026-09-02",
+            "status": "Em Dia",
+            "responsible": "Otis Elevadores Brasil"
+        },
+        {
+            "id": "MAN-402",
+            "system": "Estação Elevatória de Esgoto & Bombas",
+            "frequency": "Trimestral",
+            "nextDate": "2026-08-28",
+            "status": "Agendado",
+            "responsible": "Bombas & Cia Eusébio"
+        },
+        {
+            "id": "MAN-403",
+            "system": "Para-raios (SPDA) & Laudo de Vistoria",
+            "frequency": "Anual",
+            "nextDate": "2026-08-20",
+            "status": "Atenção",
+            "responsible": "Engenharia Elétrica CE"
+        }
+    ],
     "atividades": [
         {
             "icon": "fa-qrcode",
@@ -208,6 +326,12 @@ DEFAULT_DATA = {
             "title": "Nova reserva efetuada",
             "desc": "Deck Gourmet reservado por Dr. Roberto para 26/07.",
             "time": "Há 45 min"
+        },
+        {
+            "icon": "fa-box-archive",
+            "title": "Encomenda recebida na Portaria",
+            "desc": "Pacote Mercado Livre registrado para Casa 102.",
+            "time": "Há 1 hora"
         },
         {
             "icon": "fa-wrench",
@@ -978,6 +1102,71 @@ def query_copilot(query: CopilotQuery, token: str = Depends(verify_token)):
             f"Como assistente especialista do <strong>Hubitat by Frame [IA]</strong>, posso automatizar o registro de ocorrências, gerar notificações no app dos moradores ou consultar nossa base de conhecimentos de gestão imobiliária da região de Fortaleza e Eusébio."
         )
     return {"response": response}
+
+@app.get("/api/comunicados", response_model=List[Comunicado])
+def get_comunicados(token: str = Depends(verify_token)):
+    return load_json_data().get("comunicados", [])
+
+@app.post("/api/comunicados", response_model=Comunicado)
+def create_comunicado(com: Comunicado, token: str = Depends(verify_token)):
+    data = load_json_data()
+    data.setdefault("comunicados", []).insert(0, com.dict())
+    data.setdefault("atividades", []).insert(0, {
+        "icon": "fa-bullhorn",
+        "title": "Novo Comunicado Publicado",
+        "desc": com.title,
+        "time": "Agora"
+    })
+    save_json_data(data)
+    return com
+
+@app.get("/api/ocorrencias", response_model=List[Ocorrencia])
+def get_ocorrencias(token: str = Depends(verify_token)):
+    return load_json_data().get("ocorrencias", [])
+
+@app.post("/api/ocorrencias", response_model=Ocorrencia)
+def create_ocorrencia(oco: Ocorrencia, token: str = Depends(verify_token)):
+    data = load_json_data()
+    data.setdefault("ocorrencias", []).insert(0, oco.dict())
+    data.setdefault("atividades", []).insert(0, {
+        "icon": "fa-triangle-exclamation",
+        "title": "Ocorrência Registrada",
+        "desc": f"{oco.type} ({oco.unit})",
+        "time": "Agora"
+    })
+    save_json_data(data)
+    return oco
+
+@app.get("/api/encomendas", response_model=List[Encomenda])
+def get_encomendas(token: str = Depends(verify_token)):
+    return load_json_data().get("encomendas", [])
+
+@app.post("/api/encomendas", response_model=Encomenda)
+def create_encomenda(enc: Encomenda, token: str = Depends(verify_token)):
+    data = load_json_data()
+    data.setdefault("encomendas", []).insert(0, enc.dict())
+    data.setdefault("atividades", []).insert(0, {
+        "icon": "fa-box-archive",
+        "title": "Encomenda Registrada na Portaria",
+        "desc": f"Pacote {enc.courier} para {enc.recipient} ({enc.unit})",
+        "time": "Agora"
+    })
+    save_json_data(data)
+    return enc
+
+@app.put("/api/encomendas/{enc_id}/status")
+def update_encomenda_status(enc_id: str, token: str = Depends(verify_token)):
+    data = load_json_data()
+    for item in data.get("encomendas", []):
+        if item["id"] == enc_id:
+            item["status"] = "Entregue ao Morador"
+            save_json_data(data)
+            return item
+    raise HTTPException(status_code=404, detail="Encomenda não encontrada")
+
+@app.get("/api/manutencoes", response_model=List[Manutencao])
+def get_manutencoes(token: str = Depends(verify_token)):
+    return load_json_data().get("manutencoes", [])
 
 
 # Mount static files folder
