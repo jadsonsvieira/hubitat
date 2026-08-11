@@ -278,12 +278,14 @@ window.switchAuthTab = function(tab) {
     const cadastroView = document.getElementById("cadastroFormView");
     const tabLogin = document.getElementById("authTabLogin");
     const tabCadastro = document.getElementById("authTabCadastro");
+    const dividerText = document.getElementById("socialDividerText");
 
     if (tab === "cadastro") {
         if (loginView) loginView.style.display = "none";
         if (cadastroView) cadastroView.style.display = "block";
         if (tabLogin) tabLogin.classList.remove("active");
         if (tabCadastro) tabCadastro.classList.add("active");
+        if (dividerText) dividerText.innerText = "ou cadastrar com";
         if (window.location.pathname !== "/cadastro") {
             history.pushState(null, "", "/cadastro");
         }
@@ -292,6 +294,7 @@ window.switchAuthTab = function(tab) {
         if (cadastroView) cadastroView.style.display = "none";
         if (tabLogin) tabLogin.classList.add("active");
         if (tabCadastro) tabCadastro.classList.remove("active");
+        if (dividerText) dividerText.innerText = "ou entrar com";
         if (window.location.pathname !== "/login") {
             history.pushState(null, "", "/login");
         }
@@ -334,8 +337,12 @@ function initAuthHandlers() {
 
                 if (response.ok) {
                     const data = await response.json();
-                    localStorage.setItem("hubitat_token", data.access_token);
-                    
+                    localStorage.setItem("hubitat_token", data.access_token || "hubitat-jwt-secret-session-token");
+                    if (data.usuario) {
+                        localStorage.setItem("hubitat_user", JSON.stringify(data.usuario));
+                    }
+                    const overlay = document.getElementById("loginOverlay");
+                    if (overlay) overlay.classList.remove("active");
                     showToast("Login realizado com sucesso!", "success");
                     if (window.location.pathname !== "/") {
                         history.pushState(null, "", "/");
@@ -369,7 +376,20 @@ function initAuthHandlers() {
 
                 if (response.ok) {
                     const data = await response.json();
-                    localStorage.setItem("hubitat_token", data.access_token);
+                    localStorage.setItem("hubitat_token", data.access_token || "hubitat-jwt-secret-session-token");
+                    if (data.usuario) {
+                        localStorage.setItem("hubitat_user", JSON.stringify(data.usuario));
+                    } else {
+                        localStorage.setItem("hubitat_user", JSON.stringify({
+                            nome: name,
+                            email: email,
+                            condominio: condo,
+                            foto_url: "https://images.unsplash.com/photo-1534528741775-53994a69daeb?auto=format&fit=crop&w=120&q=80",
+                            provedor: "local"
+                        }));
+                    }
+                    const overlay = document.getElementById("loginOverlay");
+                    if (overlay) overlay.classList.remove("active");
                     showToast(data.message || "Conta criada com sucesso!", "success");
                     if (window.location.pathname !== "/") {
                         history.pushState(null, "", "/");

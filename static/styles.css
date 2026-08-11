@@ -1520,7 +1520,7 @@ body {
     background: #121214;
     border: 1px solid var(--border-color);
     border-radius: var(--radius-md);
-    padding: 0.65rem;
+    padding: 0.75rem 0.5rem;
     color: var(--text-main);
     display: flex;
     flex-direction: column;
@@ -1529,48 +1529,71 @@ body {
     gap: 0.35rem;
     cursor: pointer;
     font-family: var(--font-body);
-    font-size: 0.75rem;
-    font-weight: 500;
+    font-size: 0.78rem;
+    font-weight: 600;
     transition: var(--transition);
 }
 
 .social-btn i {
-    font-size: 1.1rem;
+    font-size: 1.25rem;
 }
 
-.social-btn:hover {
-    border-color: var(--primary);
-    background: rgba(139, 92, 246, 0.05);
+.social-btn.google-btn i { color: #ea4335; }
+.social-btn.facebook-btn i { color: #1877f2; }
+.social-btn.microsoft-btn i { color: #00a4ef; }
+
+.social-btn.google-btn:hover {
+    border-color: #ea4335;
+    background: rgba(234, 67, 53, 0.1);
     color: #fff;
-    box-shadow: 0 0 10px rgba(139, 92, 246, 0.15);
+    box-shadow: 0 0 14px rgba(234, 67, 53, 0.25);
+}
+
+.social-btn.facebook-btn:hover {
+    border-color: #1877f2;
+    background: rgba(24, 119, 242, 0.1);
+    color: #fff;
+    box-shadow: 0 0 14px rgba(24, 119, 242, 0.25);
+}
+
+.social-btn.microsoft-btn:hover {
+    border-color: #00a4ef;
+    background: rgba(0, 164, 239, 0.1);
+    color: #fff;
+    box-shadow: 0 0 14px rgba(0, 164, 239, 0.25);
 }
 
 /* LANDING PAGE STYLES */
 .landing-page {
     width: 100%;
+    max-width: 100vw;
     min-height: 100vh;
     background: #09090b;
     color: var(--text-main);
     font-family: var(--font-body);
     position: relative;
     overflow-x: hidden;
+    box-sizing: border-box;
 }
 
 .landing-nav {
     display: flex;
     align-items: center;
     justify-content: space-between;
-    padding: 1.25rem 3rem;
+    padding: 1.25rem 2.5rem;
     background: rgba(9, 9, 11, 0.85);
-    backdrop-filter: blur(12px);
+    backdrop-filter: blur(16px);
+    -webkit-backdrop-filter: blur(16px);
     border-bottom: 1px solid var(--border-color);
     position: sticky;
     top: 0;
     z-index: 1000;
+    width: 100%;
+    box-sizing: border-box;
 }
 
 .landing-nav-logo {
-    height: 40px;
+    height: 38px;
     width: auto;
     object-fit: contain;
     filter: drop-shadow(0 0 10px rgba(139, 92, 246, 0.3));
@@ -1598,7 +1621,7 @@ body {
 .landing-nav-actions {
     display: flex;
     align-items: center;
-    gap: 1rem;
+    gap: 0.75rem;
 }
 
 .landing-hero {
@@ -1606,6 +1629,7 @@ body {
     max-width: 1200px;
     margin: 0 auto;
     text-align: center;
+    box-sizing: border-box;
 }
 
 .landing-hero-badge {
@@ -1652,6 +1676,79 @@ body {
     justify-content: center;
     gap: 1.25rem;
     margin-bottom: 4rem;
+}
+
+/* RESPONSIVE LANDING PAGE MOBILE ADJUSTMENTS */
+@media (max-width: 768px) {
+    .landing-nav {
+        padding: 0.75rem 0.85rem !important;
+        gap: 0.5rem;
+    }
+
+    .landing-nav-logo {
+        height: 30px !important;
+        max-width: 125px;
+    }
+
+    .landing-nav-links {
+        display: none !important;
+    }
+
+    .landing-nav-actions {
+        gap: 0.35rem !important;
+    }
+
+    .landing-nav-actions .action-btn {
+        padding: 0.45rem 0.65rem !important;
+        font-size: 0.75rem !important;
+        white-space: nowrap !important;
+        border-radius: var(--radius-md) !important;
+    }
+
+    .landing-hero {
+        padding: 2.5rem 1rem 2rem 1rem !important;
+    }
+
+    .landing-hero-badge {
+        font-size: 0.72rem !important;
+        padding: 0.4rem 0.85rem !important;
+    }
+
+    .landing-hero-title {
+        font-size: 1.95rem !important;
+        line-height: 1.2 !important;
+    }
+
+    .landing-hero-subtitle {
+        font-size: 0.92rem !important;
+        margin-bottom: 1.75rem !important;
+    }
+
+    .landing-hero-ctas {
+        flex-direction: column !important;
+        width: 100% !important;
+        gap: 0.75rem !important;
+    }
+
+    .landing-hero-ctas .action-btn {
+        width: 100% !important;
+        box-sizing: border-box !important;
+        justify-content: center !important;
+        padding: 0.85rem 1rem !important;
+    }
+
+    .landing-section {
+        padding: 3rem 1rem !important;
+    }
+
+    .section-header h2 {
+        font-size: 1.6rem !important;
+    }
+
+    .features-grid, .pricing-grid {
+        grid-template-columns: 1fr !important;
+        gap: 1.25rem !important;
+    }
 }
 
 .landing-section {

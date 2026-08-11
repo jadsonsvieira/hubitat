@@ -510,32 +510,109 @@ def save_json_data(data: dict):
 
 @app.post("/api/login")
 def login(request: LoginRequest):
+    if not request.username or not request.password:
+        raise HTTPException(status_code=400, detail="Usuário e senha são obrigatórios.")
+        
+    username_clean = request.username.lower().strip()
+    
     if request.username == ADMIN_USER and request.password == ADMIN_PASSWORD:
-        return {"access_token": ADMIN_TOKEN, "token_type": "bearer"}
+        return {
+            "sucesso": True,
+            "access_token": ADMIN_TOKEN,
+            "token_type": "bearer",
+            "usuario": {
+                "nome": "Juliana Costa",
+                "email": "juliana.sindica@hubitat.com.br",
+                "foto_url": "https://images.unsplash.com/photo-1534528741775-53994a69daeb?auto=format&fit=crop&w=120&q=80",
+                "provedor": "admin"
+            }
+        }
     
     conn = get_db_connection()
     if conn:
         try:
             cursor = conn.cursor(dictionary=True)
-            cursor.execute("SELECT * FROM hubitat_usuarios WHERE email = %s OR nome = %s", (request.username, request.username))
+            cursor.execute("SELECT * FROM hubitat_usuarios WHERE email = %s OR nome = %s", (username_clean, username_clean))
             user = cursor.fetchone()
             cursor.close()
             conn.close()
             if user:
-                return {"access_token": ADMIN_TOKEN, "token_type": "bearer"}
+                return {
+                    "sucesso": True,
+                    "access_token": ADMIN_TOKEN,
+                    "token_type": "bearer",
+                    "usuario": {
+                        "nome": user.get("nome") or username_clean.split('@')[0].capitalize(),
+                        "email": user.get("email") or username_clean,
+                        "foto_url": user.get("foto_url") or "https://images.unsplash.com/photo-1534528741775-53994a69daeb?auto=format&fit=crop&w=120&q=80",
+                        "provedor": user.get("provedor") or "local"
+                    }
+                }
         except Exception as e:
             if conn: conn.close()
+            print("Erro ao validar login no MySQL:", e)
             
     if request.username and request.password:
-        return {"access_token": ADMIN_TOKEN, "token_type": "bearer"}
+        return {
+            "sucesso": True,
+            "access_token": ADMIN_TOKEN,
+            "token_type": "bearer",
+            "usuario": {
+                "nome": username_clean.split('@')[0].capitalize(),
+                "email": username_clean if '@' in username_clean else f"{username_clean}@hubitat.com.br",
+                "foto_url": "https://images.unsplash.com/photo-1534528741775-53994a69daeb?auto=format&fit=crop&w=120&q=80",
+                "provedor": "local"
+            }
+        }
 
-    raise HTTPException(status_code=401, detail="Usuário ou senha incorretos")
+    raise HTTPException(status_code=401, detail="Usuário ou senha incorretos.")
 
 @app.post("/api/cadastro")
 def cadastro(request: CadastroRequest):
     if not request.email or not request.password or not request.name:
         raise HTTPException(status_code=400, detail="Por favor preencha todos os campos obrigatórios")
-    return {"access_token": ADMIN_TOKEN, "token_type": "bearer", "message": "Conta criada com sucesso!"}
+    
+    email_clean = request.email.lower().strip()
+    name_clean = request.name.strip()
+    condo_clean = (request.condo or "Alphaville Eusébio Res. 1").strip()
+    foto_default = "https://images.unsplash.com/photo-1534528741775-53994a69daeb?auto=format&fit=crop&w=120&q=80"
+    
+    conn = get_db_connection()
+    if conn:
+        try:
+            cursor = conn.cursor(dictionary=True)
+            cursor.execute("SELECT * FROM hubitat_usuarios WHERE email = %s", (email_clean,))
+            if cursor.fetchone():
+                cursor.close()
+                conn.close()
+                raise HTTPException(status_code=400, detail="Este e-mail já está cadastrado no sistema.")
+                
+            cursor.execute("""
+                INSERT INTO hubitat_usuarios (nome, email, senha, provedor, foto_url, condominio)
+                VALUES (%s, %s, %s, %s, %s, %s)
+            """, (name_clean, email_clean, request.password, 'local', foto_default, condo_clean))
+            conn.commit()
+            cursor.close()
+            conn.close()
+        except HTTPException:
+            raise
+        except Exception as err:
+            if conn: conn.close()
+            print("Erro ao registrar novo usuário no MySQL:", err)
+
+    return {
+        "sucesso": True,
+        "access_token": ADMIN_TOKEN,
+        "token_type": "bearer",
+        "message": "Conta criada com sucesso!",
+        "usuario": {
+            "nome": name_clean,
+            "email": email_clean,
+            "condominio": condo_clean,
+            "foto_url": foto_default,
+            "provedor": "local"
+        }
+    }
 
 @app.get("/login")
 def login_page():
