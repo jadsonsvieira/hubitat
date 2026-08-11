@@ -73,27 +73,134 @@ async function checkAuthAndLoadData() {
     const appContainer = document.querySelector(".app-container");
     const loginOverlay = document.getElementById("loginOverlay");
     const path = window.location.pathname;
+    const urlParams = new URLSearchParams(window.location.search);
+    const forceLanding = urlParams.get('landing') === 'true' || path === "/landing";
+
+    if (forceLanding) {
+        if (landingPage) landingPage.style.display = "block";
+        if (appContainer) appContainer.style.display = "none";
+        if (loginOverlay) loginOverlay.classList.remove("active");
+        return;
+    }
+
+    if (path === "/app" || path === "/dashboard") {
+        if (token) {
+            if (landingPage) landingPage.style.display = "none";
+            if (appContainer) appContainer.style.display = "flex";
+            if (loginOverlay) loginOverlay.classList.remove("active");
+            switchTab(state.activeTab || "dashboard");
+            updateUserProfileUI();
+            await refreshAllData();
+            return;
+        }
+    }
+
+    if (path === "/login" || path === "/cadastro") {
+        if (landingPage) landingPage.style.display = "block";
+        if (appContainer) appContainer.style.display = "none";
+        if (loginOverlay) loginOverlay.classList.add("active");
+        if (window.switchAuthTab) window.switchAuthTab(path === "/cadastro" ? "cadastro" : "login");
+    } else {
+        // Root URL / -> Exibe Landing Page por padrão!
+        if (landingPage) landingPage.style.display = "block";
+        if (appContainer) appContainer.style.display = "none";
+        if (loginOverlay) loginOverlay.classList.remove("active");
+    }
+}
+
+window.showLandingPage = function(event) {
+    if (event) event.preventDefault();
+    const landingPage = document.getElementById("landingPage");
+    const appContainer = document.querySelector(".app-container");
+    const loginOverlay = document.getElementById("loginOverlay");
+
+    if (landingPage) landingPage.style.display = "block";
+    if (appContainer) appContainer.style.display = "none";
+    if (loginOverlay) loginOverlay.classList.remove("active");
+    if (window.location.pathname !== "/") {
+        history.pushState(null, "", "/");
+    }
+    window.scrollTo({ top: 0, behavior: 'smooth' });
+};
+
+window.goToAppPanel = function() {
+    const token = localStorage.getItem("hubitat_token");
+    const landingPage = document.getElementById("landingPage");
+    const appContainer = document.querySelector(".app-container");
+    const loginOverlay = document.getElementById("loginOverlay");
 
     if (token) {
         if (landingPage) landingPage.style.display = "none";
         if (appContainer) appContainer.style.display = "flex";
         if (loginOverlay) loginOverlay.classList.remove("active");
-        switchTab(state.activeTab || "dashboard");
-        updateUserProfileUI();
-        await refreshAllData();
-    } else {
-        if (appContainer) appContainer.style.display = "none";
-        if (path === "/login" || path === "/cadastro") {
-            if (landingPage) landingPage.style.display = "none";
-            if (loginOverlay) loginOverlay.classList.add("active");
-            if (window.switchAuthTab) window.switchAuthTab(path === "/cadastro" ? "cadastro" : "login");
-        } else {
-            // Root URL / -> Exibe Landing Page
-            if (landingPage) landingPage.style.display = "block";
-            if (loginOverlay) loginOverlay.classList.remove("active");
+        if (window.location.pathname !== "/app") {
+            history.pushState(null, "", "/app");
         }
+        updateUserProfileUI();
+        refreshAllData();
+    } else {
+        openAuthModal('login');
     }
-}
+};
+
+window.previewMockupRole = function(role) {
+    const btns = document.querySelectorAll('.role-preview-btn');
+    btns.forEach(b => b.classList.remove('active'));
+
+    const activeBtn = Array.from(btns).find(b => b.getAttribute('onclick').includes(role));
+    if (activeBtn) activeBtn.classList.add('active');
+
+    const screenBox = document.getElementById('mockupScreenBox');
+    if (!screenBox) return;
+
+    if (role === 'portaria') {
+        screenBox.innerHTML = `
+            <div class="mockup-card-grid">
+                <div class="mockup-card">
+                    <h4><i class="fa-solid fa-qrcode color-emerald"></i> Portaria Kiosk • Leitor de QR Code</h4>
+                    <p>Leitura express de passe de convidado em 0.2 segundos com confirmação sonora de guarita.</p>
+                    <span class="badge badge-success"><i class="fa-solid fa-check"></i> Catraca Liberada</span>
+                </div>
+                <div class="mockup-card">
+                    <h4><i class="fa-solid fa-box-archive color-info"></i> Entrada de Encomendas</h4>
+                    <p>SEDEX #99820 registrado para Destinatário <strong>Luciana Meireles (Casa 12)</strong>.</p>
+                    <small>Notificação Push via WhatsApp enviada instantaneamente</small>
+                </div>
+            </div>
+        `;
+    } else if (role === 'morador') {
+        screenBox.innerHTML = `
+            <div class="mockup-card-grid">
+                <div class="mockup-card">
+                    <h4><i class="fa-solid fa-umbrella-beach color-primary"></i> App Morador PWA • Agendamento</h4>
+                    <p>Quadra de Beach Tennis #1 reservada para hoje às 19:00h (Gratuito Moradores).</p>
+                    <span class="badge badge-info">Reserva Confirmada</span>
+                </div>
+                <div class="mockup-card">
+                    <h4><i class="fa-solid fa-barcode color-success"></i> 2ª Via do Boleto Condominial</h4>
+                    <p>Taxa do mês vigente R$ 580,00 • Código PIX Copia-e-Cola gerado.</p>
+                    <small><i class="fa-solid fa-copy"></i> Código Copiado com Sucesso</small>
+                </div>
+            </div>
+        `;
+    } else {
+        screenBox.innerHTML = `
+            <div class="mockup-card-grid">
+                <div class="mockup-card">
+                    <h4><i class="fa-solid fa-bullhorn color-primary"></i> Mural de Avisos com Leitura</h4>
+                    <p>Higienização das Caixas D'Água agendada para 28/07. Notificação enviada para todas as 250 unidades.</p>
+                    <div class="mockup-progress"><div class="fill" style="width: 88%;"></div></div>
+                    <small>88% dos moradores já confirmaram a leitura</small>
+                </div>
+                <div class="mockup-card">
+                    <h4><i class="fa-solid fa-shield-halved color-success"></i> Portaria Express QR Code</h4>
+                    <p>Visitante <strong>Carlos Eduardo Silva</strong> liberado para Casa 42 (Al. Flamboyant). QR Code enviado via WhatsApp.</p>
+                    <span class="badge badge-success">Acesso Autorizado</span>
+                </div>
+            </div>
+        `;
+    }
+};
 
 function updateUserProfileUI() {
     try {

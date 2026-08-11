@@ -7,3 +7,5 @@ data.json
 .agents/
 .gemini/
 *.log
+_versoes/*.zip
+_versoes/**/*.zip

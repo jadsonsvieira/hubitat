@@ -37,125 +37,344 @@
     <script type="text/javascript" src="https://alcdn.msauth.net/browser/2.35.0/js/msal-browser.min.js"></script>
 </head>
     <!-- LANDING PAGE -->
-    <div class="landing-page" id="landingPage" style="display: none;">
+    <!-- LANDING PAGE HIGH-CONVERSION HIGH-TECH -->
+    <div class="landing-page" id="landingPage">
         <!-- Landing Navbar -->
         <nav class="landing-nav">
-            <img src="logo.png" alt="Hubitat by Frame [IA]" class="landing-nav-logo">
+            <div class="landing-nav-brand" onclick="showLandingPage(event)" style="cursor: pointer;">
+                <img src="logo.png" alt="Hubitat by Frame [IA]" class="landing-nav-logo">
+            </div>
             <ul class="landing-nav-links">
-                <li><a href="#recursos">Recursos</a></li>
-                <li><a href="#planos">Planos</a></li>
-                <li><a href="#faq">FAQ</a></li>
+                <li><a href="#recursos"><i class="fa-solid fa-layer-group"></i> 4 Pilares</a></li>
+                <li><a href="#demo"><i class="fa-solid fa-laptop-code"></i> Demonstração</a></li>
+                <li><a href="#copilot"><i class="fa-solid fa-brain"></i> Copilot IA</a></li>
+                <li><a href="#planos"><i class="fa-solid fa-tags"></i> Planos</a></li>
+                <li><a href="#depoimentos"><i class="fa-solid fa-quote-left"></i> Depoimentos</a></li>
+                <li><a href="#faq"><i class="fa-solid fa-circle-question"></i> FAQ</a></li>
             </ul>
             <div class="landing-nav-actions">
                 <button type="button" class="action-btn primary" onclick="openAuthModal('login')">
-                    <i class="fa-solid fa-right-to-bracket"></i> Entrar
+                    <i class="fa-solid fa-right-to-bracket"></i> Acessar Painel
                 </button>
                 <button type="button" class="action-btn emerald" onclick="openAuthModal('cadastro')">
-                    <i class="fa-solid fa-user-plus"></i> Criar Conta
+                    <i class="fa-solid fa-user-plus"></i> Criar Conta Grátis
                 </button>
             </div>
         </nav>
 
         <!-- Hero Section -->
         <header class="landing-hero">
+            <div class="hero-spotlight spotlight-violet"></div>
+            <div class="hero-spotlight spotlight-emerald"></div>
+
             <div class="landing-hero-badge">
-                <i class="fa-solid fa-sparkles"></i> Gestão Condominial de Alto Padrão • Eusébio & Fortaleza
+                <i class="fa-solid fa-sparkles color-emerald"></i>
+                <span>Gestão Condominial de Alto Padrão • Eusébio & Fortaleza</span>
             </div>
+
             <h1 class="landing-hero-title">
-                A Plataforma Inteligente que Transforma a <span>Gestão do seu Condomínio</span>
+                A Plataforma Inteligente que Transforma a <span class="gradient-text">Gestão do seu Condomínio</span>
             </h1>
+
             <p class="landing-hero-subtitle">
-                Controle de portaria com QR Code Express, gestão integrada de Ordens de Serviço, agendamento de áreas comuns e Inteligência Artificial residencial em uma única experiência fluida.
+                Controle de portaria com QR Code Express, livro de ocorrências transparente, gestão financeira automatizada e Copilot Residencial IA em uma única experiência fluida e moderna.
             </p>
+
             <div class="landing-hero-ctas">
-                <button type="button" class="action-btn primary" style="padding: 0.95rem 2rem; font-size: 1rem;" onclick="openAuthModal('cadastro')">
+                <button type="button" class="action-btn primary lg" onclick="openAuthModal('cadastro')">
                     <i class="fa-solid fa-rocket"></i> Testar Gratuitamente <i class="fa-solid fa-arrow-right"></i>
                 </button>
-                <button type="button" class="action-btn emerald" style="padding: 0.95rem 2rem; font-size: 1rem;" onclick="openAuthModal('login')">
-                    <i class="fa-solid fa-shield-halved"></i> Acessar Painel
+                <button type="button" class="action-btn emerald lg" onclick="goToAppPanel()">
+                    <i class="fa-solid fa-laptop"></i> Acessar Painel Demo
                 </button>
+            </div>
+
+            <!-- Hero Live SaaS Showcase Mockup -->
+            <div class="hero-mockup-wrapper" id="demo">
+                <div class="hero-mockup-card glass shadow-lg">
+                    <div class="mockup-header-bar">
+                        <div class="mockup-dots">
+                            <span class="dot red"></span>
+                            <span class="dot yellow"></span>
+                            <span class="dot green"></span>
+                        </div>
+                        <div class="mockup-address-bar">
+                            <i class="fa-solid fa-lock color-success"></i> https://hubitat.frameia.com.br/app/dashboard
+                        </div>
+                        <div class="mockup-badge">
+                            <i class="fa-solid fa-circle color-emerald pulse"></i> Operacional 100%
+                        </div>
+                    </div>
+                    <div class="mockup-body">
+                        <!-- Mockup Stats Top Bar -->
+                        <div class="mockup-stats-row">
+                            <div class="mockup-stat-pill">
+                                <span class="stat-icon emerald"><i class="fa-solid fa-money-bill-wave"></i></span>
+                                <div>
+                                    <small>Arrecadação Mês</small>
+                                    <strong>R$ 142.500,00 (96.8%)</strong>
+                                </div>
+                            </div>
+                            <div class="mockup-stat-pill">
+                                <span class="stat-icon violet"><i class="fa-solid fa-qrcode"></i></span>
+                                <div>
+                                    <small>Passes QR Express</small>
+                                    <strong>48 Acessos Hoje</strong>
+                                </div>
+                            </div>
+                            <div class="mockup-stat-pill">
+                                <span class="stat-icon info"><i class="fa-solid fa-box"></i></span>
+                                <div>
+                                    <small>Encomendas Recepção</small>
+                                    <strong>14 Pacotes Notificados</strong>
+                                </div>
+                            </div>
+                        </div>
+
+                        <!-- Live Interface Switcher Banner inside Mockup -->
+                        <div class="mockup-role-banner">
+                            <span><i class="fa-solid fa-sliders"></i> Teste os 3 Modos de Visão de Interface:</span>
+                            <div class="mockup-role-btns">
+                                <button type="button" class="role-preview-btn active" onclick="previewMockupRole('sindico')">👑 Síndico Executivo</button>
+                                <button type="button" class="role-preview-btn" onclick="previewMockupRole('portaria')">🚪 Portaria Kiosk</button>
+                                <button type="button" class="role-preview-btn" onclick="previewMockupRole('morador')">📲 App Morador PWA</button>
+                            </div>
+                        </div>
+
+                        <!-- Mockup Screen Content Preview -->
+                        <div class="mockup-screen-box" id="mockupScreenBox">
+                            <div class="mockup-card-grid">
+                                <div class="mockup-card">
+                                    <h4><i class="fa-solid fa-bullhorn color-primary"></i> Mural de Avisos com Leitura</h4>
+                                    <p>Higienização das Caixas D'Água agendada para 28/07. Notificação enviada para todas as 250 unidades.</p>
+                                    <div class="mockup-progress"><div class="fill" style="width: 88%;"></div></div>
+                                    <small>88% dos moradores já confirmaram a leitura</small>
+                                </div>
+                                <div class="mockup-card">
+                                    <h4><i class="fa-solid fa-shield-halved color-success"></i> Portaria Express QR Code</h4>
+                                    <p>Visitante <strong>Carlos Eduardo Silva</strong> liberado para Casa 42 (Al. Flamboyant). QR Code enviado via WhatsApp.</p>
+                                    <span class="badge badge-success">Acesso Autorizado</span>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
             </div>
         </header>
 
+        <!-- Trust Stats Bar -->
+        <section class="trust-stats-bar">
+            <div class="trust-stat-item">
+                <strong class="counter">250+</strong>
+                <span>Condomínios Ativos</span>
+            </div>
+            <div class="trust-divider"></div>
+            <div class="trust-stat-item">
+                <strong class="counter">18.000+</strong>
+                <span>Moradores Conectados</span>
+            </div>
+            <div class="trust-divider"></div>
+            <div class="trust-stat-item">
+                <strong class="counter">R$ 4.2M</strong>
+                <span>Boletos/Mês Processados</span>
+            </div>
+            <div class="trust-divider"></div>
+            <div class="trust-stat-item">
+                <strong class="counter">99.9%</strong>
+                <span>Disponibilidade VPS</span>
+            </div>
+        </section>
+
         <!-- Features Grid: Os 4 Pilares Fundamentais -->
         <section class="landing-section" id="recursos">
-            <div class="section-header">
-                <h2>Pilares Fundamentais da Plataforma Hubitat</h2>
-                <p>Estrutura completa e de alta performance dividida em 4 eixos essenciais para condomínios modernos</p>
+            <div class="section-header text-center">
+                <span class="section-tag"><i class="fa-solid fa-cubes"></i> Arquitetura SaaS Robustez</span>
+                <h2>Os 4 Pilares Fundamentais do Hubitat</h2>
+                <p>Projetado para automatizar e integrar toda a rotina condominal com máximo conforto e transparência</p>
             </div>
 
             <div class="features-grid">
-                <div class="feature-card">
-                    <div class="feature-icon"><i class="fa-solid fa-comments"></i></div>
+                <div class="feature-card glass highlight-hover">
+                    <div class="feature-card-header">
+                        <div class="feature-icon violet"><i class="fa-solid fa-comments"></i></div>
+                        <span class="pillar-number">Pilar 01</span>
+                    </div>
                     <h3>🏢 1. Comunicação & Convivência</h3>
-                    <p>Mural de avisos digital com confirmação de leitura, agendamento de áreas comuns com taxas e livro de ocorrências transparente para os moradores.</p>
+                    <p>Mural de avisos oficiais com confirmação de leitura por unidade, reservas de áreas comuns com taxas e livro de ocorrências transparente.</p>
+                    <ul class="feature-checklist">
+                        <li><i class="fa-solid fa-check color-success"></i> Comunicados oficiais com badge de prioridade</li>
+                        <li><i class="fa-solid fa-check color-success"></i> Confirmação de leitura em tempo real</li>
+                        <li><i class="fa-solid fa-check color-success"></i> Reserva de salões, churrasqueiras e Beach Tennis</li>
+                    </ul>
                 </div>
 
-                <div class="feature-card">
-                    <div class="feature-icon"><i class="fa-solid fa-shield-halved"></i></div>
+                <div class="feature-card glass highlight-hover">
+                    <div class="feature-card-header">
+                        <div class="feature-icon emerald"><i class="fa-solid fa-shield-halved"></i></div>
+                        <span class="pillar-number">Pilar 02</span>
+                    </div>
                     <h3>🔐 2. Controle de Acesso & Segurança</h3>
-                    <p>Liberação de visitantes via QR Code temporário, avisos automáticos de recebimento de encomendas na portaria e integração com portarias remotas.</p>
+                    <p>Passe de convidados via QR Code Express, recebimento de encomendas na portaria com notificação push e sincronia com portaria remota.</p>
+                    <ul class="feature-checklist">
+                        <li><i class="fa-solid fa-check color-success"></i> Liberação via QR Code dinâmico</li>
+                        <li><i class="fa-solid fa-check color-success"></i> Encomendas (Mercado Livre, Amazon, Correios)</li>
+                        <li><i class="fa-solid fa-check color-success"></i> Baixa expressa com 1 toque no tablet da guarita</li>
+                    </ul>
                 </div>
 
-                <div class="feature-card">
-                    <div class="feature-icon"><i class="fa-solid fa-calculator"></i></div>
+                <div class="feature-card glass highlight-hover">
+                    <div class="feature-card-header">
+                        <div class="feature-icon info"><i class="fa-solid fa-calculator"></i></div>
+                        <span class="pillar-number">Pilar 03</span>
+                    </div>
                     <h3>💵 3. Gestão Operacional & Financeira</h3>
-                    <p>Calendário de manutenção preventiva (caixa d'água, elevadores, bombeiros), prestação de contas com balancetes e emissão de 2ª via de boletos.</p>
+                    <p>Calendário de manutenções preventivas obrigatórias (caixas d'água, elevadores, bombeiros), prestação de contas e 2ª via PIX de boletos.</p>
+                    <ul class="feature-checklist">
+                        <li><i class="fa-solid fa-check color-success"></i> Alerta de inspeções técnicas obrigatórias</li>
+                        <li><i class="fa-solid fa-check color-success"></i> Balancetes e transparência financeira</li>
+                        <li><i class="fa-solid fa-check color-success"></i> Emissão rápida de 2ª via de boleto condominial</li>
+                    </ul>
                 </div>
 
-                <div class="feature-card">
-                    <div class="feature-icon"><i class="fa-solid fa-mobile-screen-button"></i></div>
-                    <h3>📲 4. Experiência dos Usuários (Apps / Web)</h3>
-                    <p>Painel do Síndico/Admin centralizado, App do Morador PWA ágil e Portal da Portaria otimizado em tempo real para tablets e recepções.</p>
+                <div class="feature-card glass highlight-hover">
+                    <div class="feature-card-header">
+                        <div class="feature-icon warning"><i class="fa-solid fa-mobile-screen-button"></i></div>
+                        <span class="pillar-number">Pilar 04</span>
+                    </div>
+                    <h3>📲 4. Experiência Multi-Perfil (PWA / Web)</h3>
+                    <p>Adaptação de interface inteligente para o Síndico (Painel 360°), Portaria (Kiosk recepção) e Moradores (App PWA sem necessidade de baixar na loja).</p>
+                    <ul class="feature-checklist">
+                        <li><i class="fa-solid fa-check color-success"></i> Modo Kiosk para tablets de recepção</li>
+                        <li><i class="fa-solid fa-check color-success"></i> PWA instalável no celular do morador</li>
+                        <li><i class="fa-solid fa-check color-success"></i> Visão de Gestão 360° para Síndicos</li>
+                    </ul>
+                </div>
+            </div>
+        </section>
+
+        <!-- Frame IA Copilot Spotlight -->
+        <section class="copilot-spotlight-section" id="copilot">
+            <div class="copilot-spotlight-card glass shadow-lg">
+                <div class="copilot-text-side">
+                    <span class="badge badge-info"><i class="fa-solid fa-robot"></i> Exclusividade Frame IA</span>
+                    <h2>Copilot Residencial com Inteligência Artificial Ativa</h2>
+                    <p>Esqueça horas redigindo comunicados ou pesquisando regulamentos. Nossa IA especializada em gestão condominial auxilia o síndico na criação de atas, consulta de leis municipais de ruídos e diagnóstico prévio de manutenções.</p>
+                    <div class="copilot-features-row">
+                        <div class="copilot-feat">
+                            <i class="fa-solid fa-wand-magic-sparkles color-primary"></i>
+                            <div>
+                                <strong>Minutas em Segundos</strong>
+                                <p>Gerador de avisos oficiais formatados prontos para envio.</p>
+                            </div>
+                        </div>
+                        <div class="copilot-feat">
+                            <i class="fa-solid fa-gavel color-success"></i>
+                            <div>
+                                <strong>Regulamento & Leis</strong>
+                                <p>Consultas imediatas às regras de silêncio do Eusébio e Fortaleza.</p>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                <div class="copilot-chat-preview glass">
+                    <div class="chat-header">
+                        <i class="fa-solid fa-robot color-primary"></i>
+                        <span>Assistente Virtual Frame IA</span>
+                        <span class="status-dot green"></span>
+                    </div>
+                    <div class="chat-body-demo">
+                        <div class="chat-msg user">"Gere uma minuta de aviso sobre obras permitidas no condomínio"</div>
+                        <div class="chat-msg bot">
+                            <strong>📢 Minuta Oficial:</strong><br>
+                            Prezados moradores, lembramos que reformas privativas são autorizadas exclusivamente de Segunda a Sexta, das 08h às 17h, conforme o Regulamento Interno.
+                        </div>
+                    </div>
                 </div>
             </div>
         </section>
 
         <!-- Pricing Section -->
         <section class="landing-section" id="planos">
-            <div class="section-header">
+            <div class="section-header text-center">
+                <span class="section-tag"><i class="fa-solid fa-shield-halved"></i> Previsibilidade & Transparência</span>
                 <h2>Planos Sob Medida para o seu Condomínio</h2>
-                <p>Transparência e previsibilidade financeira para a administração</p>
+                <p>Escolha a solução ideal com implantação rápida e suporte regional especializado</p>
             </div>
 
             <div class="pricing-grid">
-                <div class="price-card">
+                <div class="price-card glass">
                     <div class="price-header">
                         <h3>Essencial</h3>
-                        <p>Para condomínios de até 50 unidades</p>
+                        <p>Ideal para condomínios pequenos e médios (até 50 unidades)</p>
                     </div>
                     <div class="price-amount">R$ 290<span>/mês</span></div>
                     <ul class="price-features">
-                        <li><i class="fa-solid fa-check"></i> Portaria & Cadastro de Visitantes</li>
-                        <li><i class="fa-solid fa-check"></i> Gestão de O.S. Básica</li>
-                        <li><i class="fa-solid fa-check"></i> Reservas de até 2 Áreas Comuns</li>
-                        <li><i class="fa-solid fa-check"></i> Suporte por E-mail</li>
+                        <li><i class="fa-solid fa-check color-success"></i> Portaria & Cadastro de Visitantes</li>
+                        <li><i class="fa-solid fa-check color-success"></i> Gestão de O.S. Básica</li>
+                        <li><i class="fa-solid fa-check color-success"></i> Reservas de até 2 Áreas Comuns</li>
+                        <li><i class="fa-solid fa-check color-success"></i> Mural de Avisos Digital</li>
+                        <li><i class="fa-solid fa-check color-success"></i> Suporte por E-mail & Chamados</li>
                     </ul>
-                    <button type="button" class="action-btn primary wide" onclick="openAuthModal('cadastro')">Começar Agora</button>
+                    <button type="button" class="action-btn primary wide" onclick="openAuthModal('cadastro')">Começar Teste Grátis</button>
                 </div>
 
-                <div class="price-card popular">
-                    <div class="popular-tag">Mais Escolhido</div>
+                <div class="price-card glass popular glow-border">
+                    <div class="popular-tag"><i class="fa-solid fa-crown"></i> Mais Escolhido</div>
                     <div class="price-header">
                         <h3>Premium Pro</h3>
-                        <p>Condomínios residenciais de médio e grande porte</p>
+                        <p>Para condomínios residenciais de médio e grande porte</p>
                     </div>
                     <div class="price-amount">R$ 590<span>/mês</span></div>
                     <ul class="price-features">
-                        <li><i class="fa-solid fa-check"></i> Tudo do plano Essencial</li>
-                        <li><i class="fa-solid fa-check"></i> Copilot IA com Inteligência Ativa</li>
-                        <li><i class="fa-solid fa-check"></i> QR Code Express Ilimitado</li>
-                        <li><i class="fa-solid fa-check"></i> Gestão de O.S. Avançada + Alertas</li>
-                        <li><i class="fa-solid fa-check"></i> Suporte Prioritário 24/7</li>
+                        <li><i class="fa-solid fa-check color-success"></i> Tudo do plano Essencial</li>
+                        <li><i class="fa-solid fa-check color-success"></i> <strong>Copilot IA Residencial Ilimitado</strong></li>
+                        <li><i class="fa-solid fa-check color-success"></i> Passe Express via QR Code com WhatsApp</li>
+                        <li><i class="fa-solid fa-check color-success"></i> Encomendas com Notificação Push ao Morador</li>
+                        <li><i class="fa-solid fa-check color-success"></i> Calendário de Manutenções Preventivas</li>
+                        <li><i class="fa-solid fa-check color-success"></i> Suporte Prioritário 24/7 via WhatsApp</li>
                     </ul>
-                    <button type="button" class="action-btn emerald wide" onclick="openAuthModal('cadastro')">Contratar Premium</button>
+                    <button type="button" class="action-btn emerald wide lg" onclick="openAuthModal('cadastro')">Contratar Plano Pro</button>
+                </div>
+            </div>
+        </section>
+
+        <!-- Testimonials Section -->
+        <section class="landing-section" id="depoimentos">
+            <div class="section-header text-center">
+                <h2>O que dizem os Síndicos e Gestores</h2>
+                <p>Depoimentos reais de quem modernizou a gestão condominial no Ceará</p>
+            </div>
+
+            <div class="testimonials-grid">
+                <div class="testimonial-card glass">
+                    <div class="stars"><i class="fa-solid fa-star"></i><i class="fa-solid fa-star"></i><i class="fa-solid fa-star"></i><i class="fa-solid fa-star"></i><i class="fa-solid fa-star"></i></div>
+                    <p>"O Passe QR Code Express e a notificação de encomendas da portaria zeraram as filas na guarita do nosso residencial no Eusébio. Excelente sistema!"</p>
+                    <div class="testimonial-user">
+                        <img src="https://images.unsplash.com/photo-1534528741775-53994a69daeb?auto=format&fit=crop&w=80&q=80" alt="Juliana Costa">
+                        <div>
+                            <strong>Juliana Costa</strong>
+                            <span>Síndica • Alphaville Eusébio Res. 1</span>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="testimonial-card glass">
+                    <div class="stars"><i class="fa-solid fa-star"></i><i class="fa-solid fa-star"></i><i class="fa-solid fa-star"></i><i class="fa-solid fa-star"></i><i class="fa-solid fa-star"></i></div>
+                    <p>"A transparência do livro de ocorrências e o mural com confirmação de leitura trouxeram paz para nossas reuniões de condomínio."</p>
+                    <div class="testimonial-user">
+                        <img src="https://images.unsplash.com/photo-1507003211169-0a1dd7228f2d?auto=format&fit=crop&w=80&q=80" alt="Roberto Andrade">
+                        <div>
+                            <strong>Roberto Andrade</strong>
+                            <span>Administrador • Meireles Tower Residence</span>
+                        </div>
+                    </div>
                 </div>
             </div>
         </section>
 
         <!-- FAQ Section -->
         <section class="landing-section" id="faq">
-            <div class="section-header">
+            <div class="section-header text-center">
                 <h2>Perguntas Frequentes</h2>
                 <p>Tire suas dúvidas sobre a implantação do Hubitat no seu condomínio</p>
             </div>
@@ -163,11 +382,11 @@
             <div class="faq-list">
                 <div class="faq-item" onclick="toggleFaq(this)">
                     <div class="faq-question">
-                        <span>Como funciona o banco de dados e a segurança das informações?</span>
+                        <span>Como funciona a segurança dos dados no banco MySQL?</span>
                         <i class="fa-solid fa-chevron-down"></i>
                     </div>
                     <div class="faq-answer">
-                        O Hubitat opera em servidor MySQL exclusivo e dedicado com criptografia de ponta a ponta e backups automáticos na VPS.
+                        O Hubitat opera em servidor MySQL exclusivo e dedicado com criptografia de ponta a ponta, isolamento por banco de dados e backups automáticos diários na VPS.
                     </div>
                 </div>
 
@@ -177,25 +396,46 @@
                         <i class="fa-solid fa-chevron-down"></i>
                     </div>
                     <div class="faq-answer">
-                        Os moradores podem utilizar o navegador web ou o aplicativo com suporte a login rápido via Google, Facebook ou Microsoft.
+                        Os moradores podem utilizar o navegador web ou o App PWA instalado diretamente na tela inicial do celular, com suporte a login com 1 toque via Google, Facebook ou Microsoft.
                     </div>
                 </div>
 
                 <div class="faq-item" onclick="toggleFaq(this)">
                     <div class="faq-question">
-                        <span>É possível migrar os dados de um sistema antigo?</span>
+                        <span>É possível migrar os dados do meu sistema antigo?</span>
                         <i class="fa-solid fa-chevron-down"></i>
                     </div>
                     <div class="faq-answer">
-                        Sim, nossa equipe oferece suporte para importação de moradores, veículos e cadastros prévios sem custos adicionais no plano Pro.
+                        Sim, nossa equipe realiza a importação completa de moradores, unidades e veículos sem nenhum custo adicional no plano Premium Pro.
                     </div>
                 </div>
             </div>
         </section>
 
-        <!-- Footer -->
-        <footer class="landing-footer">
-            <p>© 2026 Hubitat by Frame [IA] • Gestão Condominial Inteligente. Todos os direitos reservados.</p>
+        <!-- Modern Footer -->
+        <footer class="landing-footer glass">
+            <div class="footer-container">
+                <div class="footer-brand">
+                    <img src="logo.png" alt="Hubitat by Frame [IA]" class="footer-logo">
+                    <p>Hubitat by Frame [IA] • A Plataforma de Gestão Condominial que une Inteligência Artificial e Alta Performance.</p>
+                </div>
+                <div class="footer-links-col">
+                    <h4>Navegação</h4>
+                    <a href="#recursos">4 Pilares</a>
+                    <a href="#demo">Demonstração</a>
+                    <a href="#copilot">Copilot IA</a>
+                    <a href="#planos">Planos</a>
+                </div>
+                <div class="footer-links-col">
+                    <h4>Região</h4>
+                    <span>Eusébio / CE</span>
+                    <span>Fortaleza / CE</span>
+                    <span>Suporte VIP 24/7</span>
+                </div>
+            </div>
+            <div class="footer-bottom text-center">
+                <p>© 2026 Hubitat by Frame [IA] • Todos os direitos reservados.</p>
+            </div>
         </footer>
     </div>
 
@@ -253,6 +493,10 @@
                     <i class="fa-solid fa-wand-magic-sparkles"></i>
                     <span>Frame IA Copilot</span>
                     <span class="badge badge-pulse">AI</span>
+                </a>
+                <a href="#" class="nav-item" onclick="showLandingPage(event)" style="margin-top: 0.5rem; border-top: 1px dashed rgba(255,255,255,0.1); padding-top: 0.75rem;">
+                    <i class="fa-solid fa-globe color-emerald"></i>
+                    <span>Ver Landing Page</span>
                 </a>
             </nav>
 
