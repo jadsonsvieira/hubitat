@@ -349,11 +349,14 @@ USE_DB = False
 def get_db_connection():
     if not USE_DB:
         return None
-    host = os.getenv("DB_HOST", "147.79.84.213")
-    user = os.getenv("DB_USER", "u716503964_hubitat")
-    password = os.getenv("DB_PASS", "@@Miguel130510")
-    database = os.getenv("DB_NAME", "u716503964_hubitat")
+    host = os.getenv("DB_HOST")
+    user = os.getenv("DB_USER")
+    password = os.getenv("DB_PASS")
+    database = os.getenv("DB_NAME")
     
+    if not all([host, user, password, database]):
+        return None
+
     try:
         return mysql.connector.connect(
             host=host,
@@ -361,36 +364,28 @@ def get_db_connection():
             password=password,
             database=database
         )
-    except Exception:
-        return mysql.connector.connect(
-            host="127.0.0.1",
+    except Exception as e:
+        print(f"Alerta de conexão MySQL: {e}")
+        return None
+
+def init_db():
+    global USE_DB
+    host = os.getenv("DB_HOST")
+    user = os.getenv("DB_USER")
+    password = os.getenv("DB_PASS")
+    database = os.getenv("DB_NAME")
+
+    if not all([host, user, password, database]):
+        print("Configurações do banco de dados não encontradas no ambiente. Utilizando modo dinâmico.")
+        return
+
+    try:
+        conn = mysql.connector.connect(
+            host=host,
             user=user,
             password=password,
             database=database
         )
-
-def init_db():
-    global USE_DB
-    host = os.getenv("DB_HOST", "147.79.84.213")
-    user = os.getenv("DB_USER", "u716503964_hubitat")
-    password = os.getenv("DB_PASS", "@@Miguel130510")
-    database = os.getenv("DB_NAME", "u716503964_hubitat")
-
-    try:
-        try:
-            conn = mysql.connector.connect(
-                host=host,
-                user=user,
-                password=password,
-                database=database
-            )
-        except Exception:
-            conn = mysql.connector.connect(
-                host="127.0.0.1",
-                user=user,
-                password=password,
-                database=database
-            )
 
         if conn.is_connected():
             cursor = conn.cursor()
