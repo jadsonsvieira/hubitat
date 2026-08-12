@@ -83,28 +83,25 @@ async function checkAuthAndLoadData() {
         return;
     }
 
-    if (path === "/app" || path === "/dashboard") {
-        if (token) {
-            if (landingPage) landingPage.style.display = "none";
-            if (appContainer) appContainer.style.display = "flex";
-            if (loginOverlay) loginOverlay.classList.remove("active");
-            switchTab(state.activeTab || "dashboard");
-            updateUserProfileUI();
-            await refreshAllData();
-            return;
-        }
-    }
-
-    if (path === "/login" || path === "/cadastro") {
-        if (landingPage) landingPage.style.display = "block";
-        if (appContainer) appContainer.style.display = "none";
-        if (loginOverlay) loginOverlay.classList.add("active");
-        if (window.switchAuthTab) window.switchAuthTab(path === "/cadastro" ? "cadastro" : "login");
-    } else {
-        // Root URL / -> Exibe Landing Page por padrão!
-        if (landingPage) landingPage.style.display = "block";
-        if (appContainer) appContainer.style.display = "none";
+    if (token) {
+        // Usuário Autenticado: entra direto no aplicativo!
+        if (landingPage) landingPage.style.display = "none";
+        if (appContainer) appContainer.style.display = "flex";
         if (loginOverlay) loginOverlay.classList.remove("active");
+        switchTab(state.activeTab || "dashboard");
+        updateUserProfileUI();
+        await refreshAllData();
+    } else {
+        // Visitante não autenticado: exibe a Landing Page por padrão!
+        if (appContainer) appContainer.style.display = "none";
+        if (landingPage) landingPage.style.display = "block";
+
+        if (path === "/login" || path === "/cadastro") {
+            if (loginOverlay) loginOverlay.classList.add("active");
+            if (window.switchAuthTab) window.switchAuthTab(path === "/cadastro" ? "cadastro" : "login");
+        } else {
+            if (loginOverlay) loginOverlay.classList.remove("active");
+        }
     }
 }
 
@@ -409,9 +406,7 @@ window.switchAuthTab = function(tab) {
 };
 
 window.openAuthModal = function(tab) {
-    const landingPage = document.getElementById("landingPage");
     const loginOverlay = document.getElementById("loginOverlay");
-    if (landingPage) landingPage.style.display = "none";
     if (loginOverlay) loginOverlay.classList.add("active");
     if (window.switchAuthTab) window.switchAuthTab(tab);
 };
@@ -449,12 +444,19 @@ function initAuthHandlers() {
                         localStorage.setItem("hubitat_user", JSON.stringify(data.usuario));
                     }
                     const overlay = document.getElementById("loginOverlay");
+                    const landingPage = document.getElementById("landingPage");
+                    const appContainer = document.querySelector(".app-container");
+
                     if (overlay) overlay.classList.remove("active");
+                    if (landingPage) landingPage.style.display = "none";
+                    if (appContainer) appContainer.style.display = "flex";
+
                     showToast("Login realizado com sucesso!", "success");
-                    if (window.location.pathname !== "/") {
-                        history.pushState(null, "", "/");
+                    if (window.location.pathname !== "/app") {
+                        history.pushState(null, "", "/app");
                     }
-                    await checkAuthAndLoadData();
+                    updateUserProfileUI();
+                    await refreshAllData();
                 } else {
                     const errorData = await response.json();
                     showToast(errorData.detail || "Credenciais incorretas.", "danger");
@@ -496,12 +498,19 @@ function initAuthHandlers() {
                         }));
                     }
                     const overlay = document.getElementById("loginOverlay");
+                    const landingPage = document.getElementById("landingPage");
+                    const appContainer = document.querySelector(".app-container");
+
                     if (overlay) overlay.classList.remove("active");
+                    if (landingPage) landingPage.style.display = "none";
+                    if (appContainer) appContainer.style.display = "flex";
+
                     showToast(data.message || "Conta criada com sucesso!", "success");
-                    if (window.location.pathname !== "/") {
-                        history.pushState(null, "", "/");
+                    if (window.location.pathname !== "/app") {
+                        history.pushState(null, "", "/app");
                     }
-                    await checkAuthAndLoadData();
+                    updateUserProfileUI();
+                    await refreshAllData();
                 } else {
                     const errorData = await response.json();
                     showToast(errorData.detail || "Erro ao realizar cadastro.", "danger");
@@ -693,12 +702,19 @@ function autenticarContaSocialDireta(endpoint, email, nome, token, fotoUrl = nul
                 }));
             }
             const overlay = document.getElementById("loginOverlay");
+            const landingPage = document.getElementById("landingPage");
+            const appContainer = document.querySelector(".app-container");
+
             if (overlay) overlay.classList.remove("active");
+            if (landingPage) landingPage.style.display = "none";
+            if (appContainer) appContainer.style.display = "flex";
+
             showToast(data.message || "Conectado com sucesso!", "success");
-            if (window.location.pathname !== "/") {
-                history.pushState(null, "", "/");
+            if (window.location.pathname !== "/app") {
+                history.pushState(null, "", "/app");
             }
-            checkAuthAndLoadData();
+            updateUserProfileUI();
+            refreshAllData();
         } else {
             showToast(data.erro || "Erro ao conectar com a conta social.", "danger");
         }

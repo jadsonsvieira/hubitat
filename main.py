@@ -452,7 +452,7 @@ def init_db():
             except Exception:
                 pass
             
-            # Seed default data if empty
+            # Seed default data if table is empty
             cursor.execute("SELECT COUNT(*) FROM hubitat_os;")
             if cursor.fetchone()[0] == 0:
                 for os_item in DEFAULT_DATA["ordensServico"]:
@@ -461,18 +461,24 @@ def init_db():
                         VALUES (%s, %s, %s, %s, %s, %s, %s, %s, %s);
                     """, (os_item["id"], os_item["title"], os_item["location"], os_item["category"], os_item["priority"], os_item["status"], os_item["date"], os_item["assignee"], os_item["description"]))
                 
+            cursor.execute("SELECT COUNT(*) FROM hubitat_reservas;")
+            if cursor.fetchone()[0] == 0:
                 for res_item in DEFAULT_DATA["reservas"]:
                     cursor.execute("""
                         INSERT INTO hubitat_reservas (id, espaco, morador, unidade, data, turno, convidados, taxa, status)
                         VALUES (%s, %s, %s, %s, %s, %s, %s, %s, %s);
                     """, (res_item["id"], res_item["espaco"], res_item["morador"], res_item["unidade"], res_item["data"], res_item["turno"], res_item["convidados"], res_item["taxa"], res_item["status"]))
                     
+            cursor.execute("SELECT COUNT(*) FROM hubitat_visitantes;")
+            if cursor.fetchone()[0] == 0:
                 for vis_item in DEFAULT_DATA["visitantes"]:
                     cursor.execute("""
                         INSERT INTO hubitat_visitantes (id, name, doc, type, plate, unit, time, status)
                         VALUES (%s, %s, %s, %s, %s, %s, %s, %s);
                     """, (vis_item["id"], vis_item["name"], vis_item["doc"], vis_item["type"], vis_item["plate"], vis_item["unit"], vis_item["time"], vis_item["status"]))
                     
+            cursor.execute("SELECT COUNT(*) FROM hubitat_atividades;")
+            if cursor.fetchone()[0] == 0:
                 for act_item in DEFAULT_DATA["atividades"]:
                     cursor.execute("""
                         INSERT INTO hubitat_atividades (icon, title, desc_text, time_text)
