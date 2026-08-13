@@ -1382,14 +1382,80 @@ body {
 .color-info { color: var(--info); }
 .margin-top-lg { margin-top: 2rem; }
 
-/* RESPONSIVE */
+/* RESPONSIVE & MOBILE OPTIMIZATIONS */
 @media (max-width: 992px) {
-    .sidebar { transform: translateX(-100%); }
-    .sidebar.open { transform: translateX(0); }
-    .main-content { margin-left: 0; padding: 1.25rem; }
-    .mobile-toggle-btn { display: block; }
-    .dashboard-grid, .dashboard-grid.bottom, .copilot-container { grid-template-columns: 1fr; }
-    .search-box { display: none; }
+    .sidebar { 
+        transform: translateX(-100%); 
+        box-shadow: 0 0 40px rgba(0, 0, 0, 0.8);
+        z-index: 2000;
+    }
+    .sidebar.open { 
+        transform: translateX(0); 
+    }
+    .main-content { 
+        margin-left: 0; 
+        padding: 1rem; 
+        width: 100%;
+    }
+    .mobile-toggle-btn { 
+        display: flex; 
+        align-items: center;
+        justify-content: center;
+        width: 36px;
+        height: 36px;
+        border-radius: var(--radius-sm);
+        background: rgba(255, 255, 255, 0.05);
+        border: 1px solid var(--border-color);
+        color: #fff;
+    }
+    .top-header {
+        flex-wrap: wrap;
+        gap: 0.75rem;
+        margin-bottom: 1.25rem;
+    }
+    .header-left {
+        min-width: 0;
+    }
+    .header-title h1 {
+        font-size: 1.2rem;
+    }
+    .header-title .subtitle {
+        display: none;
+    }
+    .header-actions {
+        gap: 0.4rem;
+    }
+    .search-box { 
+        display: none; 
+    }
+    .dashboard-grid, .dashboard-grid.bottom, .copilot-container, .metrics-grid { 
+        grid-template-columns: 1fr; 
+    }
+    .form-group-row {
+        grid-template-columns: 1fr;
+        gap: 0.75rem;
+    }
+}
+
+@media (max-width: 600px) {
+    .main-content {
+        padding: 0.75rem;
+    }
+    .role-selector-pill {
+        font-size: 0.7rem;
+        padding: 0.25rem 0.4rem;
+    }
+    .role-selector-pill select {
+        font-size: 0.7rem;
+    }
+    .action-btn {
+        padding: 0.4rem 0.65rem;
+        font-size: 0.75rem;
+    }
+    .quick-action-menu {
+        width: 240px;
+        right: -40px;
+    }
 }
 
 /* LOGIN OVERLAY STYLES */

@@ -391,7 +391,7 @@
         <!-- Sidebar -->
         <aside class="sidebar">
             <div class="brand">
-                <img src="logo.png" alt="Hubitat by Frame [IA]" class="sidebar-logo-img">
+                <img src="logo.png" alt="Hubitat by Frame [IA]" class="sidebar-logo-img" style="height: 64px !important; width: auto !important; max-width: 220px !important; object-fit: contain;">
             </div>
 
             <!-- Condo Selector -->
@@ -485,15 +485,15 @@
                     <div class="role-selector-pill glass shadow-sm" title="Alternar Modo de Visualização da Interface">
                         <i class="fa-solid fa-user-gear color-primary"></i>
                         <select id="roleViewSelect" onchange="changeRoleView(this.value)">
-                            <option value="sindico">👑 Modo Síndico / Gestão Executiva</option>
-                            <option value="portaria">🚪 Modo Portaria (Kiosk Recepção)</option>
-                            <option value="morador">📲 Modo Morador (App PWA)</option>
+                            <option value="sindico">👑 Modo Síndico</option>
+                            <option value="portaria">🚪 Modo Portaria</option>
+                            <option value="morador">📲 Modo Morador</option>
                         </select>
                     </div>
 
                     <div class="search-box" onclick="openCommandPalette()" style="cursor: pointer;" title="Pressione Ctrl + K para abrir a Busca Inteligente Spotlight">
                         <i class="fa-solid fa-magnifying-glass"></i>
-                        <input type="text" id="globalSearchInput" placeholder="Buscar morador, O.S., placa, pacote ou espaço..." readonly>
+                        <input type="text" id="globalSearchInput" placeholder="Buscar (Ctrl K)..." readonly>
                         <kbd class="search-kbd">Ctrl K</kbd>
                     </div>
 
