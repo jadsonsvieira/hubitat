@@ -543,19 +543,92 @@
                         </select>
                     </div>
 
-                    <div class="search-box">
+                    <div class="search-box" onclick="openCommandPalette()" style="cursor: pointer;" title="Pressione Ctrl + K para abrir a Busca Inteligente Spotlight">
                         <i class="fa-solid fa-magnifying-glass"></i>
-                        <input type="text" id="globalSearchInput" placeholder="Buscar morador, O.S., placa, pacote ou espaço..." onkeyup="handleGlobalSearch(this.value)">
+                        <input type="text" id="globalSearchInput" placeholder="Buscar morador, O.S., placa, pacote ou espaço..." readonly>
+                        <kbd class="search-kbd">Ctrl K</kbd>
                     </div>
-                    <button class="action-btn primary" id="quickActionBtn" onclick="openNewOSModal()">
-                        <i class="fa-solid fa-plus"></i>
-                        <span>Nova Solicitação</span>
-                    </button>
-                    <div class="notification-wrapper">
-                        <button class="icon-btn notification-btn" onclick="toggleNotificationMenu()">
-                            <i class="fa-solid fa-bell"></i>
-                            <span class="dot"></span>
+
+                    <div class="quick-action-dropdown-wrapper">
+                        <button class="action-btn primary" id="quickActionBtn" onclick="toggleQuickActionMenu(event)">
+                            <i class="fa-solid fa-bolt-lightning"></i>
+                            <span>Ações Rápidas</span>
+                            <i class="fa-solid fa-chevron-down" style="font-size: 0.75rem; margin-left: 0.25rem;"></i>
                         </button>
+
+                        <div class="quick-action-menu glass shadow-lg" id="quickActionMenu">
+                            <a href="#" onclick="event.preventDefault(); openNewOSModal(); toggleQuickActionMenu();">
+                                <i class="fa-solid fa-wrench color-warning"></i>
+                                <div>
+                                    <strong>Nova Ordem de Serviço</strong>
+                                    <small>Registrar solicitação ou manutenção</small>
+                                </div>
+                            </a>
+                            <a href="#" onclick="event.preventDefault(); switchTab('visitantes'); openVisitanteModal(); toggleQuickActionMenu();">
+                                <i class="fa-solid fa-qrcode color-success"></i>
+                                <div>
+                                    <strong>Passe QR Code Express</strong>
+                                    <small>Liberar convidado via WhatsApp</small>
+                                </div>
+                            </a>
+                            <a href="#" onclick="event.preventDefault(); switchTab('visitantes'); openEncomendaModal(); toggleQuickActionMenu();">
+                                <i class="fa-solid fa-box-archive color-info"></i>
+                                <div>
+                                    <strong>Registrar Encomenda</strong>
+                                    <small>Notificar morador sobre pacote</small>
+                                </div>
+                            </a>
+                            <a href="#" onclick="event.preventDefault(); switchTab('reservas'); openReservaModal(); toggleQuickActionMenu();">
+                                <i class="fa-solid fa-umbrella-beach color-primary"></i>
+                                <div>
+                                    <strong>Nova Reserva de Espaço</strong>
+                                    <small>Agendar salão, churrasqueira ou quadra</small>
+                                </div>
+                            </a>
+                        </div>
+                    </div>
+
+                    <div class="notification-wrapper">
+                        <button class="icon-btn notification-btn" onclick="toggleNotificationMenu(event)">
+                            <i class="fa-solid fa-bell"></i>
+                            <span class="dot pulse"></span>
+                        </button>
+
+                        <div class="notification-drawer glass shadow-lg" id="notificationDrawer">
+                            <div class="drawer-header">
+                                <h3><i class="fa-solid fa-bell color-primary"></i> Notificações Recentes</h3>
+                                <span class="badge badge-info">3 Novas</span>
+                            </div>
+                            <div class="drawer-body">
+                                <div class="notification-item unread">
+                                    <div class="notif-icon emerald"><i class="fa-solid fa-box"></i></div>
+                                    <div class="notif-text">
+                                        <strong>Encomenda Entregue</strong>
+                                        <p>Pacote Amazon para Apt 1204 (Juliana Costa) recebido na portaria.</p>
+                                        <small>Há 10 minutos</small>
+                                    </div>
+                                </div>
+                                <div class="notification-item unread">
+                                    <div class="notif-icon violet"><i class="fa-solid fa-qrcode"></i></div>
+                                    <div class="notif-text">
+                                        <strong>Acesso de Visitante</strong>
+                                        <p>Carlos Eduardo liberado para Casa 42 via QR Code Express.</p>
+                                        <small>Há 25 minutos</small>
+                                    </div>
+                                </div>
+                                <div class="notification-item">
+                                    <div class="notif-icon warning"><i class="fa-solid fa-wrench"></i></div>
+                                    <div class="notif-text">
+                                        <strong>O.S. Atualizada</strong>
+                                        <p>OS-1024 (Inspeção Garagem) alterada para Em Andamento.</p>
+                                        <small>Há 1 hora</small>
+                                    </div>
+                                </div>
+                            </div>
+                            <div class="drawer-footer">
+                                <a href="#" onclick="event.preventDefault(); toggleNotificationMenu(); switchTab('comunicacao');">Ver todos os avisos do condomínio</a>
+                            </div>
+                        </div>
                     </div>
                 </div>
             </header>
@@ -1356,6 +1429,38 @@
                     </button>
                     <button type="button" class="btn-secondary" onclick="closeModal('boletoModal')">Fechar</button>
                 </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- COMMAND PALETTE SPOTLIGHT MODAL (Ctrl + K) -->
+    <div class="modal-overlay" id="commandPaletteModal" onclick="if(event.target === this) closeCommandPalette();">
+        <div class="command-palette-card glass shadow-lg">
+            <div class="palette-search-bar">
+                <i class="fa-solid fa-magnifying-glass palette-icon color-primary"></i>
+                <input type="text" id="paletteSearchInput" placeholder="Busque por morador, O.S., visitante, encomenda ou espaço..." onkeyup="executePaletteSearch(this.value)" autocomplete="off">
+                <span class="palette-esc-badge" onclick="closeCommandPalette()">ESC</span>
+            </div>
+
+            <div class="palette-filters-row">
+                <button type="button" class="palette-filter-tag active" onclick="filterPaletteCategory('all')">Todos</button>
+                <button type="button" class="palette-filter-tag" onclick="filterPaletteCategory('os')">🛠️ O.S.</button>
+                <button type="button" class="palette-filter-tag" onclick="filterPaletteCategory('moradores')">👤 Moradores</button>
+                <button type="button" class="palette-filter-tag" onclick="filterPaletteCategory('encomendas')">📦 Encomendas</button>
+                <button type="button" class="palette-filter-tag" onclick="filterPaletteCategory('visitantes')">🚪 Portaria</button>
+            </div>
+
+            <div class="palette-results-list" id="paletteResultsList">
+                <div class="palette-empty-state">
+                    <i class="fa-solid fa-wand-magic-sparkles color-primary" style="font-size: 1.5rem; margin-bottom: 0.5rem;"></i>
+                    <p>Digite para buscar instantaneamente em todo o condomínio...</p>
+                </div>
+            </div>
+
+            <div class="palette-footer-bar">
+                <span><kbd>↑</kbd> <kbd>↓</kbd> Navegar</span>
+                <span><kbd>↵</kbd> Selecionar</span>
+                <span><kbd>ESC</kbd> Fechar</span>
             </div>
         </div>
     </div>

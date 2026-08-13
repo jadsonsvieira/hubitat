@@ -1600,6 +1600,176 @@ function copyBoletoCode() {
 }
 window.copyBoletoCode = copyBoletoCode;
 
+/* --- UI REDESIGN & INTERACTIVE FUNCTIONS --- */
+
+// Quick Action Dropdown Menu Toggle
+window.toggleQuickActionMenu = function(e) {
+    if (e) e.stopPropagation();
+    const menu = document.getElementById("quickActionMenu");
+    const notifDrawer = document.getElementById("notificationDrawer");
+    if (notifDrawer) notifDrawer.classList.remove("active");
+    if (menu) menu.classList.toggle("active");
+};
+
+// Notification Drawer Toggle
+window.toggleNotificationMenu = function(e) {
+    if (e) e.stopPropagation();
+    const notifDrawer = document.getElementById("notificationDrawer");
+    const menu = document.getElementById("quickActionMenu");
+    if (menu) menu.classList.remove("active");
+    if (notifDrawer) notifDrawer.classList.toggle("active");
+};
+
+// Global click listener to close popovers
+document.addEventListener("click", function(e) {
+    const menu = document.getElementById("quickActionMenu");
+    const notifDrawer = document.getElementById("notificationDrawer");
+    const quickBtn = document.getElementById("quickActionBtn");
+    const notifBtn = document.querySelector(".notification-btn");
+
+    if (menu && !menu.contains(e.target) && quickBtn && !quickBtn.contains(e.target)) {
+        menu.classList.remove("active");
+    }
+    if (notifDrawer && !notifDrawer.contains(e.target) && notifBtn && !notifBtn.contains(e.target)) {
+        notifDrawer.classList.remove("active");
+    }
+});
+
+// Command Palette Spotlight Modal (Ctrl + K / Cmd + K)
+let paletteCategory = 'all';
+
+window.openCommandPalette = function() {
+    const modal = document.getElementById("commandPaletteModal");
+    const input = document.getElementById("paletteSearchInput");
+    if (modal) {
+        modal.classList.add("active");
+        if (input) {
+            input.value = "";
+            input.focus();
+            executePaletteSearch("");
+        }
+    }
+};
+
+window.closeCommandPalette = function() {
+    const modal = document.getElementById("commandPaletteModal");
+    if (modal) modal.classList.remove("active");
+};
+
+window.filterPaletteCategory = function(cat) {
+    paletteCategory = cat;
+    const tags = document.querySelectorAll(".palette-filter-tag");
+    tags.forEach(t => t.classList.remove("active"));
+    const activeTag = Array.from(tags).find(t => t.getAttribute("onclick").includes(cat));
+    if (activeTag) activeTag.classList.add("active");
+
+    const input = document.getElementById("paletteSearchInput");
+    executePaletteSearch(input ? input.value : "");
+};
+
+window.executePaletteSearch = function(query) {
+    const list = document.getElementById("paletteResultsList");
+    if (!list) return;
+
+    const q = query.toLowerCase().trim();
+    let results = [];
+
+    // Search O.S.
+    if (paletteCategory === 'all' || paletteCategory === 'os') {
+        (state.ordensServico || []).forEach(os => {
+            if (!q || os.title.toLowerCase().includes(q) || os.id.toLowerCase().includes(q) || os.location.toLowerCase().includes(q)) {
+                results.push({
+                    type: 'os',
+                    icon: 'fa-wrench color-warning',
+                    title: `${os.id} • ${os.title}`,
+                    subtitle: `Local: ${os.location} • Status: ${os.status}`,
+                    action: () => { switchTab('os'); closeCommandPalette(); }
+                });
+            }
+        });
+    }
+
+    // Search Encomendas
+    if (paletteCategory === 'all' || paletteCategory === 'encomendas') {
+        (state.encomendas || []).forEach(enc => {
+            if (!q || enc.recipient.toLowerCase().includes(q) || enc.unit.toLowerCase().includes(q) || enc.courier.toLowerCase().includes(q)) {
+                results.push({
+                    type: 'encomenda',
+                    icon: 'fa-box color-info',
+                    title: `Encomenda ${enc.courier} • ${enc.recipient}`,
+                    subtitle: `Unidade: ${enc.unit} • Status: ${enc.status}`,
+                    action: () => { switchTab('visitantes'); closeCommandPalette(); }
+                });
+            }
+        });
+    }
+
+    // Search Visitantes
+    if (paletteCategory === 'all' || paletteCategory === 'visitantes') {
+        (state.visitantes || []).forEach(vis => {
+            if (!q || vis.name.toLowerCase().includes(q) || vis.unit.toLowerCase().includes(q) || (vis.plate && vis.plate.toLowerCase().includes(q))) {
+                results.push({
+                    type: 'visitante',
+                    icon: 'fa-qrcode color-success',
+                    title: `Visitante: ${vis.name}`,
+                    subtitle: `Destino: ${vis.unit} • Placa: ${vis.plate || 'N/A'} • Status: ${vis.status}`,
+                    action: () => { switchTab('visitantes'); closeCommandPalette(); }
+                });
+            }
+        });
+    }
+
+    // Render Results
+    if (results.length === 0) {
+        list.innerHTML = `
+            <div class="palette-empty-state">
+                <i class="fa-solid fa-circle-exclamation color-muted" style="font-size: 1.5rem; margin-bottom: 0.5rem;"></i>
+                <p>Nenhum resultado encontrado para "${query}".</p>
+            </div>
+        `;
+
+        return;
+    }
+
+    list.innerHTML = results.slice(0, 8).map((item, idx) => `
+        <div class="palette-result-item ${idx === 0 ? 'selected' : ''}" onclick="window.paletteResults[${idx}].action()">
+            <div class="palette-item-left">
+                <i class="fa-solid ${item.icon}"></i>
+                <div>
+                    <strong>${item.title}</strong>
+                    <small>${item.subtitle}</small>
+                </div>
+            </div>
+            <i class="fa-solid fa-arrow-right color-muted" style="font-size: 0.8rem;"></i>
+        </div>
+    `).join("");
+
+    window.paletteResults = results;
+};
+
+// Global Keyboard Shortcut: Ctrl + K or Cmd + K
+document.addEventListener("keydown", function(e) {
+    if ((e.ctrlKey || e.metaKey) && e.key.toLowerCase() === 'k') {
+        e.preventDefault();
+        const modal = document.getElementById("commandPaletteModal");
+        if (modal && modal.classList.contains("active")) {
+            closeCommandPalette();
+        } else {
+            openCommandPalette();
+        }
+    } else if (e.key === 'Escape') {
+        closeCommandPalette();
+    }
+});
+
+// Share Pass via WhatsApp
+window.sharePassWhatsApp = function(name, unit, time) {
+    const text = `*Hubitat by Frame [IA] • Passe de Acesso QR Code*\n\nOlá *${name}*, seu passe de convidado para a *${unit}* foi liberado!\n\n🕒 Válido para entrada às ${time}.\nApresente o QR Code na guarita para liberação expressa.`;
+    const url = `https://api.whatsapp.com/send?text=${encodeURIComponent(text)}`;
+    window.open(url, '_blank');
+};
+window.copyBoletoCode = copyBoletoCode;
+
 function handleGlobalSearch(query) {
     if (!query || query.trim() === "") return;
     query = query.toLowerCase().trim();
