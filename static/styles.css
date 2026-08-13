@@ -393,8 +393,8 @@ body {
     display: flex;
     align-items: center;
     gap: 0.5rem;
-    width: 210px;
-    max-width: 220px;
+    width: 220px;
+    min-width: 190px;
     transition: var(--transition);
     flex-shrink: 0;
 }
@@ -407,6 +407,7 @@ body {
 .search-box i {
     color: var(--text-muted);
     font-size: 0.85rem;
+    flex-shrink: 0;
 }
 
 .search-box input {
@@ -415,7 +416,11 @@ body {
     outline: none;
     color: #fff;
     font-size: 0.78rem;
-    width: 100%;
+    flex: 1;
+    min-width: 0;
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
 }
 
 /* Buttons */
@@ -2835,11 +2840,17 @@ body.kiosk-mode .action-btn {
     background: rgba(255, 255, 255, 0.08);
     border: 1px solid var(--border-color);
     border-radius: 4px;
-    padding: 2px 6px;
+    padding: 3px 7px;
     font-size: 0.7rem;
     color: var(--text-muted);
     font-family: monospace;
     margin-left: auto;
+    white-space: nowrap !important;
+    display: inline-flex !important;
+    align-items: center;
+    justify-content: center;
+    flex-shrink: 0 !important;
+    line-height: 1 !important;
 }
 
 /* Quick Action Unforced Dropdown */
