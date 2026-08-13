@@ -162,29 +162,6 @@
             </div>
         </header>
 
-        <!-- Trust Stats Bar -->
-        <section class="trust-stats-bar">
-            <div class="trust-stat-item">
-                <strong class="counter">250+</strong>
-                <span>Condomínios Ativos</span>
-            </div>
-            <div class="trust-divider"></div>
-            <div class="trust-stat-item">
-                <strong class="counter">18.000+</strong>
-                <span>Moradores Conectados</span>
-            </div>
-            <div class="trust-divider"></div>
-            <div class="trust-stat-item">
-                <strong class="counter">R$ 4.2M</strong>
-                <span>Boletos/Mês Processados</span>
-            </div>
-            <div class="trust-divider"></div>
-            <div class="trust-stat-item">
-                <strong class="counter">99.9%</strong>
-                <span>Disponibilidade VPS</span>
-            </div>
-        </section>
-
         <!-- Features Grid: Os 4 Pilares Fundamentais -->
         <section class="landing-section" id="recursos">
             <div class="section-header text-center">
@@ -332,10 +309,14 @@
                         <li><i class="fa-solid fa-check color-success"></i> Encomendas com Notificação Push ao Morador</li>
                         <li><i class="fa-solid fa-check color-success"></i> Calendário de Manutenções Preventivas</li>
                         <li><i class="fa-solid fa-check color-success"></i> Suporte Prioritário 24/7 via WhatsApp</li>
+                        <li><i class="fa-solid fa-crown color-primary"></i> <span style="font-size: 0.82rem; color: #d8b4fe;">Setup VIP de Implantação & Migração Acompanhada (R$ 1.000,00)</span></li>
                     </ul>
                     <button type="button" class="action-btn emerald wide lg" onclick="openAuthModal('cadastro')">Contratar Plano Pro</button>
                 </div>
             </div>
+            <p class="text-center" style="font-size: 0.78rem; color: var(--text-dim); margin-top: 1.5rem;">
+                * O Setup VIP inclui configuração inicial completa do condomínio, cadastro prévio de moradores e treinamento da guarita por especialista dedicado.
+            </p>
         </section>
 
         <!-- Testimonials Section -->
@@ -1182,6 +1163,20 @@
                     <label><i class="fa-solid fa-building-user color-primary"></i> Condomínio Principal</label>
                     <input type="text" id="profileCondoInput" placeholder="Ex: Alphaville Eusébio Res. 1">
                 </div>
+
+                <div class="vip-setup-card glass" style="margin-top: 1rem; padding: 0.85rem 1rem; border-radius: 12px; border: 1px dashed rgba(139, 92, 246, 0.4); background: rgba(139, 92, 246, 0.06);">
+                    <div style="display: flex; align-items: center; justify-content: space-between;">
+                        <span style="font-weight: 600; font-size: 0.82rem; color: #c084fc; display: flex; align-items: center; gap: 0.4rem;">
+                            <i class="fa-solid fa-crown"></i> Setup VIP & Implantação Acompanhada
+                        </span>
+                        <span class="badge badge-info" style="font-size: 0.7rem;">Configuração Inicial</span>
+                    </div>
+                    <p style="font-size: 0.76rem; color: var(--text-muted); margin-top: 0.35rem; line-height: 1.4;">
+                        Ative a consultoria dedicada da equipe Frame IA para cadastrar moradores, configurar regras de acesso e treinar a equipe da portaria. 
+                        <strong style="color: #fff; display: block; margin-top: 0.2rem;">Taxa única de Setup: R$ 1.000,00</strong>
+                    </p>
+                </div>
+
                 <div class="modal-footer">
                     <button type="button" class="btn-secondary" onclick="closeModal('profileModal')">Cancelar</button>
                     <button type="submit" class="action-btn primary"><i class="fa-solid fa-floppy-disk"></i> Salvar Perfil & Foto</button>

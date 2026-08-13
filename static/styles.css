@@ -85,9 +85,12 @@ body {
     border-right: 1px solid var(--border-color);
     display: flex;
     flex-direction: column;
-    padding: 1.5rem 1.25rem;
+    padding: 1.25rem 1rem;
     position: fixed;
     height: 100vh;
+    max-height: 100vh;
+    overflow-y: auto;
+    scrollbar-width: thin;
     z-index: 100;
     transition: var(--transition);
 }
@@ -95,8 +98,18 @@ body {
 .brand {
     display: flex;
     align-items: center;
-    gap: 0.85rem;
-    margin-bottom: 1.75rem;
+    justify-content: flex-start;
+    padding: 0.25rem 0.5rem;
+    margin-bottom: 1.5rem;
+}
+
+.sidebar-logo-img {
+    height: 56px;
+    width: auto;
+    max-width: 220px;
+    object-fit: contain;
+    filter: drop-shadow(0 0 12px rgba(139, 92, 246, 0.45));
+    transition: var(--transition);
 }
 
 .brand-icon {
@@ -299,6 +312,10 @@ body {
     flex: 1;
     padding: 2rem 2.5rem;
     min-width: 0;
+    min-height: 100vh;
+    height: auto;
+    overflow-y: auto;
+    box-sizing: border-box;
 }
 
 /* Top Header */
@@ -1593,10 +1610,11 @@ body {
 }
 
 .landing-nav-logo {
-    height: 38px;
+    height: 54px;
     width: auto;
+    max-width: 240px;
     object-fit: contain;
-    filter: drop-shadow(0 0 10px rgba(139, 92, 246, 0.3));
+    filter: drop-shadow(0 0 12px rgba(139, 92, 246, 0.4));
 }
 
 .landing-nav-links {
