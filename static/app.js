@@ -1305,15 +1305,14 @@ function changeRoleView(role) {
     document.body.classList.remove('kiosk-mode');
     
     if (role === 'portaria') {
-        document.body.classList.add('kiosk-mode');
         switchTab('visitantes');
-        showToast("Interface alternada para Modo Portaria / Kiosk Recepção 🚪", "info");
+        showToast("Interface alternada para Visão da Portaria & Acesso 🚪", "info");
     } else if (role === 'morador') {
         switchTab('comunicacao');
-        showToast("Interface alternada para Modo Morador / App PWA 📲", "info");
+        showToast("Interface alternada para Visão do Morador & Mural 📲", "info");
     } else {
         switchTab('dashboard');
-        showToast("Interface alternada para Modo Síndico / Gestão Executiva 👑", "success");
+        showToast("Interface alternada para Visão do Síndico & Gestão Executiva 👑", "success");
     }
 }
 window.changeRoleView = changeRoleView;

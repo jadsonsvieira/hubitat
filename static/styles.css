@@ -345,12 +345,13 @@ body {
 .main-content {
     margin-left: var(--sidebar-width);
     flex: 1;
-    padding: 1.5rem 2rem;
+    padding: 1.75rem 2.5rem;
     min-width: 0;
     min-height: 100vh;
     height: auto;
     overflow-y: auto;
     box-sizing: border-box;
+    max-width: 100%;
 }
 
 /* Top Header */
@@ -358,8 +359,8 @@ body {
     display: flex;
     align-items: center;
     justify-content: space-between;
-    margin-bottom: 1.75rem;
-    gap: 1rem;
+    margin-bottom: 2rem;
+    gap: 1.25rem;
     flex-wrap: nowrap;
     width: 100%;
 }
@@ -367,8 +368,8 @@ body {
 .header-left {
     display: flex;
     align-items: center;
-    gap: 0.75rem;
-    min-width: 220px;
+    gap: 0.85rem;
+    min-width: 240px;
     flex-shrink: 0;
 }
 
@@ -383,7 +384,7 @@ body {
 
 .header-title h1 {
     font-family: var(--font-heading);
-    font-size: 1.5rem;
+    font-size: 1.55rem;
     font-weight: 700;
     color: #fff;
     white-space: nowrap;
@@ -392,19 +393,19 @@ body {
 }
 
 .header-title .subtitle {
-    font-size: 0.8rem;
+    font-size: 0.82rem;
     color: var(--text-muted);
     white-space: nowrap;
     overflow: hidden;
     text-overflow: ellipsis;
-    max-width: 360px;
-    margin: 0;
+    max-width: 480px;
+    margin-top: 0.2rem;
 }
 
 .header-actions {
     display: flex;
     align-items: center;
-    gap: 0.5rem;
+    gap: 0.75rem;
     flex-shrink: 0;
     margin-left: auto;
 }
