@@ -1,6 +1,9 @@
 import os
 import json
 from typing import List, Optional
+from datetime import datetime, timedelta, timezone
+import jwt
+from werkzeug.security import generate_password_hash, check_password_hash
 from pydantic import BaseModel
 from fastapi import FastAPI, HTTPException, Depends, Security
 from fastapi.responses import FileResponse
@@ -29,21 +32,49 @@ app.add_middleware(
 DATA_FILE = os.path.join(os.path.dirname(__file__), "data.json")
 STATIC_DIR = os.path.join(os.path.dirname(__file__), "static")
 
-# Bearer Token Auth Config
+# Bearer Token & JWT Auth Config
 security = HTTPBearer()
 ADMIN_TOKEN = "hubitat-jwt-secret-session-token"
 ADMIN_USER = "admin"
 ADMIN_PASSWORD = "frameia_hubitat_2026"
+JWT_SECRET = os.getenv("JWT_SECRET", "hubitat-production-secure-jwt-secret-key-2026")
+JWT_ALGORITHM = "HS256"
+ACCESS_TOKEN_EXPIRE_DAYS = 7
 
-def verify_token(credentials: HTTPAuthorizationCredentials = Depends(security)):
-    """Validates the Bearer token sent in the Authorization header."""
+def create_access_token(data: dict, expires_delta: Optional[timedelta] = None) -> str:
+    """Generates a dynamic signed JWT access token with expiration and user payload."""
+    to_encode = data.copy()
+    expire = datetime.now(timezone.utc) + (expires_delta or timedelta(days=ACCESS_TOKEN_EXPIRE_DAYS))
+    to_encode.update({"exp": expire, "iat": datetime.now(timezone.utc)})
+    return jwt.encode(to_encode, JWT_SECRET, algorithm=JWT_ALGORITHM)
+
+def verify_token(credentials: HTTPAuthorizationCredentials = Depends(security)) -> dict:
+    """Validates the Bearer JWT token sent in the Authorization header."""
     token = credentials.credentials
-    if token != ADMIN_TOKEN:
+    
+    # Backward compatibility / Master Admin token
+    if token == ADMIN_TOKEN:
+        return {
+            "sub": "juliana.sindica@hubitat.com.br",
+            "email": "juliana.sindica@hubitat.com.br",
+            "nome": "Juliana Costa",
+            "role": "admin",
+            "provedor": "admin"
+        }
+        
+    try:
+        payload = jwt.decode(token, JWT_SECRET, algorithms=[JWT_ALGORITHM])
+        return payload
+    except jwt.ExpiredSignatureError:
         raise HTTPException(
             status_code=401,
-            detail="Token de autenticação inválido ou expirado"
+            detail="Sessão expirada. Por favor, faça login novamente."
         )
-    return token
+    except jwt.InvalidTokenError:
+        raise HTTPException(
+            status_code=401,
+            detail="Token de autenticação inválido ou corrompido."
+        )
 
 # Model definitions
 class LoginRequest(BaseModel):
@@ -534,10 +565,18 @@ def login(request: LoginRequest):
         
     username_clean = request.username.lower().strip()
     
+    # Master Admin login
     if request.username == ADMIN_USER and request.password == ADMIN_PASSWORD:
+        token = create_access_token({
+            "sub": "juliana.sindica@hubitat.com.br",
+            "email": "juliana.sindica@hubitat.com.br",
+            "nome": "Juliana Costa",
+            "role": "admin",
+            "provedor": "admin"
+        })
         return {
             "sucesso": True,
-            "access_token": ADMIN_TOKEN,
+            "access_token": token,
             "token_type": "bearer",
             "usuario": {
                 "nome": "Juliana Costa",
@@ -553,37 +592,69 @@ def login(request: LoginRequest):
             cursor = conn.cursor(dictionary=True)
             cursor.execute("SELECT * FROM hubitat_usuarios WHERE email = %s OR nome = %s", (username_clean, username_clean))
             user = cursor.fetchone()
-            cursor.close()
-            conn.close()
+            
             if user:
-                return {
-                    "sucesso": True,
-                    "access_token": ADMIN_TOKEN,
-                    "token_type": "bearer",
-                    "usuario": {
-                        "nome": user.get("nome") or username_clean.split('@')[0].capitalize(),
-                        "email": user.get("email") or username_clean,
-                        "foto_url": user.get("foto_url") or "https://images.unsplash.com/photo-1534528741775-53994a69daeb?auto=format&fit=crop&w=120&q=80",
-                        "provedor": user.get("provedor") or "local"
+                stored_password = user.get("senha")
+                
+                if not stored_password:
+                    cursor.close()
+                    conn.close()
+                    raise HTTPException(status_code=401, detail="Conta registrada via login social. Por favor, entre com Google, Facebook ou Microsoft.")
+                
+                # Verify password with check_password_hash
+                is_valid = check_password_hash(stored_password, request.password)
+                
+                # Auto-migration for legacy plaintext passwords
+                if not is_valid and stored_password == request.password:
+                    is_valid = True
+                    new_hash = generate_password_hash(request.password)
+                    try:
+                        update_cursor = conn.cursor()
+                        update_cursor.execute("UPDATE hubitat_usuarios SET senha = %s WHERE email = %s", (new_hash, user.get("email")))
+                        conn.commit()
+                        update_cursor.close()
+                        print(f"Segurança: Senha em texto claro de {user.get('email')} convertida para HASH!")
+                    except Exception as migrate_err:
+                        print("Erro ao atualizar hash da senha:", migrate_err)
+
+                cursor.close()
+                conn.close()
+                
+                if is_valid:
+                    email_val = user.get("email") or username_clean
+                    nome_val = user.get("nome") or username_clean.split('@')[0].capitalize()
+                    foto_val = user.get("foto_url") or "https://images.unsplash.com/photo-1534528741775-53994a69daeb?auto=format&fit=crop&w=120&q=80"
+                    provedor_val = user.get("provedor") or "local"
+                    
+                    token = create_access_token({
+                        "sub": email_val,
+                        "email": email_val,
+                        "nome": nome_val,
+                        "provedor": provedor_val
+                    })
+                    
+                    return {
+                        "sucesso": True,
+                        "access_token": token,
+                        "token_type": "bearer",
+                        "usuario": {
+                            "nome": nome_val,
+                            "email": email_val,
+                            "foto_url": foto_val,
+                            "provedor": provedor_val
+                        }
                     }
-                }
+                else:
+                    raise HTTPException(status_code=401, detail="Usuário ou senha incorretos.")
+            else:
+                cursor.close()
+                conn.close()
+        except HTTPException:
+            raise
         except Exception as e:
             if conn: conn.close()
             print("Erro ao validar login no MySQL:", e)
             
-    if request.username and request.password:
-        return {
-            "sucesso": True,
-            "access_token": ADMIN_TOKEN,
-            "token_type": "bearer",
-            "usuario": {
-                "nome": username_clean.split('@')[0].capitalize(),
-                "email": username_clean if '@' in username_clean else f"{username_clean}@hubitat.com.br",
-                "foto_url": "https://images.unsplash.com/photo-1534528741775-53994a69daeb?auto=format&fit=crop&w=120&q=80",
-                "provedor": "local"
-            }
-        }
-
     raise HTTPException(status_code=401, detail="Usuário ou senha incorretos.")
 
 @app.post("/api/cadastro")
@@ -595,6 +666,8 @@ def cadastro(request: CadastroRequest):
     name_clean = request.name.strip()
     condo_clean = (request.condo or "Alphaville Eusébio Res. 1").strip()
     foto_default = "https://images.unsplash.com/photo-1534528741775-53994a69daeb?auto=format&fit=crop&w=120&q=80"
+    
+    hashed_password = generate_password_hash(request.password)
     
     conn = get_db_connection()
     if conn:
@@ -609,7 +682,7 @@ def cadastro(request: CadastroRequest):
             cursor.execute("""
                 INSERT INTO hubitat_usuarios (nome, email, senha, provedor, foto_url, condominio)
                 VALUES (%s, %s, %s, %s, %s, %s)
-            """, (name_clean, email_clean, request.password, 'local', foto_default, condo_clean))
+            """, (name_clean, email_clean, hashed_password, 'local', foto_default, condo_clean))
             conn.commit()
             cursor.close()
             conn.close()
@@ -619,9 +692,16 @@ def cadastro(request: CadastroRequest):
             if conn: conn.close()
             print("Erro ao registrar novo usuário no MySQL:", err)
 
+    token = create_access_token({
+        "sub": email_clean,
+        "email": email_clean,
+        "nome": name_clean,
+        "provedor": "local"
+    })
+
     return {
         "sucesso": True,
-        "access_token": ADMIN_TOKEN,
+        "access_token": token,
         "token_type": "bearer",
         "message": "Conta criada com sucesso!",
         "usuario": {
@@ -719,9 +799,10 @@ def auth_google(req: SocialAuthRequest):
         except Exception as err:
             print("Erro ao salvar usuário no MySQL:", err)
 
+    token_jwt = create_access_token({"sub": email, "email": email, "nome": nome_final, "provedor": "google"})
     return {
         "sucesso": True,
-        "access_token": ADMIN_TOKEN,
+        "access_token": token_jwt,
         "token_type": "bearer",
         "email": email,
         "nome": nome_final,
@@ -785,9 +866,10 @@ def auth_facebook(req: SocialAuthRequest):
         except Exception as err:
             print("Erro ao salvar usuário no MySQL:", err)
 
+    token_jwt = create_access_token({"sub": email, "email": email, "nome": nome_final, "provedor": "facebook"})
     return {
         "sucesso": True,
-        "access_token": ADMIN_TOKEN,
+        "access_token": token_jwt,
         "token_type": "bearer",
         "email": email,
         "nome": nome_final,
@@ -849,9 +931,10 @@ def auth_microsoft(req: SocialAuthRequest):
         except Exception as err:
             print("Erro ao salvar usuário no MySQL:", err)
 
+    token_jwt = create_access_token({"sub": email, "email": email, "nome": nome_final, "provedor": "microsoft"})
     return {
         "sucesso": True,
-        "access_token": ADMIN_TOKEN,
+        "access_token": token_jwt,
         "token_type": "bearer",
         "email": email,
         "nome": nome_final,
@@ -866,11 +949,12 @@ def auth_microsoft(req: SocialAuthRequest):
     }
 
 @app.post("/api/usuario/perfil")
-def update_user_profile(req: UpdateProfileRequest):
-    if not req.email:
-        raise HTTPException(status_code=400, detail="E-mail é obrigatório.")
+def update_user_profile(req: UpdateProfileRequest, current_user: dict = Depends(verify_token)):
+    authenticated_email = (current_user.get("sub") or current_user.get("email") or req.email or "").lower().strip()
+    if not authenticated_email:
+        raise HTTPException(status_code=401, detail="Token de autenticação inválido.")
     
-    email = req.email.lower().strip()
+    email = authenticated_email
     nome = req.nome
     foto_url = req.foto_url
     condo = req.condominio

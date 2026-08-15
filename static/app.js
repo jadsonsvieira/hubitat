@@ -286,7 +286,7 @@ window.saveUserProfile = async function(event) {
     const fotoUrl = photoPreview ? photoPreview.src : null;
 
     try {
-        const response = await fetch(`${API_BASE}/api/usuario/perfil`, {
+        const response = await apiFetch(`${API_BASE}/api/usuario/perfil`, {
             method: 'POST',
             headers: { 'Content-Type': 'application/json' },
             body: JSON.stringify({ email, nome: name, condominio: condo, foto_url: fotoUrl })
