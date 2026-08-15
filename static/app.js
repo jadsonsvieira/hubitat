@@ -51,6 +51,7 @@ const state = {
     ocorrencias: [],
     encomendas: [],
     manutencoes: [],
+    colaboradores: [],
     atividades: []
 };
 
@@ -342,7 +343,7 @@ async function apiFetch(url, options = {}) {
 // FETCH ALL DATA FROM PYTHON BACKEND
 async function refreshAllData() {
     try {
-        const [osRes, resRes, visRes, actRes, comRes, ocoRes, encRes, manRes] = await Promise.all([
+        const [osRes, resRes, visRes, actRes, comRes, ocoRes, encRes, manRes, colabRes] = await Promise.all([
             apiFetch(`${API_BASE}/api/os`),
             apiFetch(`${API_BASE}/api/reservas`),
             apiFetch(`${API_BASE}/api/visitantes`),
@@ -350,7 +351,8 @@ async function refreshAllData() {
             apiFetch(`${API_BASE}/api/comunicados`),
             apiFetch(`${API_BASE}/api/ocorrencias`),
             apiFetch(`${API_BASE}/api/encomendas`),
-            apiFetch(`${API_BASE}/api/manutencoes`)
+            apiFetch(`${API_BASE}/api/manutencoes`),
+            apiFetch(`${API_BASE}/api/colaboradores`)
         ]);
 
         state.ordensServico = await osRes.json();
@@ -361,6 +363,7 @@ async function refreshAllData() {
         state.ocorrencias = await ocoRes.json();
         state.encomendas = await encRes.json();
         state.manutencoes = await manRes.json();
+        state.colaboradores = await colabRes.json();
 
         renderDashboard();
         renderOS();
@@ -370,6 +373,7 @@ async function refreshAllData() {
         renderOcorrencias();
         renderEncomendas();
         renderManutencoes();
+        renderColaboradores();
         updateCounters();
     } catch (err) {
         console.error("Erro ao carregar dados do servidor Python:", err);
@@ -788,7 +792,8 @@ function switchTab(tabName) {
         financeiro: { title: 'Gestão Operacional & Financeira', subtitle: 'Prestação de contas, balancetes, manutenção e assembleias' },
         os: { title: 'Ordens de Serviço (O.S.)', subtitle: 'Gestão preventiva, corretiva e acompanhamento de prestadores' },
         reservas: { title: 'Reservas & Espaços', subtitle: 'Agendamento de áreas comuns, churrasqueiras e quadras esportivas' },
-        copilot: { title: 'Frame IA Copilot', subtitle: 'Inteligência Artificial especialista em regulamentos e operações condominiais' }
+        copilot: { title: 'Frame IA Copilot', subtitle: 'Inteligência Artificial especialista em regulamentos e operações condominiais' },
+        colaboradores: { title: 'Colaboradores & Equipe', subtitle: 'Gestão operacional de funcionários, turnos, crachás digitais e prestadores terceirizados' }
     };
 
     if (titles[tabName]) {
@@ -796,6 +801,10 @@ function switchTab(tabName) {
         const subEl = document.getElementById('pageSubtitle');
         if (titleEl) titleEl.textContent = titles[tabName].title;
         if (subEl) subEl.textContent = titles[tabName].subtitle;
+    }
+
+    if (tabName === 'colaboradores') {
+        renderColaboradores();
     }
 
     // Scroll to top of main content
@@ -1165,6 +1174,7 @@ function updateCounters() {
     const osBadge = document.getElementById('osBadgeCount');
     const comBadge = document.getElementById('comunicadoBadgeCount');
     const encBadge = document.getElementById('encomendasBadgeCount');
+    const colabBadge = document.getElementById('colaboradoresBadgeCount');
 
     const totalOS = state.ordensServico.length;
     const openOS = state.ordensServico.filter(o => o.status !== 'Concluída').length;
@@ -1172,12 +1182,19 @@ function updateCounters() {
     const pendentesOS = state.ordensServico.filter(o => o.status === 'Pendente').length;
     const concluidasOS = state.ordensServico.filter(o => o.status === 'Concluída').length;
 
+    const colabTotal = (state.colaboradores || []).length;
+    const colabTurno = (state.colaboradores || []).filter(c => c.status === 'Em Turno').length;
+    const colabFolga = (state.colaboradores || []).filter(c => c.status === 'Folga').length;
+    const empresasSet = new Set((state.colaboradores || []).map(c => c.empresa).filter(Boolean));
+    const colabEmpresas = empresasSet.size || 3;
+
     if (osCount) osCount.textContent = openOS;
     if (osBadge) osBadge.textContent = openOS;
     if (resCount) resCount.textContent = state.reservas.length;
     if (visCount) visCount.textContent = state.visitantes.length;
     if (comBadge) comBadge.textContent = state.comunicados.length || 2;
     if (encBadge) encBadge.textContent = state.encomendas.filter(e => e.status !== 'Entregue ao Morador').length || 1;
+    if (colabBadge) colabBadge.textContent = colabTurno || 4;
 
     const osTotalEl = document.getElementById('osTotalCount');
     const osAndamentoEl = document.getElementById('osAndamentoCount');
@@ -1188,6 +1205,16 @@ function updateCounters() {
     if (osAndamentoEl) osAndamentoEl.textContent = andamentoOS;
     if (osPendentesEl) osPendentesEl.textContent = pendentesOS;
     if (osConcluidasEl) osConcluidasEl.textContent = concluidasOS;
+
+    const colabTotalEl = document.getElementById('colabTotalCount');
+    const colabTurnoEl = document.getElementById('colabTurnoCount');
+    const colabFolgaEl = document.getElementById('colabFolgaCount');
+    const colabEmpresasEl = document.getElementById('colabEmpresasCount');
+
+    if (colabTotalEl) colabTotalEl.textContent = colabTotal || 6;
+    if (colabTurnoEl) colabTurnoEl.textContent = colabTurno || 4;
+    if (colabFolgaEl) colabFolgaEl.textContent = colabFolga || 2;
+    if (colabEmpresasEl) colabEmpresasEl.textContent = colabEmpresas;
 }
 
 // MODAL UTILS
@@ -1631,6 +1658,175 @@ function copyBoletoCode() {
     showToast("Código PIX / Copia e Cola copiado!", "success");
 }
 window.copyBoletoCode = copyBoletoCode;
+
+// --- COLABORADORES & PRESTADORES DE SERVIÇO ---
+let colabCurrentFilter = 'all';
+
+function renderColaboradores(filter) {
+    if (filter) colabCurrentFilter = filter;
+    const tbody = document.getElementById('colaboradoresTableBody');
+    if (!tbody) return;
+    
+    let items = state.colaboradores || [];
+    if (colabCurrentFilter === 'turno') items = items.filter(c => c.status === 'Em Turno');
+    if (colabCurrentFilter === 'folga') items = items.filter(c => c.status === 'Folga');
+    if (colabCurrentFilter === 'terceirizado') items = items.filter(c => c.tipo_vinculo === 'Terceirizado');
+
+    if (items.length === 0) {
+        tbody.innerHTML = `<tr><td colspan="7" class="text-center" style="padding: 2.5rem; color: var(--text-muted);">Nenhum colaborador encontrado para este filtro.</td></tr>`;
+        return;
+    }
+
+    tbody.innerHTML = items.map(c => `
+        <tr>
+            <td>
+                <div style="display: flex; align-items: center; gap: 0.85rem;">
+                    <div style="position: relative;">
+                        <img src="${c.foto_url || 'https://images.unsplash.com/photo-1535713875002-d1d0cf377fde?auto=format&fit=crop&w=120&q=80'}" style="width: 44px; height: 44px; border-radius: 50%; object-fit: cover; border: 2px solid ${c.status === 'Em Turno' ? '#10b981' : '#71717a'};" onerror="this.src='https://images.unsplash.com/photo-1535713875002-d1d0cf377fde?auto=format&fit=crop&w=120&q=80'">
+                        <span style="position: absolute; bottom: 0; right: 0; width: 12px; height: 12px; border-radius: 50%; background: ${c.status === 'Em Turno' ? '#10b981' : '#71717a'}; border: 2px solid #18181b;" title="${c.status}"></span>
+                    </div>
+                    <div>
+                        <strong style="color: #fff; font-size: 0.92rem;">${escapeHtml(c.nome)}</strong><br>
+                        <small style="color: var(--text-muted);">${escapeHtml(c.doc || c.id)}</small>
+                    </div>
+                </div>
+            </td>
+            <td>
+                <strong style="color: var(--primary); font-size: 0.86rem;">${escapeHtml(c.funcao)}</strong><br>
+                <small style="color: var(--text-muted);">${escapeHtml(c.setor)}</small>
+            </td>
+            <td>
+                <span class="badge ${c.tipo_vinculo === 'CLT Condomínio' ? 'badge-success' : 'badge-info'}">${escapeHtml(c.tipo_vinculo)}</span><br>
+                <small style="color: var(--text-muted);">${escapeHtml(c.empresa || 'Condomínio')}</small>
+            </td>
+            <td>
+                <span style="font-size: 0.84rem; color: #fff;"><i class="fa-solid fa-clock color-primary"></i> ${escapeHtml(c.escala)}</span>
+            </td>
+            <td>
+                <span style="font-size: 0.84rem; color: #fff;"><i class="fa-brands fa-whatsapp color-emerald"></i> ${escapeHtml(c.telefone || '(85) 98800-0000')}</span>
+            </td>
+            <td>
+                <span class="badge ${c.status === 'Em Turno' ? 'badge-success' : 'badge-warning'}">${escapeHtml(c.status)}</span>
+            </td>
+            <td>
+                <div style="display: flex; gap: 0.4rem; align-items: center;">
+                    <button class="btn-secondary sm" title="Alternar Status (Turno / Folga)" onclick="toggleColaboradorStatus('${c.id}')">
+                        <i class="fa-solid fa-repeat"></i> Status
+                    </button>
+                    <button class="btn-secondary sm" title="Ver Crachá Digital QR" onclick="showColaboradorQrBadge('${c.id}')">
+                        <i class="fa-solid fa-id-badge"></i>
+                    </button>
+                    <button class="btn-secondary sm" title="Excluir Colaborador" onclick="deleteColaborador('${c.id}')" style="color: #f87171;">
+                        <i class="fa-solid fa-trash"></i>
+                    </button>
+                </div>
+            </td>
+        </tr>
+    `).join('');
+}
+window.renderColaboradores = renderColaboradores;
+
+window.filterColaboradores = function(filter) {
+    colabCurrentFilter = filter;
+    const btns = document.querySelectorAll('#colabFilterGroup .filter-btn');
+    btns.forEach(b => {
+        b.classList.toggle('active', b.getAttribute('data-filter') === filter);
+    });
+    renderColaboradores(filter);
+};
+
+window.openColaboradorModal = function() {
+    openModal('colaboradorModal');
+};
+
+window.closeColaboradorModal = function() {
+    closeModal('colaboradorModal');
+};
+
+window.saveColaborador = async function(e) {
+    e.preventDefault();
+    const newColab = {
+        id: 'COL-' + Math.floor(100 + Math.random() * 900),
+        nome: document.getElementById('colabNome').value,
+        funcao: document.getElementById('colabFuncao').value,
+        setor: document.getElementById('colabSetor').value,
+        tipo_vinculo: document.getElementById('colabTipoVinculo').value,
+        empresa: document.getElementById('colabEmpresa').value,
+        escala: document.getElementById('colabEscala').value,
+        telefone: document.getElementById('colabTelefone').value,
+        doc: document.getElementById('colabDoc').value,
+        status: document.getElementById('colabStatus').value,
+        foto_url: 'https://images.unsplash.com/photo-1535713875002-d1d0cf377fde?auto=format&fit=crop&w=120&q=80'
+    };
+
+    try {
+        await apiFetch(`${API_BASE}/api/colaboradores`, {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify(newColab)
+        });
+        state.colaboradores.unshift(newColab);
+        renderColaboradores();
+        updateCounters();
+        closeModal('colaboradorModal');
+        document.getElementById('colaboradorForm').reset();
+        showToast(`Colaborador ${newColab.nome} cadastrado com sucesso!`, 'success');
+    } catch (err) {
+        state.colaboradores.unshift(newColab);
+        renderColaboradores();
+        updateCounters();
+        closeModal('colaboradorModal');
+        document.getElementById('colaboradorForm').reset();
+        showToast(`Colaborador cadastrado localmente!`, 'success');
+    }
+};
+
+window.toggleColaboradorStatus = async function(id) {
+    try {
+        const res = await apiFetch(`${API_BASE}/api/colaboradores/${id}/status`, { method: 'PUT' });
+        const c = (state.colaboradores || []).find(item => item.id === id);
+        if (c) {
+            c.status = c.status === 'Em Turno' ? 'Folga' : 'Em Turno';
+        }
+        renderColaboradores();
+        updateCounters();
+        showToast("Status de turno alterado!", "info");
+    } catch (err) {
+        const c = (state.colaboradores || []).find(item => item.id === id);
+        if (c) {
+            c.status = c.status === 'Em Turno' ? 'Folga' : 'Em Turno';
+        }
+        renderColaboradores();
+        updateCounters();
+        showToast("Status atualizado localmente!", "info");
+    }
+};
+
+window.deleteColaborador = async function(id) {
+    if (!confirm("Deseja realmente remover o cadastro deste colaborador?")) return;
+    try {
+        await apiFetch(`${API_BASE}/api/colaboradores/${id}`, { method: 'DELETE' });
+        state.colaboradores = (state.colaboradores || []).filter(c => c.id !== id);
+        renderColaboradores();
+        updateCounters();
+        showToast("Colaborador removido.", "warning");
+    } catch (err) {
+        state.colaboradores = (state.colaboradores || []).filter(c => c.id !== id);
+        renderColaboradores();
+        updateCounters();
+        showToast("Colaborador removido localmente.", "warning");
+    }
+};
+
+window.showColaboradorQrBadge = function(id) {
+    const c = (state.colaboradores || []).find(item => item.id === id);
+    if (!c) return;
+    
+    document.getElementById('qrVisitorNameDisplay').textContent = `${c.nome} (${c.funcao})`;
+    document.getElementById('qrVisitorMetaDisplay').textContent = `Crachá Digital • ${c.empresa} • ${c.escala}`;
+    generateQRCodeCanvas();
+    openModal('qrModal');
+};
 
 /* --- UI REDESIGN & INTERACTIVE FUNCTIONS --- */
 

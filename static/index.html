@@ -442,9 +442,10 @@
                     <span>Frame IA Copilot</span>
                     <span class="badge badge-pulse">AI</span>
                 </a>
-                <a href="#" class="nav-item" onclick="showLandingPage(event)" style="margin-top: 0.5rem; border-top: 1px dashed rgba(255,255,255,0.1); padding-top: 0.75rem;">
-                    <i class="fa-solid fa-globe color-emerald"></i>
-                    <span>Ver Landing Page</span>
+                <a href="#" class="nav-item" data-tab="colaboradores">
+                    <i class="fa-solid fa-users-gear"></i>
+                    <span>Colaboradores & Equipe</span>
+                    <span class="badge badge-success" id="colaboradoresBadgeCount">6</span>
                 </a>
             </nav>
 
@@ -1165,7 +1166,199 @@
                     </div>
                 </div>
             </section>
+
+            <!-- TAB 8: COLABORADORES & PRESTADORES DE SERVIÇO -->
+            <section class="tab-content" id="tab-colaboradores">
+                <!-- Colaboradores Metrics Header -->
+                <div class="metrics-grid">
+                    <div class="metric-card glass">
+                        <div class="metric-header">
+                            <span class="metric-title">Total de Colaboradores</span>
+                            <div class="metric-icon primary"><i class="fa-solid fa-users-gear"></i></div>
+                        </div>
+                        <div class="metric-value" id="colabTotalCount">6</div>
+                        <div class="metric-footer">
+                            <span class="trend positive"><i class="fa-solid fa-shield-halved"></i> 100% Cadastrados</span>
+                            <span class="subtext">CLT & Terceirizados</span>
+                        </div>
+                    </div>
+                    <div class="metric-card glass">
+                        <div class="metric-header">
+                            <span class="metric-title">Em Turno Agora</span>
+                            <div class="metric-icon success"><i class="fa-solid fa-user-clock"></i></div>
+                        </div>
+                        <div class="metric-value" id="colabTurnoCount">4</div>
+                        <div class="metric-footer">
+                            <span class="trend positive">Presentes no condomínio</span>
+                            <span class="subtext">Portaria, Limpeza & Jardins</span>
+                        </div>
+                    </div>
+                    <div class="metric-card glass">
+                        <div class="metric-header">
+                            <span class="metric-title">Folga / Intervalo</span>
+                            <div class="metric-icon warning"><i class="fa-solid fa-bed"></i></div>
+                        </div>
+                        <div class="metric-value" id="colabFolgaCount">2</div>
+                        <div class="metric-footer">
+                            <span class="trend neutral">Escala 12x36 & Plantão</span>
+                            <span class="subtext">Revezamento previsto</span>
+                        </div>
+                    </div>
+                    <div class="metric-card glass">
+                        <div class="metric-header">
+                            <span class="metric-title">Empresas Terceirizadas</span>
+                            <div class="metric-icon info"><i class="fa-solid fa-building-shield"></i></div>
+                        </div>
+                        <div class="metric-value" id="colabEmpresasCount">3</div>
+                        <div class="metric-footer">
+                            <span class="trend positive"><i class="fa-solid fa-handshake"></i> Contratos Vigentes</span>
+                            <span class="subtext">Servis, LimpClean, ServElétrica</span>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Colaboradores Table & Management Card -->
+                <div class="card glass shadow-sm">
+                    <div class="tab-header-actions" style="display: flex; flex-wrap: wrap; gap: 1rem; align-items: center; justify-content: space-between; margin-bottom: 1.5rem;">
+                        <div>
+                            <h3><i class="fa-solid fa-users-gear color-primary"></i> Equipe Operacional & Prestadores</h3>
+                            <p class="card-subtitle">Gestão de escalas, crachás digitais, turnos e controle de prestadores terceirizados</p>
+                        </div>
+                        <div style="display: flex; gap: 0.75rem; align-items: center; flex-wrap: wrap;">
+                            <div class="filter-group" id="colabFilterGroup">
+                                <button type="button" class="filter-btn active" data-filter="all" onclick="filterColaboradores('all')">Todos</button>
+                                <button type="button" class="filter-btn" data-filter="turno" onclick="filterColaboradores('turno')">Em Turno</button>
+                                <button type="button" class="filter-btn" data-filter="folga" onclick="filterColaboradores('folga')">Folga</button>
+                                <button type="button" class="filter-btn" data-filter="terceirizado" onclick="filterColaboradores('terceirizado')">Terceirizados</button>
+                            </div>
+                            <button type="button" class="action-btn primary" onclick="openColaboradorModal()">
+                                <i class="fa-solid fa-user-plus"></i> Cadastrar Colaborador
+                            </button>
+                        </div>
+                    </div>
+
+                    <div class="table-container">
+                        <table class="data-table">
+                            <thead>
+                                <tr>
+                                    <th>Colaborador / Foto</th>
+                                    <th>Função & Setor</th>
+                                    <th>Vínculo & Empresa</th>
+                                    <th>Escala / Horário</th>
+                                    <th>Contato / WhatsApp</th>
+                                    <th>Status Atual</th>
+                                    <th>Ações</th>
+                                </tr>
+                            </thead>
+                            <tbody id="colaboradoresTableBody">
+                                <!-- Injected by JS -->
+                            </tbody>
+                        </table>
+                    </div>
+                </div>
+            </section>
         </main>
+    </div>
+
+    <!-- MODAL: CADASTRAR NOVO COLABORADOR -->
+    <div class="modal-overlay" id="colaboradorModal">
+        <div class="modal-card glass shadow-lg">
+            <div class="modal-header">
+                <div class="modal-header-title">
+                    <div class="modal-header-icon" style="background: rgba(139, 92, 246, 0.2); color: #c084fc;">
+                        <i class="fa-solid fa-user-plus"></i>
+                    </div>
+                    <div>
+                        <h3>Cadastrar Colaborador ou Prestador</h3>
+                        <p class="modal-subtitle">Adicione trabalhadores da portaria, conservação ou empresas terceirizadas</p>
+                    </div>
+                </div>
+                <button type="button" class="close-btn" onclick="closeModal('colaboradorModal')"><i class="fa-solid fa-xmark"></i></button>
+            </div>
+            <form id="colaboradorForm" onsubmit="saveColaborador(event)">
+                <div class="form-group">
+                    <label><i class="fa-solid fa-user color-primary"></i> Nome Completo</label>
+                    <input type="text" id="colabNome" placeholder="Ex: Francisco Gomes de Lima" required>
+                </div>
+                <div class="form-group-row">
+                    <div class="form-group">
+                        <label><i class="fa-solid fa-briefcase color-primary"></i> Função / Cargo</label>
+                        <select id="colabFuncao" required>
+                            <option value="Porteiro Líder">Porteiro Líder</option>
+                            <option value="Porteiro / Recepcionista">Porteiro / Recepcionista</option>
+                            <option value="Vigilante / Ronda">Vigilante / Ronda</option>
+                            <option value="Zelador Geral">Zelador Geral</option>
+                            <option value="Líder de Higienização">Líder de Higienização</option>
+                            <option value="Auxiliar de Limpeza">Auxiliar de Limpeza</option>
+                            <option value="Jardineiro Paisagista">Jardineiro Paisagista</option>
+                            <option value="Eletricista de Manutenção">Eletricista de Manutenção</option>
+                            <option value="Técnico de Piscinas">Técnico de Piscinas</option>
+                            <option value="Prestador Autônomo">Prestador Autônomo</option>
+                        </select>
+                    </div>
+                    <div class="form-group">
+                        <label><i class="fa-solid fa-building color-primary"></i> Setor de Atuação</label>
+                        <select id="colabSetor" required>
+                            <option value="Portaria & Controle de Acesso">Portaria & Controle de Acesso</option>
+                            <option value="Conservação & Manutenção Geral">Conservação & Manutenção Geral</option>
+                            <option value="Áreas Comuns & Club House">Áreas Comuns & Club House</option>
+                            <option value="Segurança Perimetral & Rondas">Segurança Perimetral & Rondas</option>
+                            <option value="Áreas Verdes & Jardins">Áreas Verdes & Jardins</option>
+                            <option value="Infraestrutura & Elétrica">Infraestrutura & Elétrica</option>
+                            <option value="Administração Condominial">Administração Condominial</option>
+                        </select>
+                    </div>
+                </div>
+                <div class="form-group-row">
+                    <div class="form-group">
+                        <label><i class="fa-solid fa-file-contract color-primary"></i> Tipo de Vínculo</label>
+                        <select id="colabTipoVinculo" required>
+                            <option value="Terceirizado">Terceirizado (Empresa Prestadora)</option>
+                            <option value="CLT Condomínio">CLT Direto (Condomínio)</option>
+                            <option value="Prestador Autônomo / Diarista">Prestador Autônomo / Diarista</option>
+                        </select>
+                    </div>
+                    <div class="form-group">
+                        <label><i class="fa-solid fa-building-shield color-primary"></i> Empresa Prestadora</label>
+                        <input type="text" id="colabEmpresa" placeholder="Ex: Servis Segurança ou Condomínio" value="Condomínio Alphaville">
+                    </div>
+                </div>
+                <div class="form-group-row">
+                    <div class="form-group">
+                        <label><i class="fa-solid fa-clock color-primary"></i> Escala / Turno</label>
+                        <select id="colabEscala" required>
+                            <option value="12x36 Diurno (07h às 19h)">12x36 Diurno (07h às 19h)</option>
+                            <option value="12x36 Noturno (19h às 07h)">12x36 Noturno (19h às 07h)</option>
+                            <option value="Comercial (08h às 17h)">Comercial (08h às 17h)</option>
+                            <option value="Comercial (07h às 16h)">Comercial (07h às 16h)</option>
+                            <option value="Plantão Sob Demanda">Plantão Sob Demanda</option>
+                        </select>
+                    </div>
+                    <div class="form-group">
+                        <label><i class="fa-brands fa-whatsapp color-primary"></i> Telefone / WhatsApp</label>
+                        <input type="text" id="colabTelefone" placeholder="(85) 90000-0000">
+                    </div>
+                </div>
+                <div class="form-group-row">
+                    <div class="form-group">
+                        <label><i class="fa-solid fa-id-card color-primary"></i> CPF / Documento</label>
+                        <input type="text" id="colabDoc" placeholder="000.000.000-00">
+                    </div>
+                    <div class="form-group">
+                        <label><i class="fa-solid fa-toggle-on color-primary"></i> Status Inicial</label>
+                        <select id="colabStatus">
+                            <option value="Em Turno" selected>Em Turno (No Condomínio)</option>
+                            <option value="Folga">Folga (Escala / Repouso)</option>
+                            <option value="Férias">Férias</option>
+                        </select>
+                    </div>
+                </div>
+                <div class="modal-footer">
+                    <button type="button" class="btn-secondary" onclick="closeModal('colaboradorModal')">Cancelar</button>
+                    <button type="submit" class="action-btn primary"><i class="fa-solid fa-check"></i> Cadastrar Colaborador</button>
+                </div>
+            </form>
+        </div>
     </div>
 
     <!-- MODAL: NOVA ORDEM DE SERVIÇO -->

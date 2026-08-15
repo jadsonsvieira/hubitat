@@ -178,6 +178,19 @@ class Manutencao(BaseModel):
     status: str
     responsible: str
 
+class Colaborador(BaseModel):
+    id: Optional[str] = None
+    nome: str
+    funcao: str
+    setor: str
+    tipo_vinculo: str
+    empresa: Optional[str] = "Condomínio"
+    escala: str
+    telefone: Optional[str] = ""
+    doc: Optional[str] = ""
+    foto_url: Optional[str] = ""
+    status: Optional[str] = "Em Turno"
+
 class OcrEncomendaRequest(BaseModel):
     image_base64: Optional[str] = None
     raw_text: Optional[str] = None
@@ -286,13 +299,93 @@ DEFAULT_DATA = {
         },
         {
             "id": "VIS-902",
-            "name": "Fernanda Albuquerque",
-            "doc": "882.109.334-00",
-            "type": "Familiar / Amigo",
-            "plate": "RIO-2A19",
-            "unit": "Casa 102 - Al. Flamboyant",
-            "time": "Aguardado 14:00",
-            "status": "Pendente"
+            "name": "Dra. Patrícia Lima",
+            "doc": "987.654.321-00",
+            "type": "Convidado / Amigo",
+            "plate": "QRA-2026",
+            "unit": "Casa 12",
+            "time": "14:15",
+            "status": "No Condomínio"
+        }
+    ],
+    "colaboradores": [
+        {
+            "id": "COL-001",
+            "nome": "Francisco Gomes de Lima",
+            "funcao": "Porteiro Líder",
+            "setor": "Portaria & Controle de Acesso",
+            "tipo_vinculo": "Terceirizado",
+            "empresa": "Servis Segurança & Portaria",
+            "escala": "12x36 Diurno (07h às 19h)",
+            "telefone": "(85) 98822-1044",
+            "doc": "348.912.783-10",
+            "foto_url": "https://images.unsplash.com/photo-1507003211169-0a1dd7228f2d?auto=format&fit=crop&w=120&q=80",
+            "status": "Em Turno"
+        },
+        {
+            "id": "COL-002",
+            "nome": "Raimundo Nonato Alves",
+            "funcao": "Zelador Geral",
+            "setor": "Conservação & Manutenção Geral",
+            "tipo_vinculo": "CLT Condomínio",
+            "empresa": "Condomínio Alphaville",
+            "escala": "Comercial (08h às 17h)",
+            "telefone": "(85) 99144-8833",
+            "doc": "412.890.123-55",
+            "foto_url": "https://images.unsplash.com/photo-1500648767791-00dcc994a43e?auto=format&fit=crop&w=120&q=80",
+            "status": "Em Turno"
+        },
+        {
+            "id": "COL-003",
+            "nome": "Maria de Fátima Sousa",
+            "funcao": "Líder de Higienização",
+            "setor": "Áreas Comuns & Club House",
+            "tipo_vinculo": "Terceirizado",
+            "empresa": "LimpClean Serviços Especializados",
+            "escala": "Comercial (07h às 16h)",
+            "telefone": "(85) 98711-3322",
+            "doc": "618.345.901-22",
+            "foto_url": "https://images.unsplash.com/photo-1544005313-94ddf0286df2?auto=format&fit=crop&w=120&q=80",
+            "status": "Em Turno"
+        },
+        {
+            "id": "COL-004",
+            "nome": "Antônio Carlos Pinheiro",
+            "funcao": "Eletricista de Manutenção",
+            "setor": "Infraestrutura & Elétrica",
+            "tipo_vinculo": "Terceirizado",
+            "empresa": "Eusébio ServElétrica Ltda",
+            "escala": "Plantão Sob Demanda",
+            "telefone": "(85) 99655-4411",
+            "doc": "523.771.890-44",
+            "foto_url": "https://images.unsplash.com/photo-1519085360753-af0119f7cbe7?auto=format&fit=crop&w=120&q=80",
+            "status": "Folga"
+        },
+        {
+            "id": "COL-005",
+            "nome": "José Valmir de Oliveira",
+            "funcao": "Jardineiro Paisagista",
+            "setor": "Áreas Verdes & Jardins",
+            "tipo_vinculo": "CLT Condomínio",
+            "empresa": "Condomínio Alphaville",
+            "escala": "Comercial (07h às 16h)",
+            "telefone": "(85) 98933-7766",
+            "doc": "291.644.382-77",
+            "foto_url": "https://images.unsplash.com/photo-1522075469751-3a6694fb2f61?auto=format&fit=crop&w=120&q=80",
+            "status": "Em Turno"
+        },
+        {
+            "id": "COL-006",
+            "nome": "Marcos Vinícius Barbosa",
+            "funcao": "Vigilante Noturno",
+            "setor": "Segurança Perimetral & Rondas",
+            "tipo_vinculo": "Terceirizado",
+            "empresa": "Servis Segurança & Portaria",
+            "escala": "12x36 Noturno (19h às 07h)",
+            "telefone": "(85) 99211-9988",
+            "doc": "784.120.943-88",
+            "foto_url": "https://images.unsplash.com/photo-1492562080023-ab3db95bfbce?auto=format&fit=crop&w=120&q=80",
+            "status": "Folga"
         }
     ],
     "comunicados": [
@@ -567,11 +660,33 @@ def init_db():
                     created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP
                 );
             """)
-            try:
-                cursor.execute("ALTER TABLE hubitat_usuarios ADD COLUMN foto_url TEXT;")
+            # Create Colaboradores table
+            cursor.execute("""
+                CREATE TABLE IF NOT EXISTS hubitat_colaboradores (
+                    id VARCHAR(50) PRIMARY KEY,
+                    nome VARCHAR(255) NOT NULL,
+                    funcao VARCHAR(100) NOT NULL,
+                    setor VARCHAR(100) NOT NULL,
+                    tipo_vinculo VARCHAR(100) NOT NULL,
+                    empresa VARCHAR(255) DEFAULT 'Condomínio',
+                    escala VARCHAR(100) NOT NULL,
+                    telefone VARCHAR(50),
+                    doc VARCHAR(50),
+                    foto_url TEXT,
+                    status VARCHAR(50) DEFAULT 'Em Turno',
+                    created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP
+                );
+            """)
+
+            # Seed colaboradores if empty
+            cursor.execute("SELECT COUNT(*) FROM hubitat_colaboradores;")
+            if cursor.fetchone()[0] == 0:
+                for c in DEFAULT_DATA.get("colaboradores", []):
+                    cursor.execute("""
+                        INSERT INTO hubitat_colaboradores (id, nome, funcao, setor, tipo_vinculo, empresa, escala, telefone, doc, foto_url, status)
+                        VALUES (%s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s);
+                    """, (c["id"], c["nome"], c["funcao"], c["setor"], c["tipo_vinculo"], c["empresa"], c["escala"], c["telefone"], c["doc"], c["foto_url"], c["status"]))
                 conn.commit()
-            except Exception:
-                pass
             
             # Seed default data if table is empty
             cursor.execute("SELECT COUNT(*) FROM hubitat_os;")
@@ -1738,6 +1853,117 @@ def update_encomenda_status(enc_id: str, token: dict = Depends(verify_token)):
 @app.get("/api/manutencoes", response_model=List[Manutencao])
 def get_manutencoes(token: dict = Depends(verify_token)):
     return load_json_data().get("manutencoes", [])
+
+# COLABORADORES & PRESTADORES ENDPOINTS
+@app.get("/api/colaboradores", response_model=List[Colaborador])
+def get_colaboradores(token: dict = Depends(verify_token)):
+    if not USE_DB:
+        return load_json_data().get("colaboradores", DEFAULT_DATA.get("colaboradores", []))
+    
+    try:
+        conn = get_db_connection()
+        cursor = conn.cursor(dictionary=True)
+        cursor.execute("SELECT * FROM hubitat_colaboradores ORDER BY FIELD(status, 'Em Turno', 'Folga', 'Férias'), nome ASC;")
+        res = cursor.fetchall()
+        cursor.close()
+        conn.close()
+        return res if res else DEFAULT_DATA.get("colaboradores", [])
+    except Exception as e:
+        print(f"Erro ao buscar colaboradores no MySQL: {e}")
+        return load_json_data().get("colaboradores", DEFAULT_DATA.get("colaboradores", []))
+
+@app.post("/api/colaboradores", response_model=Colaborador)
+def create_colaborador(colab: Colaborador, token: dict = Depends(verify_token)):
+    import uuid
+    if not colab.id:
+        colab.id = f"COL-{uuid.uuid4().hex[:4].upper()}"
+    if not colab.foto_url:
+        colab.foto_url = "https://images.unsplash.com/photo-1535713875002-d1d0cf377fde?auto=format&fit=crop&w=120&q=80"
+        
+    if not USE_DB:
+        data = load_json_data()
+        data.setdefault("colaboradores", []).insert(0, colab.dict())
+        data.setdefault("atividades", []).insert(0, {
+            "icon": "fa-user-check",
+            "title": "Colaborador Cadastrado",
+            "desc": f"{colab.nome} • {colab.funcao} ({colab.empresa})",
+            "time": "Agora"
+        })
+        save_json_data(data)
+        return colab
+
+    try:
+        conn = get_db_connection()
+        cursor = conn.cursor()
+        cursor.execute("""
+            INSERT INTO hubitat_colaboradores (id, nome, funcao, setor, tipo_vinculo, empresa, escala, telefone, doc, foto_url, status)
+            VALUES (%s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s);
+        """, (colab.id, colab.nome, colab.funcao, colab.setor, colab.tipo_vinculo, colab.empresa, colab.escala, colab.telefone, colab.doc, colab.foto_url, colab.status or "Em Turno"))
+        
+        cursor.execute("""
+            INSERT INTO hubitat_atividades (icon, title, desc_text, time_text)
+            VALUES (%s, %s, %s, %s);
+        """, ("fa-user-check", "Novo Colaborador Cadastrado", f"{colab.nome} • {colab.funcao} ({colab.empresa})", "Agora"))
+        
+        conn.commit()
+        cursor.close()
+        conn.close()
+        return colab
+    except Exception as e:
+        raise HTTPException(status_code=500, detail=f"Erro ao salvar colaborador no MySQL: {e}")
+
+@app.put("/api/colaboradores/{colab_id}/status")
+def update_colaborador_status(colab_id: str, token: dict = Depends(verify_token)):
+    if not USE_DB:
+        data = load_json_data()
+        for item in data.get("colaboradores", []):
+            if item["id"] == colab_id:
+                curr = item.get("status", "Em Turno")
+                novo = "Folga" if curr == "Em Turno" else "Em Turno"
+                item["status"] = novo
+                save_json_data(data)
+                return item
+        raise HTTPException(status_code=404, detail="Colaborador não encontrado")
+
+    try:
+        conn = get_db_connection()
+        cursor = conn.cursor(dictionary=True)
+        cursor.execute("SELECT status FROM hubitat_colaboradores WHERE id = %s;", (colab_id,))
+        colab = cursor.fetchone()
+        if not colab:
+            cursor.close()
+            conn.close()
+            raise HTTPException(status_code=404, detail="Colaborador não encontrado")
+            
+        curr = colab["status"]
+        novo = "Folga" if curr == "Em Turno" else "Em Turno"
+        
+        cursor.execute("UPDATE hubitat_colaboradores SET status = %s WHERE id = %s;", (novo, colab_id))
+        conn.commit()
+        cursor.close()
+        conn.close()
+        return {"id": colab_id, "status": novo, "message": f"Status alterado para {novo}"}
+    except Exception as e:
+        raise HTTPException(status_code=500, detail=f"Erro ao atualizar status: {e}")
+
+@app.delete("/api/colaboradores/{colab_id}")
+def delete_colaborador(colab_id: str, token: dict = Depends(verify_token)):
+    if not USE_DB:
+        data = load_json_data()
+        data["colaboradores"] = [c for c in data.get("colaboradores", []) if c["id"] != colab_id]
+        save_json_data(data)
+        return {"status": "success", "message": "Colaborador removido com sucesso"}
+
+    try:
+        conn = get_db_connection()
+        cursor = conn.cursor()
+        cursor.execute("DELETE FROM hubitat_colaboradores WHERE id = %s;", (colab_id,))
+        conn.commit()
+        cursor.close()
+        conn.close()
+        return {"status": "success", "message": "Colaborador removido com sucesso"}
+    except Exception as e:
+        raise HTTPException(status_code=500, detail=f"Erro ao remover colaborador: {e}")
 
 
 # Mount static files folder
