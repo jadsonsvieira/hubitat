@@ -505,11 +505,11 @@
                         </button>
 
                         <div class="quick-action-menu glass shadow-lg" id="quickActionMenu">
-                            <a href="#" onclick="event.preventDefault(); openNewOSModal(); toggleQuickActionMenu();">
-                                <i class="fa-solid fa-wrench color-warning"></i>
+                            <a href="#" onclick="event.preventDefault(); openOcrScanner(); toggleQuickActionMenu();">
+                                <i class="fa-solid fa-camera color-primary"></i>
                                 <div>
-                                    <strong>Nova Ordem de Serviço</strong>
-                                    <small>Registrar solicitação ou manutenção</small>
+                                    <strong>OCR Scanner de Encomendas</strong>
+                                    <small>Leitura automática de etiquetas por IA</small>
                                 </div>
                             </a>
                             <a href="#" onclick="event.preventDefault(); switchTab('visitantes'); openVisitanteModal(); toggleQuickActionMenu();">
@@ -519,11 +519,18 @@
                                     <small>Liberar convidado via WhatsApp</small>
                                 </div>
                             </a>
-                            <a href="#" onclick="event.preventDefault(); switchTab('visitantes'); openEncomendaModal(); toggleQuickActionMenu();">
-                                <i class="fa-solid fa-box-archive color-info"></i>
+                            <a href="#" onclick="event.preventDefault(); openAssembleiaModal(); toggleQuickActionMenu();">
+                                <i class="fa-solid fa-check-to-slot color-emerald"></i>
                                 <div>
-                                    <strong>Registrar Encomenda</strong>
-                                    <small>Notificar morador sobre pacote</small>
+                                    <strong>Assembleia & Votação</strong>
+                                    <small>Deliberações oficiais e enquetes</small>
+                                </div>
+                            </a>
+                            <a href="#" onclick="event.preventDefault(); openNewOSModal(); toggleQuickActionMenu();">
+                                <i class="fa-solid fa-wrench color-warning"></i>
+                                <div>
+                                    <strong>Nova Ordem de Serviço</strong>
+                                    <small>Registrar solicitação ou manutenção</small>
                                 </div>
                             </a>
                             <a href="#" onclick="event.preventDefault(); switchTab('reservas'); openReservaModal(); toggleQuickActionMenu();">
@@ -1424,6 +1431,204 @@
                 <span><kbd>↵</kbd> Selecionar</span>
                 <span><kbd>ESC</kbd> Fechar</span>
             </div>
+        </div>
+    </div>
+
+    <!-- MODAL: OCR SCANNER DE ENCOMENDAS (IA EMBARCADA) -->
+    <div class="modal-overlay" id="ocrScannerModal">
+        <div class="modal-card glass shadow-lg" style="max-width: 520px;">
+            <div class="modal-header">
+                <div>
+                    <h3><i class="fa-solid fa-camera color-primary"></i> OCR Inteligente de Encomendas</h3>
+                    <p class="modal-subtitle">Aponte a câmera para a etiqueta da caixa para triagem automática instantânea</p>
+                </div>
+                <button type="button" class="close-btn" onclick="closeOcrScanner()"><i class="fa-solid fa-xmark"></i></button>
+            </div>
+            
+            <div class="ocr-scanner-viewport" id="ocrCameraContainer">
+                <div class="ocr-target-box">
+                    <div class="ocr-laser-beam"></div>
+                    <span class="ocr-guide-text"><i class="fa-solid fa-expand"></i> Enquadre a etiqueta de envio</span>
+                </div>
+                <video id="ocrVideoPreview" autoplay playsinline style="width: 100%; height: 260px; object-fit: cover; border-radius: 12px; display: none;"></video>
+                <div id="ocrFallbackUpload" style="padding: 2.5rem 1rem; text-align: center; background: rgba(0,0,0,0.3); border-radius: 12px;">
+                    <i class="fa-solid fa-cloud-arrow-up color-primary" style="font-size: 2.5rem; margin-bottom: 0.75rem;"></i>
+                    <p style="font-size: 0.9rem; color: #fff; font-weight: 600;">Câmera Kiosk ou Upload da Etiqueta</p>
+                    <p style="font-size: 0.78rem; color: var(--text-muted); margin-bottom: 1rem;">Envie uma foto da etiqueta ou utilize a câmera do dispositivo</p>
+                    <input type="file" id="ocrFileInput" accept="image/*" style="display: none;" onchange="handleOcrFileUpload(event)">
+                    <div style="display: flex; gap: 0.5rem; justify-content: center;">
+                        <button type="button" class="action-btn primary" onclick="document.getElementById('ocrFileInput').click()">
+                            <i class="fa-solid fa-image"></i> Escolher Foto
+                        </button>
+                        <button type="button" class="action-btn secondary" onclick="simulateOcrSample()">
+                            <i class="fa-solid fa-wand-magic-sparkles"></i> Simular Leitura OCR
+                        </button>
+                    </div>
+                </div>
+            </div>
+
+            <!-- OCR Extraction Results Preview -->
+            <div id="ocrResultBox" style="display: none; margin-top: 1.25rem; background: rgba(139, 92, 246, 0.08); border: 1px solid rgba(139, 92, 246, 0.3); border-radius: 12px; padding: 1rem;">
+                <h4 style="font-size: 0.85rem; color: #c084fc; margin-bottom: 0.75rem; display: flex; align-items: center; gap: 0.4rem;">
+                    <i class="fa-solid fa-circle-check"></i> Dados Extraídos com Sucesso pela Frame IA
+                </h4>
+                <div class="form-group-row" style="margin-bottom: 0.5rem;">
+                    <div class="form-group">
+                        <label style="font-size: 0.72rem;">Destinatário</label>
+                        <input type="text" id="ocrDestinatario" class="readonly-input">
+                    </div>
+                    <div class="form-group">
+                        <label style="font-size: 0.72rem;">Unidade / Casa</label>
+                        <input type="text" id="ocrUnidade" class="readonly-input">
+                    </div>
+                </div>
+                <div class="form-group-row">
+                    <div class="form-group">
+                        <label style="font-size: 0.72rem;">Transportadora</label>
+                        <input type="text" id="ocrTransportadora" class="readonly-input">
+                    </div>
+                    <div class="form-group">
+                        <label style="font-size: 0.72rem;">Código de Rastreio</label>
+                        <input type="text" id="ocrCodigoRastreio" class="readonly-input">
+                    </div>
+                </div>
+                <button type="button" class="action-btn success wide margin-top-sm" onclick="confirmOcrPackageRegistration()">
+                    <i class="fa-solid fa-bell"></i> Confirmar & Notificar Morador via WhatsApp
+                </button>
+            </div>
+        </div>
+    </div>
+
+    <!-- MODAL: PAGAMENTO PIX INSTANTÂNEO (MERCADO PAGO / PIX BACEN) -->
+    <div class="modal-overlay" id="pixPaymentModal">
+        <div class="modal-card glass shadow-lg text-center" style="max-width: 460px;">
+            <div class="modal-header justify-center">
+                <h3><i class="fa-brands fa-pix color-emerald"></i> Pagamento Pix Instantâneo</h3>
+                <button type="button" class="close-btn" onclick="closeModal('pixPaymentModal')"><i class="fa-solid fa-xmark"></i></button>
+            </div>
+            <div style="padding: 1.25rem 1rem;">
+                <div style="background: rgba(16, 185, 129, 0.08); border: 1px solid rgba(16, 185, 129, 0.3); border-radius: 12px; padding: 1rem; margin-bottom: 1.25rem;">
+                    <span style="font-size: 0.78rem; color: #a1a1aa; text-transform: uppercase;">Taxa de Reserva de Espaço</span>
+                    <h3 id="pixValorDisplay" style="font-size: 1.8rem; color: #10b981; margin: 0.25rem 0;">R$ 150,00</h3>
+                    <span id="pixEspacoDisplay" style="font-size: 0.82rem; color: #fff;">Deck & Churrasqueira Gourmet</span>
+                </div>
+
+                <!-- QR Code Box -->
+                <div style="background: #fff; padding: 1rem; border-radius: 12px; display: inline-block; margin-bottom: 1rem; box-shadow: 0 4px 20px rgba(0,0,0,0.5);">
+                    <img id="pixQrCodeImg" src="" alt="QR Code Pix" style="width: 180px; height: 180px; display: block;">
+                </div>
+                <p style="font-size: 0.75rem; color: var(--text-muted); margin-bottom: 0.75rem;">Aponte o app do seu banco ou copie a chave abaixo:</p>
+
+                <div class="form-group text-left" style="margin-bottom: 1rem;">
+                    <input type="text" id="pixCopiaColaInput" readonly class="readonly-input" style="font-family: monospace; font-size: 0.75rem; text-align: center;">
+                </div>
+
+                <div style="display: flex; gap: 0.5rem; flex-direction: column;">
+                    <button type="button" class="action-btn success wide" onclick="copyPixCopiaCola()">
+                        <i class="fa-solid fa-copy"></i> Copiar Código PIX
+                    </button>
+                    <button type="button" class="action-btn primary wide" onclick="simularConfirmacaoPix()">
+                        <i class="fa-solid fa-circle-check"></i> Simular Confirmação Bancária Instantânea
+                    </button>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- MODAL: PASSE EXPRESS QR CODE PARA CONVIDADOS -->
+    <div class="modal-overlay" id="guestQrModal">
+        <div class="modal-card glass shadow-lg text-center" style="max-width: 440px;">
+            <div class="modal-header justify-center">
+                <h3><i class="fa-solid fa-qrcode color-primary"></i> Passe Digital de Acesso</h3>
+                <button type="button" class="close-btn" onclick="closeModal('guestQrModal')"><i class="fa-solid fa-xmark"></i></button>
+            </div>
+            <div style="padding: 1.25rem 1rem;">
+                <div style="background: #fff; padding: 1rem; border-radius: 16px; display: inline-block; margin-bottom: 1rem; box-shadow: 0 4px 20px rgba(0,0,0,0.5);">
+                    <img id="guestQrCodeImg" src="" alt="QR Code Convidado" style="width: 200px; height: 200px; display: block;">
+                </div>
+                <h4 id="guestQrNameDisplay" style="color: #fff; font-size: 1.1rem; margin-bottom: 0.25rem;">Visitante</h4>
+                <p id="guestQrUnitDisplay" style="color: #c084fc; font-size: 0.85rem; font-weight: 600; margin-bottom: 0.5rem;">Unidade Casa 42</p>
+                <p style="color: var(--text-muted); font-size: 0.78rem; margin-bottom: 1.25rem;">Válido para entrada única na eclusa / portaria de visitantes.</p>
+
+                <div style="display: flex; gap: 0.75rem;">
+                    <a id="guestWhatsAppShareBtn" href="#" target="_blank" class="action-btn success wide" style="text-decoration: none;">
+                        <i class="fa-brands fa-whatsapp"></i> Compartilhar no WhatsApp
+                    </a>
+                    <button type="button" class="btn-secondary" onclick="closeModal('guestQrModal')">Fechar</button>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- MODAL: ASSEMBLEIA VIRTUAL - DETALHES E VOTAÇÃO -->
+    <div class="modal-overlay" id="assembleiaVotarModal">
+        <div class="modal-card glass shadow-lg" style="max-width: 500px;">
+            <div class="modal-header">
+                <div>
+                    <h3><i class="fa-solid fa-check-to-slot color-primary"></i> Assembleia Digital • Votação</h3>
+                    <p class="modal-subtitle">Deliberação oficial auditada com validade jurídica</p>
+                </div>
+                <button type="button" class="close-btn" onclick="closeModal('assembleiaVotarModal')"><i class="fa-solid fa-xmark"></i></button>
+            </div>
+            <div style="padding: 1.25rem 0.5rem;">
+                <input type="hidden" id="assembleiaEnqueteId">
+                <h4 id="assembleiaTitulo" style="color: #fff; font-size: 1.05rem; margin-bottom: 0.5rem;">Título da Pauta</h4>
+                <p id="assembleiaDescricao" style="color: var(--text-muted); font-size: 0.85rem; line-height: 1.5; margin-bottom: 1.25rem;">Descrição da proposta.</p>
+
+                <div class="voting-options-grid" style="display: grid; grid-template-columns: 1fr 1fr 1fr; gap: 0.5rem; margin-bottom: 1.5rem;">
+                    <button type="button" class="action-btn success" onclick="enviarVotoAssembleia('favor')" style="padding: 0.75rem 0.25rem; font-size: 0.82rem;">
+                        <i class="fa-solid fa-thumbs-up"></i> A Favor
+                    </button>
+                    <button type="button" class="action-btn danger" onclick="enviarVotoAssembleia('contra')" style="padding: 0.75rem 0.25rem; font-size: 0.82rem;">
+                        <i class="fa-solid fa-thumbs-down"></i> Contra
+                    </button>
+                    <button type="button" class="action-btn secondary" onclick="enviarVotoAssembleia('abstencao')" style="padding: 0.75rem 0.25rem; font-size: 0.82rem;">
+                        <i class="fa-solid fa-hand"></i> Abstenção
+                    </button>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- COPILOT IA FLOATING CONCIERGE 24/7 (DRAWER & BUTTON) -->
+    <div class="copilot-floating-trigger" id="copilotFloatingBtn" onclick="toggleCopilotDrawer()" title="Abrir Concierge Virtual Hubitat IA 24/7">
+        <i class="fa-solid fa-wand-magic-sparkles"></i>
+        <span>Copilot IA</span>
+    </div>
+
+    <div class="copilot-drawer" id="copilotDrawer">
+        <div class="copilot-drawer-header">
+            <div class="copilot-avatar-badge">
+                <i class="fa-solid fa-brain"></i>
+            </div>
+            <div>
+                <h4>Hubitat Copilot IA</h4>
+                <span class="online-indicator"><span class="pulse-dot"></span> Concierge 24/7 Ativo</span>
+            </div>
+            <button type="button" class="close-btn" onclick="toggleCopilotDrawer()" style="margin-left: auto;"><i class="fa-solid fa-xmark"></i></button>
+        </div>
+
+        <div class="copilot-chat-messages" id="copilotChatMessages">
+            <div class="copilot-msg bot">
+                <div class="msg-bubble">
+                    Olá! Sou o <strong>Hubitat Copilot IA</strong>, seu concierge autônomo e assistente de gestão condominial.<br><br>
+                    Como posso ajudar você hoje no condomínio?
+                </div>
+            </div>
+        </div>
+
+        <!-- Copilot Quick Prompt Chips -->
+        <div class="copilot-quick-chips">
+            <button type="button" class="quick-chip" onclick="sendCopilotQuickPrompt('Quais os horários de silêncio e limites de som?')">📜 Horários de Silêncio</button>
+            <button type="button" class="quick-chip" onclick="sendCopilotQuickPrompt('Elaborar comunicado sobre manutenção preventiva')">📢 Minuta de Comunicado</button>
+            <button type="button" class="quick-chip" onclick="sendCopilotQuickPrompt('Resumo semanal de ordens de serviço e portaria')">📊 Resumo Semanal</button>
+        </div>
+
+        <div class="copilot-chat-input-bar">
+            <input type="text" id="copilotChatInput" placeholder="Faça uma pergunta ou solicite uma minuta..." onkeypress="if(event.key === 'Enter') sendCopilotMessage()">
+            <button type="button" class="action-btn primary icon-only" onclick="sendCopilotMessage()" title="Enviar mensagem">
+                <i class="fa-solid fa-paper-plane"></i>
+            </button>
         </div>
     </div>
 
