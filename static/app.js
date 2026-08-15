@@ -783,15 +783,29 @@ function switchTab(tabName) {
     // Update page titles
     const titles = {
         dashboard: { title: 'Dashboard Geral', subtitle: 'Visão executiva em tempo real e status operacional do condomínio' },
-        os: { title: 'Ordens de Serviço', subtitle: 'Gestão preventiva, corretiva e acompanhamento de prestadores' },
+        comunicacao: { title: 'Comunicação & Mural', subtitle: 'Mural de avisos oficiais, comunicados e livro de ocorrências' },
+        visitantes: { title: 'Portaria & Controle de Acesso', subtitle: 'Gestão da portaria, QR Codes de visitantes e entregas express' },
+        financeiro: { title: 'Gestão Operacional & Financeira', subtitle: 'Prestação de contas, balancetes, manutenção e assembleias' },
+        os: { title: 'Ordens de Serviço (O.S.)', subtitle: 'Gestão preventiva, corretiva e acompanhamento de prestadores' },
         reservas: { title: 'Reservas & Espaços', subtitle: 'Agendamento de áreas comuns, churrasqueiras e quadras esportivas' },
-        visitantes: { title: 'Controle de Acesso', subtitle: 'Gestão da portaria, QR Codes de visitantes e entregas express' },
         copilot: { title: 'Frame IA Copilot', subtitle: 'Inteligência Artificial especialista em regulamentos e operações condominiais' }
     };
 
     if (titles[tabName]) {
-        document.getElementById('pageTitle').textContent = titles[tabName].title;
-        document.getElementById('pageSubtitle').textContent = titles[tabName].subtitle;
+        const titleEl = document.getElementById('pageTitle');
+        const subEl = document.getElementById('pageSubtitle');
+        if (titleEl) titleEl.textContent = titles[tabName].title;
+        if (subEl) subEl.textContent = titles[tabName].subtitle;
+    }
+
+    // Scroll to top of main content
+    const mainContent = document.querySelector('.main-content');
+    if (mainContent) mainContent.scrollTop = 0;
+
+    // Mobile Sidebar auto close
+    const sidebar = document.querySelector('.sidebar');
+    if (sidebar && window.innerWidth <= 1024) {
+        sidebar.classList.remove('open');
     }
 }
 
@@ -1149,12 +1163,31 @@ function updateCounters() {
     const resCount = document.getElementById('metricReservasCount');
     const visCount = document.getElementById('metricVisitantesCount');
     const osBadge = document.getElementById('osBadgeCount');
+    const comBadge = document.getElementById('comunicadoBadgeCount');
+    const encBadge = document.getElementById('encomendasBadgeCount');
 
+    const totalOS = state.ordensServico.length;
     const openOS = state.ordensServico.filter(o => o.status !== 'Concluída').length;
+    const andamentoOS = state.ordensServico.filter(o => o.status === 'Em Andamento').length;
+    const pendentesOS = state.ordensServico.filter(o => o.status === 'Pendente').length;
+    const concluidasOS = state.ordensServico.filter(o => o.status === 'Concluída').length;
+
     if (osCount) osCount.textContent = openOS;
     if (osBadge) osBadge.textContent = openOS;
-    if (resCount) resCount.textContent = state.reservas.length + 5;
-    if (visCount) visCount.textContent = state.visitantes.length + 12;
+    if (resCount) resCount.textContent = state.reservas.length;
+    if (visCount) visCount.textContent = state.visitantes.length;
+    if (comBadge) comBadge.textContent = state.comunicados.length || 2;
+    if (encBadge) encBadge.textContent = state.encomendas.filter(e => e.status !== 'Entregue ao Morador').length || 1;
+
+    const osTotalEl = document.getElementById('osTotalCount');
+    const osAndamentoEl = document.getElementById('osAndamentoCount');
+    const osPendentesEl = document.getElementById('osPendentesCount');
+    const osConcluidasEl = document.getElementById('osConcluidasCount');
+
+    if (osTotalEl) osTotalEl.textContent = totalOS;
+    if (osAndamentoEl) osAndamentoEl.textContent = andamentoOS;
+    if (osPendentesEl) osPendentesEl.textContent = pendentesOS;
+    if (osConcluidasEl) osConcluidasEl.textContent = concluidasOS;
 }
 
 // MODAL UTILS

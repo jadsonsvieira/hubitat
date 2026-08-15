@@ -923,9 +923,206 @@
                         </div>
                     </div>
                 </div>
+
+                <!-- Assembleias & Deliberações Digitais (Pilar 4) -->
+                <div class="card glass shadow-sm margin-top-lg">
+                    <div class="card-header">
+                        <div>
+                            <h3><i class="fa-solid fa-check-to-slot color-emerald"></i> Assembleias & Votações Virtuais</h3>
+                            <p class="card-subtitle">Deliberações oficiais auditadas com quórum em tempo real</p>
+                        </div>
+                        <button class="action-btn success sm" onclick="openAssembleiaModal()">
+                            <i class="fa-solid fa-vote-yea"></i> Votar na Pauta Vigente
+                        </button>
+                    </div>
+                    <div class="dashboard-grid">
+                        <div style="background: rgba(255,255,255,0.02); border: 1px solid var(--border-color); border-radius: var(--radius-lg); padding: 1.25rem;">
+                            <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 0.75rem;">
+                                <span class="badge badge-info">Pauta em Votação</span>
+                                <span style="font-size: 0.75rem; color: var(--text-muted);"><i class="fa-solid fa-clock"></i> Encerra em 3 dias</span>
+                            </div>
+                            <h4 style="color: #fff; font-size: 1rem; margin-bottom: 0.5rem;">Instalação de Carregadores para Carros Elétricos</h4>
+                            <p style="font-size: 0.82rem; color: var(--text-muted); line-height: 1.5; margin-bottom: 1rem;">
+                                Implantação de 4 pontos de recarga inteligente tipo 2 no estacionamento de visitantes com medição individualizada.
+                            </p>
+                            <div style="margin-bottom: 1rem;">
+                                <div style="display: flex; justify-content: space-between; font-size: 0.78rem; margin-bottom: 0.25rem;">
+                                    <span style="color: var(--success); font-weight: 600;">88% A Favor (42 votos)</span>
+                                    <span style="color: var(--danger); font-weight: 600;">12% Contra (6 votos)</span>
+                                </div>
+                                <div style="height: 8px; background: rgba(239, 68, 68, 0.4); border-radius: 10px; overflow: hidden;">
+                                    <div style="height: 100%; width: 88%; background: #10b981; border-radius: 10px;"></div>
+                                </div>
+                            </div>
+                            <button type="button" class="action-btn emerald wide" onclick="openAssembleiaModal()">
+                                <i class="fa-solid fa-check-to-slot"></i> Participar da Votação Digital
+                            </button>
+                        </div>
+                        <div style="background: rgba(255,255,255,0.02); border: 1px solid var(--border-color); border-radius: var(--radius-lg); padding: 1.25rem;">
+                            <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 0.75rem;">
+                                <span class="badge badge-success">Aprovada & Concluída</span>
+                                <span style="font-size: 0.75rem; color: var(--text-muted);">Ata Registrada</span>
+                            </div>
+                            <h4 style="color: #fff; font-size: 1rem; margin-bottom: 0.5rem;">Ampliação do Horário da Academia aos Domingos</h4>
+                            <p style="font-size: 0.82rem; color: var(--text-muted); line-height: 1.5; margin-bottom: 1rem;">
+                                Horário estendido até as 22:00h com controle automático de biometria e ar condicionado inteligente.
+                            </p>
+                            <div style="margin-bottom: 1rem;">
+                                <div style="display: flex; justify-content: space-between; font-size: 0.78rem; margin-bottom: 0.25rem;">
+                                    <span style="color: var(--success); font-weight: 600;">86.6% A Favor (78 votos)</span>
+                                    <span style="color: var(--danger); font-weight: 600;">13.4% Contra (12 votos)</span>
+                                </div>
+                                <div style="height: 8px; background: rgba(239, 68, 68, 0.4); border-radius: 10px; overflow: hidden;">
+                                    <div style="height: 100%; width: 86.6%; background: #10b981; border-radius: 10px;"></div>
+                                </div>
+                            </div>
+                            <span style="font-size: 0.75rem; color: #10b981; display: inline-flex; align-items: center; gap: 0.35rem;">
+                                <i class="fa-solid fa-circle-check"></i> Quórum atingido e ata anexada ao balancete.
+                            </span>
+                        </div>
+                    </div>
+                </div>
             </section>
 
-            <!-- TAB 5: FRAME IA COPILOT -->
+            <!-- TAB 5: ORDENS DE SERVIÇO (O.S.) -->
+            <section class="tab-content" id="tab-os">
+                <!-- OS Metrics Header -->
+                <div class="metrics-grid">
+                    <div class="metric-card glass">
+                        <div class="metric-header">
+                            <span class="metric-title">Total de O.S. Registradas</span>
+                            <div class="metric-icon primary"><i class="fa-solid fa-wrench"></i></div>
+                        </div>
+                        <div class="metric-value" id="osTotalCount">8</div>
+                        <div class="metric-footer">
+                            <span class="trend positive"><i class="fa-solid fa-shield-halved"></i> 100% Auditadas</span>
+                            <span class="subtext">Preventivas & Corretivas</span>
+                        </div>
+                    </div>
+                    <div class="metric-card glass">
+                        <div class="metric-header">
+                            <span class="metric-title">Em Andamento</span>
+                            <div class="metric-icon warning"><i class="fa-solid fa-hourglass-half"></i></div>
+                        </div>
+                        <div class="metric-value" id="osAndamentoCount">2</div>
+                        <div class="metric-footer">
+                            <span class="trend neutral">Equipes terceirizadas em campo</span>
+                            <span class="subtext">Revisão Elétrica & Gerador</span>
+                        </div>
+                    </div>
+                    <div class="metric-card glass">
+                        <div class="metric-header">
+                            <span class="metric-title">Pendentes / Triagem</span>
+                            <div class="metric-icon warning"><i class="fa-solid fa-triangle-exclamation"></i></div>
+                        </div>
+                        <div class="metric-value" id="osPendentesCount">1</div>
+                        <div class="metric-footer">
+                            <span class="trend negative">Aguardando orçamento</span>
+                            <span class="subtext">Quadra de Areia</span>
+                        </div>
+                    </div>
+                    <div class="metric-card glass">
+                        <div class="metric-header">
+                            <span class="metric-title">Resolvidas no Mês</span>
+                            <div class="metric-icon success"><i class="fa-solid fa-circle-check"></i></div>
+                        </div>
+                        <div class="metric-value" id="osConcluidasCount">5</div>
+                        <div class="metric-footer">
+                            <span class="trend positive"><i class="fa-solid fa-arrow-up"></i> 92% SLA cumprido</span>
+                            <span class="subtext">Tempo médio: 4.2h</span>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- OS Table Card with Filters and Search -->
+                <div class="card glass shadow-sm">
+                    <div class="tab-header-actions" style="display: flex; flex-wrap: wrap; gap: 1rem; align-items: center; justify-content: space-between; margin-bottom: 1.5rem;">
+                        <div>
+                            <h3><i class="fa-solid fa-list-check color-warning"></i> Painel de Ordens de Serviço</h3>
+                            <p class="card-subtitle">Acompanhamento e alteração de status operacional das instalações</p>
+                        </div>
+                        <div style="display: flex; gap: 0.75rem; align-items: center; flex-wrap: wrap;">
+                            <div class="filter-group">
+                                <button type="button" class="filter-btn active" data-filter="all">Todas</button>
+                                <button type="button" class="filter-btn" data-filter="pendente">Pendentes</button>
+                                <button type="button" class="filter-btn" data-filter="andamento">Em Andamento</button>
+                                <button type="button" class="filter-btn" data-filter="concluida">Concluídas</button>
+                            </div>
+                            <button type="button" class="action-btn primary" onclick="openNewOSModal()">
+                                <i class="fa-solid fa-plus"></i> Nova Ordem de Serviço
+                            </button>
+                        </div>
+                    </div>
+
+                    <div class="table-container">
+                        <table class="data-table">
+                            <thead>
+                                <tr>
+                                    <th>Código & Título</th>
+                                    <th>Local / Setor</th>
+                                    <th>Categoria</th>
+                                    <th>Prioridade</th>
+                                    <th>Status</th>
+                                    <th>Abertura</th>
+                                    <th>Ações</th>
+                                </tr>
+                            </thead>
+                            <tbody id="osTableBody">
+                                <!-- Injected by JS -->
+                            </tbody>
+                        </table>
+                    </div>
+                </div>
+            </section>
+
+            <!-- TAB 6: RESERVAS & ESPAÇOS DE LAZER -->
+            <section class="tab-content" id="tab-reservas">
+                <!-- Spaces Showcase Grid -->
+                <div class="card glass shadow-sm" style="margin-bottom: 2rem;">
+                    <div class="card-header">
+                        <div>
+                            <h3><i class="fa-solid fa-umbrella-beach color-primary"></i> Espaços & Áreas Comuns Disponíveis</h3>
+                            <p class="card-subtitle">Reserve áreas de lazer com quitação instantânea via Pix e bloqueio de datas</p>
+                        </div>
+                        <button class="action-btn emerald sm" onclick="openReservaModal('deck-gourmet', 'Deck & Churrasqueira Gourmet')">
+                            <i class="fa-solid fa-plus"></i> Agendar Espaço
+                        </button>
+                    </div>
+                    <div class="spaces-grid" id="spacesGrid">
+                        <!-- Injected by JS -->
+                    </div>
+                </div>
+
+                <!-- Schedule & History Table -->
+                <div class="card glass shadow-sm">
+                    <div class="card-header">
+                        <div>
+                            <h3><i class="fa-solid fa-calendar-check color-success"></i> Reservas Confirmadas & Histórico</h3>
+                            <p class="card-subtitle">Visualização de agendamentos futuros e gestão de cancelamentos</p>
+                        </div>
+                    </div>
+                    <div class="table-container">
+                        <table class="data-table">
+                            <thead>
+                                <tr>
+                                    <th>Espaço Reservado</th>
+                                    <th>Morador & Unidade</th>
+                                    <th>Data & Turno</th>
+                                    <th>Capacidade</th>
+                                    <th>Taxa de Uso</th>
+                                    <th>Status</th>
+                                    <th>Ações</th>
+                                </tr>
+                            </thead>
+                            <tbody id="reservasTableBody">
+                                <!-- Injected by JS -->
+                            </tbody>
+                        </table>
+                    </div>
+                </div>
+            </section>
+
+            <!-- TAB 7: FRAME IA COPILOT -->
             <section class="tab-content" id="tab-copilot">
                 <div class="copilot-container glass shadow-sm">
                     <div class="copilot-sidebar">
