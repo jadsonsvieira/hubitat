@@ -360,29 +360,49 @@
             </div>
         </section>
 
-        <!-- Modern Footer -->
+        <!-- Modern Luxury Footer -->
         <footer class="landing-footer glass">
             <div class="footer-container">
                 <div class="footer-brand">
                     <img src="logo.png" alt="Hubitat by Frame [IA]" class="footer-logo">
-                    <p>Hubitat by Frame [IA] • A Plataforma de Gestão Condominial que une Inteligência Artificial e Alta Performance.</p>
+                    <p class="footer-desc">Hubitat by Frame [IA] • A Plataforma Autônoma de Gestão Condominial com Inteligência Artificial Nativa e Alta Performance.</p>
+                    <div class="footer-badge-region">
+                        <i class="fa-solid fa-map-location-dot"></i>
+                        <span>Polo Eusébio & Fortaleza / CE</span>
+                    </div>
                 </div>
                 <div class="footer-links-col">
-                    <h4>Navegação</h4>
-                    <a href="#recursos">4 Pilares</a>
-                    <a href="#demo">Demonstração</a>
-                    <a href="#copilot">Copilot IA</a>
-                    <a href="#planos">Planos</a>
+                    <h4>Módulos & Recursos</h4>
+                    <a href="#recursos"><i class="fa-solid fa-shield-halved"></i> Portaria & Acesso Express</a>
+                    <a href="#demo"><i class="fa-solid fa-camera"></i> Leitor OCR Inteligente</a>
+                    <a href="#copilot"><i class="fa-solid fa-wand-magic-sparkles"></i> Frame IA Copilot 24/7</a>
+                    <a href="#recursos"><i class="fa-solid fa-check-to-slot"></i> Assembleias Digitais</a>
+                    <a href="#planos"><i class="fa-solid fa-coins"></i> Gestão Financeira & Pix</a>
                 </div>
                 <div class="footer-links-col">
-                    <h4>Região</h4>
-                    <span>Eusébio / CE</span>
-                    <span>Fortaleza / CE</span>
-                    <span>Suporte VIP 24/7</span>
+                    <h4>Segurança & Nuvem</h4>
+                    <span class="footer-info-item"><i class="fa-solid fa-lock color-primary"></i> Criptografia TLS & JWT</span>
+                    <span class="footer-info-item"><i class="fa-solid fa-database color-emerald"></i> MySQL Hostinger Dedicado</span>
+                    <span class="footer-info-item"><i class="fa-solid fa-cloud-arrow-up color-info"></i> Backup Diário Automatizado</span>
+                    <span class="footer-info-item"><i class="fa-solid fa-shield-check color-warning"></i> 100% LGPD Compliance</span>
+                </div>
+                <div class="footer-links-col">
+                    <h4>Suporte & Contato</h4>
+                    <span class="footer-info-item"><i class="fa-solid fa-headset color-primary"></i> Suporte VIP Síndicos 24/7</span>
+                    <span class="footer-info-item"><i class="fa-brands fa-whatsapp color-emerald"></i> Plantão: (85) 99800-0000</span>
+                    <span class="footer-info-item"><i class="fa-solid fa-envelope color-info"></i> contato@frameia.com.br</span>
+                    <a href="#" onclick="event.preventDefault(); openAuthModal('login');" class="footer-login-btn"><i class="fa-solid fa-arrow-right-to-bracket"></i> Acessar Painel do Condomínio</a>
                 </div>
             </div>
-            <div class="footer-bottom text-center">
-                <p>© 2026 Hubitat by Frame [IA] • Todos os direitos reservados.</p>
+            <div class="footer-bottom">
+                <div class="footer-bottom-inner">
+                    <p>© 2026 Hubitat by Frame [IA] • Todos os direitos reservados.</p>
+                    <div class="footer-legal-links">
+                        <a href="#">Termos de Uso</a>
+                        <a href="#">Privacidade & LGPD</a>
+                        <a href="#">Segurança da Informação</a>
+                    </div>
+                </div>
             </div>
         </footer>
     </div>
@@ -446,6 +466,10 @@
                     <i class="fa-solid fa-users-gear"></i>
                     <span>Colaboradores & Equipe</span>
                     <span class="badge badge-success" id="colaboradoresBadgeCount">6</span>
+                </a>
+                <a href="#" class="nav-item" data-tab="configuracoes">
+                    <i class="fa-solid fa-sliders"></i>
+                    <span>Configurações & Dados</span>
                 </a>
             </nav>
 
@@ -1257,7 +1281,269 @@
                     </div>
                 </div>
             </section>
+
+            <!-- TAB 9: CONFIGURAÇÕES DO CONDOMÍNIO & CADASTROS -->
+            <section class="tab-content" id="tab-configuracoes">
+                <!-- Condominio Overview Banner -->
+                <div class="card glass shadow-sm" style="margin-bottom: 1.5rem; background: linear-gradient(135deg, rgba(139, 92, 246, 0.1), rgba(16, 185, 129, 0.08)); border-color: rgba(139, 92, 246, 0.3);">
+                    <div style="display: flex; flex-wrap: wrap; justify-content: space-between; align-items: center; gap: 1.25rem;">
+                        <div style="display: flex; align-items: center; gap: 1.25rem;">
+                            <div style="width: 56px; height: 56px; border-radius: 16px; background: rgba(139, 92, 246, 0.2); border: 2px solid rgba(139, 92, 246, 0.4); display: flex; align-items: center; justify-content: center; font-size: 1.6rem; color: #c084fc;">
+                                <i class="fa-solid fa-building-flag"></i>
+                            </div>
+                            <div>
+                                <h3 id="cfgHeaderCondoName" style="font-size: 1.25rem; color: #fff; margin-bottom: 0.2rem;">Alphaville Eusébio Residencial 1</h3>
+                                <p style="color: var(--text-muted); font-size: 0.85rem;" id="cfgHeaderCondoMeta">CNPJ: 14.892.401/0001-90 • Eusébio / CE • Gestão Vigente: 2025 - 2027</p>
+                            </div>
+                        </div>
+                        <div style="display: flex; gap: 0.75rem; align-items: center;">
+                            <span class="badge badge-success" style="padding: 0.5rem 0.9rem; font-size: 0.82rem;"><i class="fa-solid fa-circle-check"></i> Condomínio Ativo</span>
+                            <button type="button" class="action-btn primary" onclick="saveCondominioConfigForm(event)">
+                                <i class="fa-solid fa-floppy-disk"></i> Salvar Todas as Configurações
+                            </button>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Grid de Formulários de Configuração -->
+                <div class="dashboard-grid" style="margin-bottom: 1.5rem;">
+                    <!-- Card 1: Dados Cadastrais -->
+                    <div class="card glass shadow-sm">
+                        <div class="card-header">
+                            <h3><i class="fa-solid fa-id-card-clip color-primary"></i> Dados Oficiais do Condomínio</h3>
+                            <p class="card-subtitle">Informações cadastrais e endereço da administração</p>
+                        </div>
+                        <form id="condoCadastraisForm">
+                            <div class="form-group">
+                                <label><i class="fa-solid fa-building color-primary"></i> Nome Oficial do Condomínio</label>
+                                <input type="text" id="cfgNome" value="Alphaville Eusébio Residencial 1" required>
+                            </div>
+                            <div class="form-group-row">
+                                <div class="form-group">
+                                    <label><i class="fa-solid fa-file-invoice color-primary"></i> CNPJ</label>
+                                    <input type="text" id="cfgCnpj" value="14.892.401/0001-90">
+                                </div>
+                                <div class="form-group">
+                                    <label><i class="fa-solid fa-door-open color-primary"></i> Total de Unidades / Lotes</label>
+                                    <input type="number" id="cfgTotalUnidades" value="250">
+                                </div>
+                            </div>
+                            <div class="form-group">
+                                <label><i class="fa-solid fa-location-dot color-primary"></i> Endereço Completo</label>
+                                <input type="text" id="cfgEndereco" value="Av. Eusébio de Queiroz, 1200">
+                            </div>
+                            <div class="form-group-row">
+                                <div class="form-group">
+                                    <label><i class="fa-solid fa-city color-primary"></i> Cidade / UF</label>
+                                    <input type="text" id="cfgCidade" value="Eusébio / CE">
+                                </div>
+                                <div class="form-group">
+                                    <label><i class="fa-solid fa-map-pin color-primary"></i> CEP</label>
+                                    <input type="text" id="cfgCep" value="61760-000">
+                                </div>
+                            </div>
+                            <div class="form-group-row">
+                                <div class="form-group">
+                                    <label><i class="fa-solid fa-user-tie color-primary"></i> Síndico Responsável</label>
+                                    <input type="text" id="cfgSindico" value="Dra. Juliana Costa">
+                                </div>
+                                <div class="form-group">
+                                    <label><i class="fa-solid fa-calendar-days color-primary"></i> Período do Mandato</label>
+                                    <input type="text" id="cfgMandato" value="2025 - 2027">
+                                </div>
+                            </div>
+                            <div class="form-group-row">
+                                <div class="form-group">
+                                    <label><i class="fa-solid fa-envelope color-primary"></i> E-mail da Administração</label>
+                                    <input type="email" id="cfgEmailAdmin" value="administracao@alphavilleeusebio.com.br">
+                                </div>
+                                <div class="form-group">
+                                    <label><i class="fa-solid fa-phone color-primary"></i> Telefone / Portaria</label>
+                                    <input type="text" id="cfgTelefoneAdmin" value="(85) 3260-8800">
+                                </div>
+                            </div>
+                        </form>
+                    </div>
+
+                    <!-- Card 2: Regras de Convivência & Taxas -->
+                    <div class="card glass shadow-sm">
+                        <div class="card-header">
+                            <h3><i class="fa-solid fa-scale-balanced color-emerald"></i> Regras & Parâmetros Operacionais</h3>
+                            <p class="card-subtitle">Regulamento interno, horários e valores de taxas</p>
+                        </div>
+                        <form id="condoRegrasForm">
+                            <div class="form-group-row">
+                                <div class="form-group">
+                                    <label><i class="fa-solid fa-moon color-emerald"></i> Início Lei do Silêncio</label>
+                                    <input type="time" id="cfgSilencioInicio" value="22:00">
+                                </div>
+                                <div class="form-group">
+                                    <label><i class="fa-solid fa-sun color-emerald"></i> Fim Lei do Silêncio</label>
+                                    <input type="time" id="cfgSilencioFim" value="08:00">
+                                </div>
+                            </div>
+                            <div class="form-group-row">
+                                <div class="form-group">
+                                    <label><i class="fa-solid fa-money-bill-wave color-emerald"></i> Taxa Condominial Padrão</label>
+                                    <input type="text" id="cfgTaxaCondominial" value="R$ 580,00">
+                                </div>
+                                <div class="form-group">
+                                    <label><i class="fa-solid fa-calendar-check color-emerald"></i> Dia de Vencimento</label>
+                                    <input type="number" id="cfgDiaVencimento" min="1" max="31" value="10">
+                                </div>
+                            </div>
+                            <div class="form-group-row">
+                                <div class="form-group">
+                                    <label><i class="fa-brands fa-pix color-emerald"></i> Chave Pix Oficial</label>
+                                    <input type="text" id="cfgChavePix" value="14.892.401/0001-90">
+                                </div>
+                                <div class="form-group">
+                                    <label><i class="fa-solid fa-users color-emerald"></i> Limite de Convidados</label>
+                                    <input type="number" id="cfgLimiteVisitantes" value="10">
+                                </div>
+                            </div>
+                            <div class="form-group">
+                                <label><i class="fa-solid fa-helmet-safety color-emerald"></i> Horários Permitidos para Obras e Reformas</label>
+                                <input type="text" id="cfgHorarioObras" value="Seg a Sex: 08h às 17h | Sáb: 08h às 12h">
+                            </div>
+                            <div class="form-group">
+                                <label><i class="fa-solid fa-truck-moving color-emerald"></i> Regras e Agendamento de Mudanças</label>
+                                <input type="text" id="cfgRegrasMudancas" value="Seg a Sex: 08h às 17h (Agendamento prévio com 48h de antecedência)">
+                            </div>
+                        </form>
+                    </div>
+                </div>
+
+                <!-- Card 3: Tabela de Gestão de Moradores & Unidades -->
+                <div class="card glass shadow-sm" style="margin-bottom: 1.5rem;">
+                    <div class="tab-header-actions" style="display: flex; flex-wrap: wrap; gap: 1rem; align-items: center; justify-content: space-between; margin-bottom: 1.5rem;">
+                        <div>
+                            <h3><i class="fa-solid fa-house-chimney-user color-info"></i> Cadastro de Moradores & Unidades</h3>
+                            <p class="card-subtitle">Controle de moradores, proprietários, inquilinos e veículos cadastrados</p>
+                        </div>
+                        <div style="display: flex; gap: 0.75rem; align-items: center; flex-wrap: wrap;">
+                            <input type="text" id="moradorSearchInput" placeholder="Buscar por morador, casa ou CPF..." style="padding: 0.55rem 0.95rem; background: #09090b; border: 1px solid rgba(255,255,255,0.12); border-radius: 10px; color: #fff; font-size: 0.82rem; min-width: 240px;" oninput="filterMoradoresTable(this.value)">
+                            <button type="button" class="action-btn info" onclick="openMoradorModal()">
+                                <i class="fa-solid fa-user-plus"></i> Cadastrar Morador
+                            </button>
+                        </div>
+                    </div>
+
+                    <div class="table-container">
+                        <table class="data-table">
+                            <thead>
+                                <tr>
+                                    <th>Morador / Responsável</th>
+                                    <th>Unidade Residencial</th>
+                                    <th>CPF / Documento</th>
+                                    <th>WhatsApp / Contato</th>
+                                    <th>Perfil / Vínculo</th>
+                                    <th>Veículo Cadastrado</th>
+                                    <th>Status</th>
+                                    <th>Ações</th>
+                                </tr>
+                            </thead>
+                            <tbody id="moradoresTableBody">
+                                <!-- Injected via JS -->
+                            </tbody>
+                        </table>
+                    </div>
+                </div>
+
+                <!-- Card 4: Status do Sistema & Conexões -->
+                <div class="card glass shadow-sm">
+                    <div class="card-header">
+                        <h3><i class="fa-solid fa-server color-warning"></i> Infraestrutura, Segurança & Backups</h3>
+                        <p class="card-subtitle">Status das integrações em nuvem e servidores de alta disponibilidade</p>
+                    </div>
+                    <div style="display: grid; grid-template-columns: repeat(auto-fit, minmax(240px, 1fr)); gap: 1.25rem;">
+                        <div style="padding: 1.25rem; border-radius: 14px; background: rgba(16, 185, 129, 0.08); border: 1px solid rgba(16, 185, 129, 0.25);">
+                            <div style="display: flex; align-items: center; justify-content: space-between;">
+                                <strong style="color: #fff; font-size: 0.92rem;"><i class="fa-solid fa-database color-emerald"></i> MySQL Hostinger</strong>
+                                <span class="badge badge-success">Conectado</span>
+                            </div>
+                            <p style="font-size: 0.78rem; color: var(--text-muted); margin-top: 0.5rem;">Hostinger VPS IP 187.77.229.236 • Criptografia ativa</p>
+                        </div>
+                        <div style="padding: 1.25rem; border-radius: 14px; background: rgba(139, 92, 246, 0.08); border: 1px solid rgba(139, 92, 246, 0.25);">
+                            <div style="display: flex; align-items: center; justify-content: space-between;">
+                                <strong style="color: #fff; font-size: 0.92rem;"><i class="fa-solid fa-wand-magic-sparkles color-primary"></i> Frame IA Engine</strong>
+                                <span class="badge badge-pulse">Ativo 24/7</span>
+                            </div>
+                            <p style="font-size: 0.78rem; color: var(--text-muted); margin-top: 0.5rem;">Gemini 2.5 Flash • OCR e Consultoria Condominial</p>
+                        </div>
+                        <div style="padding: 1.25rem; border-radius: 14px; background: rgba(6, 182, 212, 0.08); border: 1px solid rgba(6, 182, 212, 0.25);">
+                            <div style="display: flex; align-items: center; justify-content: space-between;">
+                                <strong style="color: #fff; font-size: 0.92rem;"><i class="fa-brands fa-pix color-info"></i> Pix & Mercado Pago</strong>
+                                <span class="badge badge-info">Operacional</span>
+                            </div>
+                            <p style="font-size: 0.78rem; color: var(--text-muted); margin-top: 0.5rem;">Liquidação instantânea de taxas e reservas</p>
+                        </div>
+                    </div>
+                </div>
+            </section>
         </main>
+    </div>
+
+    <!-- MODAL: CADASTRAR NOVO MORADOR -->
+    <div class="modal-overlay" id="moradorModal">
+        <div class="modal-card glass shadow-lg">
+            <div class="modal-header">
+                <div class="modal-header-title">
+                    <div class="modal-header-icon" style="background: rgba(6, 182, 212, 0.2); color: #06b6d4;">
+                        <i class="fa-solid fa-house-chimney-user"></i>
+                    </div>
+                    <div>
+                        <h3>Cadastrar Morador / Unidade</h3>
+                        <p class="modal-subtitle">Adicione residentes, proprietários ou inquilinos ao condomínio</p>
+                    </div>
+                </div>
+                <button type="button" class="close-btn" onclick="closeModal('moradorModal')"><i class="fa-solid fa-xmark"></i></button>
+            </div>
+            <form id="moradorForm" onsubmit="saveMorador(event)">
+                <div class="form-group">
+                    <label><i class="fa-solid fa-user color-info"></i> Nome Completo do Morador</label>
+                    <input type="text" id="morNome" placeholder="Ex: Dra. Juliana Costa" required>
+                </div>
+                <div class="form-group-row">
+                    <div class="form-group">
+                        <label><i class="fa-solid fa-house color-info"></i> Unidade Residencial</label>
+                        <input type="text" id="morUnidade" placeholder="Ex: Casa 14 - Al. Flamboyant" required>
+                    </div>
+                    <div class="form-group">
+                        <label><i class="fa-solid fa-id-card color-info"></i> CPF</label>
+                        <input type="text" id="morCpf" placeholder="000.000.000-00">
+                    </div>
+                </div>
+                <div class="form-group-row">
+                    <div class="form-group">
+                        <label><i class="fa-brands fa-whatsapp color-info"></i> Telefone / WhatsApp</label>
+                        <input type="text" id="morTelefone" placeholder="(85) 90000-0000">
+                    </div>
+                    <div class="form-group">
+                        <label><i class="fa-solid fa-envelope color-info"></i> E-mail</label>
+                        <input type="email" id="morEmail" placeholder="morador@email.com">
+                    </div>
+                </div>
+                <div class="form-group-row">
+                    <div class="form-group">
+                        <label><i class="fa-solid fa-user-tag color-info"></i> Tipo de Vínculo</label>
+                        <select id="morTipo">
+                            <option value="Proprietário Residente">Proprietário Residente</option>
+                            <option value="Inquilino / Locatário">Inquilino / Locatário</option>
+                            <option value="Familiar Residente">Familiar Residente</option>
+                        </select>
+                    </div>
+                    <div class="form-group">
+                        <label><i class="fa-solid fa-car color-info"></i> Veículo & Placa (Opcional)</label>
+                        <input type="text" id="morVeiculo" placeholder="Ex: BMW 320i - PNV-8920">
+                    </div>
+                </div>
+                <div class="modal-footer">
+                    <button type="button" class="btn-secondary" onclick="closeModal('moradorModal')">Cancelar</button>
+                    <button type="submit" class="action-btn info"><i class="fa-solid fa-check"></i> Salvar Morador</button>
+                </div>
+            </form>
+        </div>
     </div>
 
     <!-- MODAL: CADASTRAR NOVO COLABORADOR -->

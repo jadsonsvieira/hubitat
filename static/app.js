@@ -52,6 +52,8 @@ const state = {
     encomendas: [],
     manutencoes: [],
     colaboradores: [],
+    moradores: [],
+    condominioConfig: {},
     atividades: []
 };
 
@@ -343,7 +345,7 @@ async function apiFetch(url, options = {}) {
 // FETCH ALL DATA FROM PYTHON BACKEND
 async function refreshAllData() {
     try {
-        const [osRes, resRes, visRes, actRes, comRes, ocoRes, encRes, manRes, colabRes] = await Promise.all([
+        const [osRes, resRes, visRes, actRes, comRes, ocoRes, encRes, manRes, colabRes, cfgRes, morRes] = await Promise.all([
             apiFetch(`${API_BASE}/api/os`),
             apiFetch(`${API_BASE}/api/reservas`),
             apiFetch(`${API_BASE}/api/visitantes`),
@@ -352,7 +354,9 @@ async function refreshAllData() {
             apiFetch(`${API_BASE}/api/ocorrencias`),
             apiFetch(`${API_BASE}/api/encomendas`),
             apiFetch(`${API_BASE}/api/manutencoes`),
-            apiFetch(`${API_BASE}/api/colaboradores`)
+            apiFetch(`${API_BASE}/api/colaboradores`),
+            apiFetch(`${API_BASE}/api/condominio/config`).catch(() => ({ json: () => ({}) })),
+            apiFetch(`${API_BASE}/api/moradores`).catch(() => ({ json: () => ([]) }))
         ]);
 
         state.ordensServico = await osRes.json();
@@ -364,6 +368,8 @@ async function refreshAllData() {
         state.encomendas = await encRes.json();
         state.manutencoes = await manRes.json();
         state.colaboradores = await colabRes.json();
+        state.condominioConfig = await cfgRes.json();
+        state.moradores = await morRes.json();
 
         renderDashboard();
         renderOS();
@@ -374,6 +380,8 @@ async function refreshAllData() {
         renderEncomendas();
         renderManutencoes();
         renderColaboradores();
+        renderCondominioConfig();
+        renderMoradores();
         updateCounters();
     } catch (err) {
         console.error("Erro ao carregar dados do servidor Python:", err);
@@ -793,7 +801,8 @@ function switchTab(tabName) {
         os: { title: 'Ordens de Serviço (O.S.)', subtitle: 'Gestão preventiva, corretiva e acompanhamento de prestadores' },
         reservas: { title: 'Reservas & Espaços', subtitle: 'Agendamento de áreas comuns, churrasqueiras e quadras esportivas' },
         copilot: { title: 'Frame IA Copilot', subtitle: 'Inteligência Artificial especialista em regulamentos e operações condominiais' },
-        colaboradores: { title: 'Colaboradores & Equipe', subtitle: 'Gestão operacional de funcionários, turnos, crachás digitais e prestadores terceirizados' }
+        colaboradores: { title: 'Colaboradores & Equipe', subtitle: 'Gestão operacional de funcionários, turnos, crachás digitais e prestadores terceirizados' },
+        configuracoes: { title: 'Configurações do Condomínio & Cadastros', subtitle: 'Parâmetros operacionais, regras de convivência, dados cadastrais e moradores' }
     };
 
     if (titles[tabName]) {
@@ -805,6 +814,9 @@ function switchTab(tabName) {
 
     if (tabName === 'colaboradores') {
         renderColaboradores();
+    } else if (tabName === 'configuracoes') {
+        renderCondominioConfig();
+        renderMoradores();
     }
 
     // Scroll to top of main content
@@ -1049,7 +1061,21 @@ function initForms() {
                 if (response.ok) {
                     await refreshAllData();
                     visitorForm.reset();
-                    showToast(`Passe gerado! Registrado no servidor Python.`, 'success');
+
+                    // Open QR Code Modal & Copy WhatsApp Access Link
+                    const nameDisp = document.getElementById('qrVisitorNameDisplay');
+                    const metaDisp = document.getElementById('qrVisitorMetaDisplay');
+                    if (nameDisp) nameDisp.textContent = `${newVis.name} (${newVis.type})`;
+                    if (metaDisp) metaDisp.textContent = `Válido para hoje • ${newVis.unit} • Placa: ${newVis.plate || 'N/A'}`;
+                    generateQRCodeCanvas();
+                    openModal('qrModal');
+
+                    const text = `Passe de Acesso QR Code Express para ${newVis.name} no Hubitat by Frame [IA]. Apresente este QR Code na portaria: https://hubitat.frameia.com.br/pass/express`;
+                    try {
+                        navigator.clipboard.writeText(text);
+                    } catch(e) {}
+
+                    showToast(`Passe gerado! QR Code aberto e link copiado para WhatsApp.`, 'success');
                 }
             } catch (err) {
                 showToast("Erro ao registrar visitante no servidor.", "danger");
@@ -1826,6 +1852,202 @@ window.showColaboradorQrBadge = function(id) {
     document.getElementById('qrVisitorMetaDisplay').textContent = `Crachá Digital • ${c.empresa} • ${c.escala}`;
     generateQRCodeCanvas();
     openModal('qrModal');
+};
+
+// --- CONDOMÍNIO & CONFIGURAÇÕES HANDLERS ---
+function renderCondominioConfig() {
+    const cfg = state.condominioConfig || {};
+    
+    const setVal = (id, val) => {
+        const el = document.getElementById(id);
+        if (el && val !== undefined && val !== null) el.value = val;
+    };
+    
+    setVal('cfgNome', cfg.nome || 'Alphaville Eusébio Residencial 1');
+    setVal('cfgCnpj', cfg.cnpj || '14.892.401/0001-90');
+    setVal('cfgTotalUnidades', cfg.total_unidades || 250);
+    setVal('cfgEndereco', cfg.endereco || 'Av. Eusébio de Queiroz, 1200');
+    setVal('cfgCidade', cfg.cidade || 'Eusébio / CE');
+    setVal('cfgCep', cfg.cep || '61760-000');
+    setVal('cfgSindico', cfg.sindico || 'Dra. Juliana Costa');
+    setVal('cfgMandato', cfg.mandato || '2025 - 2027');
+    setVal('cfgEmailAdmin', cfg.email_admin || 'administracao@alphavilleeusebio.com.br');
+    setVal('cfgTelefoneAdmin', cfg.telefone_admin || '(85) 3260-8800');
+    
+    setVal('cfgSilencioInicio', cfg.horario_silencio_inicio || '22:00');
+    setVal('cfgSilencioFim', cfg.horario_silencio_fim || '08:00');
+    setVal('cfgTaxaCondominial', cfg.taxa_condominial || 'R$ 580,00');
+    setVal('cfgDiaVencimento', cfg.dia_vencimento || 10);
+    setVal('cfgChavePix', cfg.chave_pix || '14.892.401/0001-90');
+    setVal('cfgLimiteVisitantes', cfg.limite_visitantes || 10);
+    setVal('cfgHorarioObras', cfg.horario_obras || 'Seg a Sex: 08h às 17h | Sáb: 08h às 12h');
+    setVal('cfgRegrasMudancas', cfg.regras_mudancas || 'Seg a Sex: 08h às 17h (Agendamento prévio com 48h de antecedência)');
+    
+    const hName = document.getElementById('cfgHeaderCondoName');
+    const hMeta = document.getElementById('cfgHeaderCondoMeta');
+    if (hName) hName.textContent = cfg.nome || 'Alphaville Eusébio Residencial 1';
+    if (hMeta) hMeta.textContent = `CNPJ: ${cfg.cnpj || '14.892.401/0001-90'} • ${cfg.cidade || 'Eusébio / CE'} • Gestão Vigente: ${cfg.mandato || '2025 - 2027'}`;
+}
+window.renderCondominioConfig = renderCondominioConfig;
+
+window.saveCondominioConfigForm = async function(e) {
+    if (e) e.preventDefault();
+    const payload = {
+        id: 'eusebio-alphaville',
+        nome: document.getElementById('cfgNome').value,
+        cnpj: document.getElementById('cfgCnpj').value,
+        total_unidades: parseInt(document.getElementById('cfgTotalUnidades').value) || 250,
+        endereco: document.getElementById('cfgEndereco').value,
+        cidade: document.getElementById('cfgCidade').value,
+        cep: document.getElementById('cfgCep').value,
+        sindico: document.getElementById('cfgSindico').value,
+        mandato: document.getElementById('cfgMandato').value,
+        email_admin: document.getElementById('cfgEmailAdmin').value,
+        telefone_admin: document.getElementById('cfgTelefoneAdmin').value,
+        horario_silencio_inicio: document.getElementById('cfgSilencioInicio').value,
+        horario_silencio_fim: document.getElementById('cfgSilencioFim').value,
+        taxa_condominial: document.getElementById('cfgTaxaCondominial').value,
+        dia_vencimento: parseInt(document.getElementById('cfgDiaVencimento').value) || 10,
+        chave_pix: document.getElementById('cfgChavePix').value,
+        limite_visitantes: parseInt(document.getElementById('cfgLimiteVisitantes').value) || 10,
+        horario_obras: document.getElementById('cfgHorarioObras').value,
+        regras_mudancas: document.getElementById('cfgRegrasMudancas').value
+    };
+
+    try {
+        const res = await apiFetch(`${API_BASE}/api/condominio/config`, {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify(payload)
+        });
+        if (res.ok) {
+            state.condominioConfig = payload;
+            renderCondominioConfig();
+            showToast("Configurações do condomínio salvas com sucesso!", "success");
+        }
+    } catch(err) {
+        state.condominioConfig = payload;
+        renderCondominioConfig();
+        showToast("Configurações salvas localmente!", "success");
+    }
+};
+
+let moradorSearchFilter = '';
+
+function renderMoradores(filterQuery) {
+    if (filterQuery !== undefined) moradorSearchFilter = filterQuery.toLowerCase().trim();
+    const tbody = document.getElementById('moradoresTableBody');
+    if (!tbody) return;
+
+    let items = state.moradores || [];
+    if (moradorSearchFilter) {
+        items = items.filter(m => 
+            (m.nome && m.nome.toLowerCase().includes(moradorSearchFilter)) ||
+            (m.unidade && m.unidade.toLowerCase().includes(moradorSearchFilter)) ||
+            (m.cpf && m.cpf.includes(moradorSearchFilter)) ||
+            (m.veiculo && m.veiculo.toLowerCase().includes(moradorSearchFilter))
+        );
+    }
+
+    if (items.length === 0) {
+        tbody.innerHTML = `<tr><td colspan="8" class="text-center" style="padding: 2.5rem; color: var(--text-muted);">Nenhum morador encontrado com este filtro.</td></tr>`;
+        return;
+    }
+
+    tbody.innerHTML = items.map(m => `
+        <tr>
+            <td>
+                <strong style="color: #fff; font-size: 0.92rem;">${escapeHtml(m.nome)}</strong><br>
+                <small style="color: var(--text-muted);">${escapeHtml(m.email || 'E-mail não informado')}</small>
+            </td>
+            <td>
+                <strong style="color: var(--primary); font-size: 0.88rem;">${escapeHtml(m.unidade)}</strong>
+            </td>
+            <td>
+                <span style="font-size: 0.82rem; color: #d4d4d8;">${escapeHtml(m.cpf || 'Não cadastrado')}</span>
+            </td>
+            <td>
+                <span style="font-size: 0.84rem; color: #fff;"><i class="fa-brands fa-whatsapp color-emerald"></i> ${escapeHtml(m.telefone || 'N/A')}</span>
+            </td>
+            <td>
+                <span class="badge ${m.tipo === 'Proprietário Residente' ? 'badge-success' : 'badge-info'}">${escapeHtml(m.tipo || 'Proprietário')}</span>
+            </td>
+            <td>
+                <span style="font-size: 0.82rem; color: #a1a1aa;"><i class="fa-solid fa-car color-primary"></i> ${escapeHtml(m.veiculo || 'Nenhum')}</span>
+            </td>
+            <td>
+                <span class="badge badge-success">${escapeHtml(m.status || 'Ativo')}</span>
+            </td>
+            <td>
+                <div style="display: flex; gap: 0.4rem;">
+                    <button class="btn-secondary sm" title="Remover Morador" onclick="deleteMorador('${m.id}')" style="color: #f87171;">
+                        <i class="fa-solid fa-trash"></i>
+                    </button>
+                </div>
+            </td>
+        </tr>
+    `).join('');
+}
+window.renderMoradores = renderMoradores;
+
+window.filterMoradoresTable = function(query) {
+    renderMoradores(query);
+};
+
+window.openMoradorModal = function() {
+    openModal('moradorModal');
+};
+
+window.closeMoradorModal = function() {
+    closeModal('moradorModal');
+};
+
+window.saveMorador = async function(e) {
+    e.preventDefault();
+    const newMor = {
+        id: 'MOR-' + Math.floor(100 + Math.random() * 900),
+        nome: document.getElementById('morNome').value,
+        unidade: document.getElementById('morUnidade').value,
+        cpf: document.getElementById('morCpf').value,
+        telefone: document.getElementById('morTelefone').value,
+        email: document.getElementById('morEmail').value,
+        tipo: document.getElementById('morTipo').value,
+        veiculo: document.getElementById('morVeiculo').value,
+        status: 'Ativo'
+    };
+
+    try {
+        await apiFetch(`${API_BASE}/api/moradores`, {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify(newMor)
+        });
+        state.moradores.unshift(newMor);
+        renderMoradores();
+        closeModal('moradorModal');
+        document.getElementById('moradorForm').reset();
+        showToast(`Morador ${newMor.nome} cadastrado com sucesso!`, 'success');
+    } catch(err) {
+        state.moradores.unshift(newMor);
+        renderMoradores();
+        closeModal('moradorModal');
+        document.getElementById('moradorForm').reset();
+        showToast(`Morador cadastrado localmente!`, 'success');
+    }
+};
+
+window.deleteMorador = async function(id) {
+    if (!confirm("Deseja realmente remover o cadastro deste morador?")) return;
+    try {
+        await apiFetch(`${API_BASE}/api/moradores/${id}`, { method: 'DELETE' });
+        state.moradores = (state.moradores || []).filter(m => m.id !== id);
+        renderMoradores();
+        showToast("Morador removido.", "warning");
+    } catch(err) {
+        state.moradores = (state.moradores || []).filter(m => m.id !== id);
+        renderMoradores();
+        showToast("Morador removido localmente.", "warning");
+    }
 };
 
 /* --- UI REDESIGN & INTERACTIVE FUNCTIONS --- */

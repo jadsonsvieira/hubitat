@@ -191,6 +191,38 @@ class Colaborador(BaseModel):
     foto_url: Optional[str] = ""
     status: Optional[str] = "Em Turno"
 
+class CondominioConfig(BaseModel):
+    id: Optional[str] = "eusebio-alphaville"
+    nome: str
+    cnpj: Optional[str] = "14.892.401/0001-90"
+    endereco: Optional[str] = "Av. Eusébio de Queiroz, 1200"
+    cidade: Optional[str] = "Eusébio / CE"
+    cep: Optional[str] = "61760-000"
+    sindico: Optional[str] = "Dra. Juliana Costa"
+    mandato: Optional[str] = "2025 - 2027"
+    email_admin: Optional[str] = "administracao@alphavilleeusebio.com.br"
+    telefone_admin: Optional[str] = "(85) 3260-8800"
+    total_unidades: Optional[int] = 250
+    horario_silencio_inicio: Optional[str] = "22:00"
+    horario_silencio_fim: Optional[str] = "08:00"
+    taxa_condominial: Optional[str] = "R$ 580,00"
+    dia_vencimento: Optional[int] = 10
+    chave_pix: Optional[str] = "14.892.401/0001-90"
+    limite_visitantes: Optional[int] = 10
+    horario_obras: Optional[str] = "Seg a Sex: 08h às 17h | Sáb: 08h às 12h"
+    regras_mudancas: Optional[str] = "Seg a Sex: 08h às 17h (Agendamento prévio com 48h de antecedência)"
+
+class Morador(BaseModel):
+    id: Optional[str] = None
+    nome: str
+    unidade: str
+    cpf: Optional[str] = ""
+    telefone: Optional[str] = ""
+    email: Optional[str] = ""
+    tipo: Optional[str] = "Proprietário Residente"
+    status: Optional[str] = "Ativo"
+    veiculo: Optional[str] = ""
+
 class OcrEncomendaRequest(BaseModel):
     image_base64: Optional[str] = None
     raw_text: Optional[str] = None
@@ -677,6 +709,75 @@ def init_db():
                     created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP
                 );
             """)
+
+            # Create Condominio Config table
+            cursor.execute("""
+                CREATE TABLE IF NOT EXISTS hubitat_condominio_config (
+                    id VARCHAR(50) PRIMARY KEY,
+                    nome VARCHAR(255) NOT NULL,
+                    cnpj VARCHAR(50),
+                    endereco TEXT,
+                    cidade VARCHAR(100),
+                    cep VARCHAR(20),
+                    sindico VARCHAR(255),
+                    mandato VARCHAR(100),
+                    email_admin VARCHAR(255),
+                    telefone_admin VARCHAR(50),
+                    total_unidades INT DEFAULT 250,
+                    horario_silencio_inicio VARCHAR(10) DEFAULT '22:00',
+                    horario_silencio_fim VARCHAR(10) DEFAULT '08:00',
+                    taxa_condominial VARCHAR(50) DEFAULT 'R$ 580,00',
+                    dia_vencimento INT DEFAULT 10,
+                    chave_pix VARCHAR(255),
+                    limite_visitantes INT DEFAULT 10,
+                    horario_obras TEXT,
+                    regras_mudancas TEXT,
+                    updated_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP
+                );
+            """)
+
+            # Create Moradores table
+            cursor.execute("""
+                CREATE TABLE IF NOT EXISTS hubitat_moradores (
+                    id VARCHAR(50) PRIMARY KEY,
+                    nome VARCHAR(255) NOT NULL,
+                    unidade VARCHAR(100) NOT NULL,
+                    cpf VARCHAR(50),
+                    telefone VARCHAR(50),
+                    email VARCHAR(255),
+                    tipo VARCHAR(100) DEFAULT 'Proprietário Residente',
+                    status VARCHAR(50) DEFAULT 'Ativo',
+                    veiculo VARCHAR(100),
+                    created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP
+                );
+            """)
+
+            # Seed Condominio Config if empty
+            cursor.execute("SELECT COUNT(*) FROM hubitat_condominio_config;")
+            if cursor.fetchone()[0] == 0:
+                cursor.execute("""
+                    INSERT INTO hubitat_condominio_config (id, nome, cnpj, endereco, cidade, cep, sindico, mandato, email_admin, telefone_admin, total_unidades, horario_silencio_inicio, horario_silencio_fim, taxa_condominial, dia_vencimento, chave_pix, limite_visitantes, horario_obras, regras_mudancas)
+                    VALUES 
+                    ('eusebio-alphaville', 'Alphaville Eusébio Residencial 1', '14.892.401/0001-90', 'Av. Eusébio de Queiroz, 1200', 'Eusébio / CE', '61760-000', 'Dra. Juliana Costa', '2025 - 2027', 'administracao@alphavilleeusebio.com.br', '(85) 3260-8800', 250, '22:00', '08:00', 'R$ 580,00', 10, '14.892.401/0001-90', 10, 'Seg a Sex: 08h às 17h | Sáb: 08h às 12h', 'Seg a Sex: 08h às 17h (Agendamento prévio com 48h)');
+                """)
+                conn.commit()
+
+            # Seed Moradores if empty
+            cursor.execute("SELECT COUNT(*) FROM hubitat_moradores;")
+            if cursor.fetchone()[0] == 0:
+                initial_moradores = [
+                    ("MOR-001", "Dra. Juliana Costa", "Casa 14 - Al. Flamboyant", "102.394.881-90", "(85) 99801-4455", "juliana.costa@email.com", "Proprietário Residente", "Ativo", "BMW 320i - PNV-8920"),
+                    ("MOR-002", "Dr. Marcelo Farias", "Casa 42 - Al. Ipês", "239.551.402-11", "(85) 98712-3456", "marcelo.farias@email.com", "Proprietário Residente", "Ativo", "Hilux SW4 - PXT-1020"),
+                    ("MOR-003", "Renata Albuquerque", "Casa 88 - Al. Palmeiras", "384.772.910-44", "(85) 99123-8899", "renata.alb@email.com", "Proprietário Residente", "Ativo", "Jeep Compass - QNK-4411"),
+                    ("MOR-004", "Eduardo Silveira Filho", "Casa 102 - Al. Flamboyant", "491.883.210-55", "(85) 99455-2233", "eduardo.silveira@email.com", "Inquilino / Locatário", "Ativo", "Corolla Cross - RNS-9900"),
+                    ("MOR-005", "Dra. Patrícia Magalhães", "Casa 05 - Al. Bosque", "512.994.331-77", "(85) 98877-6655", "patricia.mag@email.com", "Proprietário Residente", "Ativo", "Volvo XC60 - SBH-3322")
+                ]
+                for m in initial_moradores:
+                    cursor.execute("""
+                        INSERT INTO hubitat_moradores (id, nome, unidade, cpf, telefone, email, tipo, status, veiculo)
+                        VALUES (%s, %s, %s, %s, %s, %s, %s, %s, %s);
+                    """, m)
+                conn.commit()
 
             # Seed colaboradores if empty
             cursor.execute("SELECT COUNT(*) FROM hubitat_colaboradores;")
@@ -1964,6 +2065,160 @@ def delete_colaborador(colab_id: str, token: dict = Depends(verify_token)):
         return {"status": "success", "message": "Colaborador removido com sucesso"}
     except Exception as e:
         raise HTTPException(status_code=500, detail=f"Erro ao remover colaborador: {e}")
+
+# --- CONDOMÍNIO CONFIGURAÇÕES & MORADORES ENDPOINTS ---
+@app.get("/api/condominio/config")
+def get_condominio_config():
+    if not USE_DB:
+        return {
+            "id": "eusebio-alphaville",
+            "nome": "Alphaville Eusébio Residencial 1",
+            "cnpj": "14.892.401/0001-90",
+            "endereco": "Av. Eusébio de Queiroz, 1200",
+            "cidade": "Eusébio / CE",
+            "cep": "61760-000",
+            "sindico": "Dra. Juliana Costa",
+            "mandato": "2025 - 2027",
+            "email_admin": "administracao@alphavilleeusebio.com.br",
+            "telefone_admin": "(85) 3260-8800",
+            "total_unidades": 250,
+            "horario_silencio_inicio": "22:00",
+            "horario_silencio_fim": "08:00",
+            "taxa_condominial": "R$ 580,00",
+            "dia_vencimento": 10,
+            "chave_pix": "14.892.401/0001-90",
+            "limite_visitantes": 10,
+            "horario_obras": "Seg a Sex: 08h às 17h | Sáb: 08h às 12h",
+            "regras_mudancas": "Seg a Sex: 08h às 17h (Agendamento prévio com 48h de antecedência)"
+        }
+    try:
+        conn = get_db_connection()
+        cursor = conn.cursor(dictionary=True)
+        cursor.execute("SELECT * FROM hubitat_condominio_config LIMIT 1;")
+        config = cursor.fetchone()
+        cursor.close()
+        conn.close()
+        if config:
+            return config
+        return {
+            "id": "eusebio-alphaville",
+            "nome": "Alphaville Eusébio Residencial 1",
+            "cnpj": "14.892.401/0001-90",
+            "endereco": "Av. Eusébio de Queiroz, 1200",
+            "cidade": "Eusébio / CE",
+            "cep": "61760-000",
+            "sindico": "Dra. Juliana Costa",
+            "mandato": "2025 - 2027",
+            "email_admin": "administracao@alphavilleeusebio.com.br",
+            "telefone_admin": "(85) 3260-8800",
+            "total_unidades": 250,
+            "horario_silencio_inicio": "22:00",
+            "horario_silencio_fim": "08:00",
+            "taxa_condominial": "R$ 580,00",
+            "dia_vencimento": 10,
+            "chave_pix": "14.892.401/0001-90",
+            "limite_visitantes": 10,
+            "horario_obras": "Seg a Sex: 08h às 17h | Sáb: 08h às 12h",
+            "regras_mudancas": "Seg a Sex: 08h às 17h (Agendamento prévio com 48h)"
+        }
+    except Exception as e:
+        raise HTTPException(status_code=500, detail=f"Erro ao buscar configurações: {e}")
+
+@app.post("/api/condominio/config")
+def save_condominio_config(cfg: CondominioConfig, token: dict = Depends(verify_token)):
+    if not USE_DB:
+        return {"status": "success", "message": "Configurações salvas localmente!", "data": cfg}
+    try:
+        conn = get_db_connection()
+        cursor = conn.cursor()
+        cursor.execute("""
+            INSERT INTO hubitat_condominio_config 
+            (id, nome, cnpj, endereco, cidade, cep, sindico, mandato, email_admin, telefone_admin, total_unidades, horario_silencio_inicio, horario_silencio_fim, taxa_condominial, dia_vencimento, chave_pix, limite_visitantes, horario_obras, regras_mudancas)
+            VALUES (%s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s)
+            ON DUPLICATE KEY UPDATE
+            nome=VALUES(nome), cnpj=VALUES(cnpj), endereco=VALUES(endereco), cidade=VALUES(cidade), cep=VALUES(cep),
+            sindico=VALUES(sindico), mandato=VALUES(mandato), email_admin=VALUES(email_admin), telefone_admin=VALUES(telefone_admin),
+            total_unidades=VALUES(total_unidades), horario_silencio_inicio=VALUES(horario_silencio_inicio), horario_silencio_fim=VALUES(horario_silencio_fim),
+            taxa_condominial=VALUES(taxa_condominial), dia_vencimento=VALUES(dia_vencimento), chave_pix=VALUES(chave_pix),
+            limite_visitantes=VALUES(limite_visitantes), horario_obras=VALUES(horario_obras), regras_mudancas=VALUES(regras_mudancas);
+        """, (
+            cfg.id or "eusebio-alphaville", cfg.nome, cfg.cnpj, cfg.endereco, cfg.cidade, cfg.cep,
+            cfg.sindico, cfg.mandato, cfg.email_admin, cfg.telefone_admin, cfg.total_unidades or 250,
+            cfg.horario_silencio_inicio or "22:00", cfg.horario_silencio_fim or "08:00", cfg.taxa_condominial or "R$ 580,00",
+            cfg.dia_vencimento or 10, cfg.chave_pix, cfg.limite_visitantes or 10, cfg.horario_obras, cfg.regras_mudancas
+        ))
+        
+        cursor.execute("""
+            INSERT INTO hubitat_atividades (icon, title, desc_text, time_text)
+            VALUES (%s, %s, %s, %s);
+        """, ("fa-sliders", "Configurações do Condomínio Atualizadas", f"Novos parâmetros salvos para {cfg.nome}", "Agora"))
+        
+        conn.commit()
+        cursor.close()
+        conn.close()
+        return {"status": "success", "message": "Configurações do condomínio salvas com sucesso!", "data": cfg}
+    except Exception as e:
+        raise HTTPException(status_code=500, detail=f"Erro ao salvar configurações no MySQL: {e}")
+
+@app.get("/api/moradores")
+def list_moradores(token: dict = Depends(verify_token)):
+    if not USE_DB:
+        return [
+            {"id": "MOR-001", "nome": "Dra. Juliana Costa", "unidade": "Casa 14 - Al. Flamboyant", "cpf": "102.394.881-90", "telefone": "(85) 99801-4455", "email": "juliana.costa@email.com", "tipo": "Proprietário Residente", "status": "Ativo", "veiculo": "BMW 320i - PNV-8920"},
+            {"id": "MOR-002", "nome": "Dr. Marcelo Farias", "unidade": "Casa 42 - Al. Ipês", "cpf": "239.551.402-11", "telefone": "(85) 98712-3456", "email": "marcelo.farias@email.com", "tipo": "Proprietário Residente", "status": "Ativo", "veiculo": "Hilux SW4 - PXT-1020"},
+            {"id": "MOR-003", "nome": "Renata Albuquerque", "unidade": "Casa 88 - Al. Palmeiras", "cpf": "384.772.910-44", "telefone": "(85) 99123-8899", "email": "renata.alb@email.com", "tipo": "Proprietário Residente", "status": "Ativo", "veiculo": "Jeep Compass - QNK-4411"}
+        ]
+    try:
+        conn = get_db_connection()
+        cursor = conn.cursor(dictionary=True)
+        cursor.execute("SELECT * FROM hubitat_moradores ORDER BY unidade ASC;")
+        moradores = cursor.fetchall()
+        cursor.close()
+        conn.close()
+        return moradores
+    except Exception as e:
+        raise HTTPException(status_code=500, detail=f"Erro ao listar moradores: {e}")
+
+@app.post("/api/moradores")
+def create_morador(m: Morador, token: dict = Depends(verify_token)):
+    if not m.id:
+        m.id = f"MOR-{random.randint(100, 999)}"
+    if not USE_DB:
+        return m
+    try:
+        conn = get_db_connection()
+        cursor = conn.cursor()
+        cursor.execute("""
+            INSERT INTO hubitat_moradores (id, nome, unidade, cpf, telefone, email, tipo, status, veiculo)
+            VALUES (%s, %s, %s, %s, %s, %s, %s, %s, %s);
+        """, (m.id, m.nome, m.unidade, m.cpf, m.telefone, m.email, m.tipo or "Proprietário Residente", m.status or "Ativo", m.veiculo))
+        
+        cursor.execute("""
+            INSERT INTO hubitat_atividades (icon, title, desc_text, time_text)
+            VALUES (%s, %s, %s, %s);
+        """, ("fa-house-user", "Novo Morador Cadastrado", f"{m.nome} • {m.unidade}", "Agora"))
+        
+        conn.commit()
+        cursor.close()
+        conn.close()
+        return m
+    except Exception as e:
+        raise HTTPException(status_code=500, detail=f"Erro ao salvar morador no MySQL: {e}")
+
+@app.delete("/api/moradores/{morador_id}")
+def delete_morador(morador_id: str, token: dict = Depends(verify_token)):
+    if not USE_DB:
+        return {"status": "success", "message": "Morador removido"}
+    try:
+        conn = get_db_connection()
+        cursor = conn.cursor()
+        cursor.execute("DELETE FROM hubitat_moradores WHERE id = %s;", (morador_id,))
+        conn.commit()
+        cursor.close()
+        conn.close()
+        return {"status": "success", "message": "Morador removido com sucesso"}
+    except Exception as e:
+        raise HTTPException(status_code=500, detail=f"Erro ao remover morador: {e}")
 
 
 # Mount static files folder
