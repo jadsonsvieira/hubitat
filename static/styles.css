@@ -747,6 +747,64 @@ body {
     gap: 0.75rem;
 }
 
+/* BILLING CYCLE TOGGLE */
+.billing-toggle-wrapper {
+    display: inline-flex;
+    align-items: center;
+    background: rgba(255, 255, 255, 0.05);
+    border: 1px solid rgba(255, 255, 255, 0.12);
+    border-radius: 30px;
+    padding: 0.35rem;
+    margin: 1.5rem auto 0 auto;
+    box-shadow: inset 0 2px 4px rgba(0, 0, 0, 0.3);
+}
+
+.billing-toggle-btn {
+    background: transparent;
+    border: none;
+    color: #a1a1aa;
+    font-family: var(--font-body);
+    font-size: 0.88rem;
+    font-weight: 600;
+    padding: 0.5rem 1.25rem;
+    border-radius: 25px;
+    cursor: pointer;
+    transition: all 0.3s cubic-bezier(0.16, 1, 0.3, 1);
+    display: flex;
+    align-items: center;
+    gap: 0.5rem;
+}
+
+.billing-toggle-btn:hover {
+    color: #fff;
+}
+
+.billing-toggle-btn.active {
+    background: var(--primary);
+    color: #fff;
+    box-shadow: 0 4px 15px rgba(139, 92, 246, 0.4);
+}
+
+.billing-discount-badge {
+    background: #10b981;
+    color: #09090b;
+    font-size: 0.72rem;
+    font-weight: 800;
+    padding: 0.15rem 0.5rem;
+    border-radius: 12px;
+    letter-spacing: 0.3px;
+    text-transform: uppercase;
+}
+
+.price-annual-note {
+    font-size: 0.78rem;
+    color: #34d399;
+    margin-top: -1rem;
+    margin-bottom: 1.25rem;
+    font-weight: 600;
+    transition: all 0.3s ease;
+}
+
 .os-mini-item {
     background: rgba(255, 255, 255, 0.03);
     border: 1px solid var(--border-color);

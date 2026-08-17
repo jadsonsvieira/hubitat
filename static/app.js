@@ -427,6 +427,41 @@ window.toggleFaq = function(element) {
     element.classList.toggle("active");
 };
 
+window.setBillingCycle = function(cycle) {
+    const btnMensal = document.getElementById('btnPlanMensal');
+    const btnAnual = document.getElementById('btnPlanAnual');
+    const valEssencial = document.getElementById('priceValEssencial');
+    const valPro = document.getElementById('priceValPro');
+    const valEnterprise = document.getElementById('priceValEnterprise');
+    const noteEssencial = document.getElementById('notePriceEssencial');
+    const notePro = document.getElementById('notePricePro');
+    const noteEnterprise = document.getElementById('notePriceEnterprise');
+
+    if (cycle === 'anual') {
+        if (btnMensal) btnMensal.classList.remove('active');
+        if (btnAnual) btnAnual.classList.add('active');
+
+        if (valEssencial) valEssencial.innerHTML = 'R$ 232<span>/mês</span>';
+        if (valPro) valPro.innerHTML = 'R$ 472<span>/mês</span>';
+        if (valEnterprise) valEnterprise.innerHTML = 'R$ 792<span>/mês</span>';
+
+        if (noteEssencial) noteEssencial.style.display = 'block';
+        if (notePro) notePro.style.display = 'block';
+        if (noteEnterprise) noteEnterprise.style.display = 'block';
+    } else {
+        if (btnMensal) btnMensal.classList.add('active');
+        if (btnAnual) btnAnual.classList.remove('active');
+
+        if (valEssencial) valEssencial.innerHTML = 'R$ 290<span>/mês</span>';
+        if (valPro) valPro.innerHTML = 'R$ 590<span>/mês</span>';
+        if (valEnterprise) valEnterprise.innerHTML = 'R$ 990<span>/mês</span>';
+
+        if (noteEssencial) noteEssencial.style.display = 'none';
+        if (notePro) notePro.style.display = 'none';
+        if (noteEnterprise) noteEnterprise.style.display = 'none';
+    }
+};
+
 function initAuthHandlers() {
     // Initial Route check
     if (window.location.pathname === "/cadastro") {

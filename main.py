@@ -2220,6 +2220,19 @@ def delete_morador(morador_id: str, token: dict = Depends(verify_token)):
     except Exception as e:
         raise HTTPException(status_code=500, detail=f"Erro ao remover morador: {e}")
 
+@app.get("/termos")
+def get_termos_page():
+    termos_path = os.path.join(STATIC_DIR, "termos.html")
+    if os.path.exists(termos_path):
+        return FileResponse(termos_path)
+    return FileResponse(os.path.join(STATIC_DIR, "index.html"))
+
+@app.get("/privacidade")
+def get_privacidade_page():
+    priv_path = os.path.join(STATIC_DIR, "privacidade.html")
+    if os.path.exists(priv_path):
+        return FileResponse(priv_path)
+    return FileResponse(os.path.join(STATIC_DIR, "index.html"))
 
 # Mount static files folder
 if not os.path.exists(STATIC_DIR):

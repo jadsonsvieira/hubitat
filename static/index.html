@@ -275,6 +275,16 @@
                 <span class="section-tag"><i class="fa-solid fa-shield-halved"></i> Previsibilidade & Transparência</span>
                 <h2>Planos Sob Medida para o seu Condomínio</h2>
                 <p>Escolha a solução ideal com implantação rápida e suporte regional especializado</p>
+                
+                <!-- Billing Cycle Toggle -->
+                <div class="billing-toggle-wrapper">
+                    <button type="button" class="billing-toggle-btn active" id="btnPlanMensal" onclick="setBillingCycle('mensal')">
+                        <i class="fa-solid fa-calendar-days"></i> Mensal
+                    </button>
+                    <button type="button" class="billing-toggle-btn" id="btnPlanAnual" onclick="setBillingCycle('anual')">
+                        <i class="fa-solid fa-gift color-emerald"></i> Anual <span class="billing-discount-badge">20% OFF • 2 Meses Grátis</span>
+                    </button>
+                </div>
             </div>
 
             <div class="pricing-grid">
@@ -283,7 +293,8 @@
                         <h3>Essencial</h3>
                         <p>Ideal para condomínios pequenos e médios (até 50 unidades)</p>
                     </div>
-                    <div class="price-amount">R$ 290<span>/mês</span></div>
+                    <div class="price-amount" id="priceValEssencial">R$ 290<span>/mês</span></div>
+                    <div class="price-annual-note" id="notePriceEssencial" style="display: none;">R$ 2.784 faturado anualmente (Economia de R$ 696/ano)</div>
                     <ul class="price-features">
                         <li><i class="fa-solid fa-check color-success"></i> Portaria & Cadastro de Visitantes</li>
                         <li><i class="fa-solid fa-check color-success"></i> Gestão de O.S. Básica</li>
@@ -300,7 +311,8 @@
                         <h3>Premium Pro</h3>
                         <p>Para condomínios residenciais de médio e grande porte</p>
                     </div>
-                    <div class="price-amount">R$ 590<span>/mês</span></div>
+                    <div class="price-amount" id="priceValPro">R$ 590<span>/mês</span></div>
+                    <div class="price-annual-note" id="notePricePro" style="display: none; color: #34d399; font-weight: 700;">R$ 5.664 faturado anualmente (Economia de R$ 1.416/ano)</div>
                     <ul class="price-features">
                         <li><i class="fa-solid fa-check color-success"></i> Tudo do plano Essencial</li>
                         <li><i class="fa-solid fa-check color-success"></i> <strong>Copilot IA Residencial Ilimitado</strong></li>
@@ -308,13 +320,31 @@
                         <li><i class="fa-solid fa-check color-success"></i> Encomendas com Notificação Push ao Morador</li>
                         <li><i class="fa-solid fa-check color-success"></i> Calendário de Manutenções Preventivas</li>
                         <li><i class="fa-solid fa-check color-success"></i> Suporte Prioritário 24/7 via WhatsApp</li>
-                        <li><i class="fa-solid fa-crown color-primary"></i> <span style="font-size: 0.82rem; color: #d8b4fe;">Setup VIP de Implantação & Migração Acompanhada (R$ 1.000,00)</span></li>
+                        <li><i class="fa-solid fa-crown color-primary"></i> <span style="font-size: 0.82rem; color: #d8b4fe;">Setup VIP de Implantação & Migração Acompanhada</span></li>
                     </ul>
                     <button type="button" class="action-btn emerald wide lg" onclick="openAuthModal('cadastro')">Contratar Plano Pro</button>
                 </div>
+
+                <div class="price-card glass">
+                    <div class="price-header">
+                        <h3>Enterprise & Loteamentos</h3>
+                        <p>Condomínios de alto padrão, loteamentos horizontais e resorts</p>
+                    </div>
+                    <div class="price-amount" id="priceValEnterprise">R$ 990<span>/mês</span></div>
+                    <div class="price-annual-note" id="notePriceEnterprise" style="display: none;">R$ 9.504 faturado anualmente (Economia de R$ 2.376/ano)</div>
+                    <ul class="price-features">
+                        <li><i class="fa-solid fa-check color-success"></i> Tudo do plano Premium Pro</li>
+                        <li><i class="fa-solid fa-check color-success"></i> <strong>Múltiplas Portarias & Cancelas Integradas</strong></li>
+                        <li><i class="fa-solid fa-check color-success"></i> Assembleias Virtuais Ilimitadas com Votação</li>
+                        <li><i class="fa-solid fa-check color-success"></i> Integração com Câmeras & Reconhecimento de Placas</li>
+                        <li><i class="fa-solid fa-check color-success"></i> Gerente de Contas Dedicado em Eusébio/Fortaleza</li>
+                        <li><i class="fa-solid fa-check color-success"></i> SLA de Atendimento em até 1 hora</li>
+                    </ul>
+                    <button type="button" class="action-btn primary wide" onclick="openAuthModal('cadastro')">Falar com Consultor</button>
+                </div>
             </div>
             <p class="text-center" style="font-size: 0.78rem; color: var(--text-dim); margin-top: 1.5rem;">
-                * O Setup VIP inclui configuração inicial completa do condomínio, cadastro prévio de moradores e treinamento da guarita por especialista dedicado.
+                * O plano anual garante congelamento de tarifas por 12 meses e inclui suporte VIP presencial para a região de Eusébio e Grande Fortaleza.
             </p>
         </section>
 
@@ -396,11 +426,11 @@
             </div>
             <div class="footer-bottom">
                 <div class="footer-bottom-inner">
-                    <p>© 2026 Hubitat by Frame [IA] • Todos os direitos reservados.</p>
+                    <p>© 2026 Hubitat by Frame [IA] • MJSV TECNOLOGIA E SOLUCOES DIGITAIS INOVA SIMPLES (I.S.) • CNPJ: 68.614.850/0001-13</p>
                     <div class="footer-legal-links">
-                        <a href="#">Termos de Uso</a>
-                        <a href="#">Privacidade & LGPD</a>
-                        <a href="#">Segurança da Informação</a>
+                        <a href="/termos" target="_blank"><i class="fa-solid fa-file-contract"></i> Termos de Uso</a>
+                        <a href="/privacidade" target="_blank"><i class="fa-solid fa-user-shield"></i> Privacidade & LGPD</a>
+                        <a href="/termos" target="_blank"><i class="fa-solid fa-lock"></i> Segurança da Informação</a>
                     </div>
                 </div>
             </div>
@@ -2363,6 +2393,9 @@
                     <div class="form-group margin-top-sm">
                         <label><i class="fa-solid fa-lock"></i> Criar Senha</label>
                         <input type="password" id="cadastroPassword" placeholder="Sua senha secreta" required>
+                    </div>
+                    <div style="margin-top: 0.75rem; font-size: 0.75rem; color: #a1a1aa; line-height: 1.4;">
+                        Ao criar sua conta, você concorda com os <a href="/termos" target="_blank" style="color: #c084fc; text-decoration: underline;">Termos de Uso</a> e a <a href="/privacidade" target="_blank" style="color: #c084fc; text-decoration: underline;">Política de Privacidade</a> da MJSV Tecnologia.
                     </div>
                     <button type="submit" class="action-btn primary wide margin-top-lg">
                         <i class="fa-solid fa-user-plus"></i> Criar Minha Conta
