@@ -2549,7 +2549,19 @@ window.enviarVotoAssembleia = async function(voto) {
 window.sharePassWhatsApp = function(name, unit, time) {
     gerarPasseVisitanteQr(name, unit);
 };
-window.copyBoletoCode = copyBoletoCode;
+
+window.changeRoleView = function(role) {
+    if (role === 'portaria') {
+        switchTab('visitantes');
+        showToast("Modo Portaria ativado: Acesso direto à portaria e controle de acessos.", "info");
+    } else if (role === 'morador') {
+        switchTab('reservas');
+        showToast("Modo Morador ativado: Gestão de reservas, avisos e encomendas.", "info");
+    } else {
+        switchTab('dashboard');
+        showToast("Modo Síndico / Gestão Executiva ativado.", "info");
+    }
+};
 
 function escapeHtml(str) {
     return str.replace(/&/g, "&amp;").replace(/</g, "&lt;").replace(/>/g, "&gt;");

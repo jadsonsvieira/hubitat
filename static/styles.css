@@ -216,18 +216,21 @@ body {
 .condo-info select {
     background: transparent;
     border: none;
-    color: #fff;
+    color: #fff !important;
     font-family: var(--font-body);
     font-size: 0.8rem;
     font-weight: 600;
     outline: none;
     cursor: pointer;
     width: 100%;
+    color-scheme: dark;
 }
 
 .condo-info select option {
-    background-color: var(--bg-sidebar);
-    color: #fff;
+    background-color: #18181b !important;
+    background: #18181b !important;
+    color: #ffffff !important;
+    padding: 8px 12px !important;
 }
 
 /* Navigation Menu */
@@ -1195,12 +1198,14 @@ body {
     background-size: 1.1rem;
     padding-right: 2.75rem;
     cursor: pointer;
+    color-scheme: dark;
 }
 
 .form-group select option {
-    background: #18181b;
-    color: #ffffff;
-    padding: 0.5rem;
+    background-color: #18181b !important;
+    background: #18181b !important;
+    color: #ffffff !important;
+    padding: 10px 14px !important;
 }
 
 .visitor-list {
@@ -2402,19 +2407,31 @@ body {
     background: transparent;
     border: none;
     outline: none;
-    color: #f4f4f5;
+    color: #ffffff !important;
     font-family: var(--font-body);
-    font-size: 0.82rem;
+    font-size: 0.84rem;
     font-weight: 600;
     cursor: pointer;
-}
-    font-weight: 600;
-    cursor: pointer;
+    color-scheme: dark;
 }
 
 .role-selector-pill select option {
-    background-color: var(--bg-card);
-    color: #fff;
+    background-color: #18181b !important;
+    background: #18181b !important;
+    color: #ffffff !important;
+    padding: 10px 14px !important;
+    font-size: 0.88rem;
+    font-weight: 500;
+}
+
+select {
+    color-scheme: dark;
+}
+
+select option {
+    background-color: #18181b !important;
+    background: #18181b !important;
+    color: #ffffff !important;
 }
 
 /* Color Helpers */
