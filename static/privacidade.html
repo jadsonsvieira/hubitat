@@ -1,202 +1,316 @@
 <!DOCTYPE html>
-<html lang="pt-BR">
+<html lang="pt-br">
+
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Política de Privacidade & LGPD • Hubitat by Frame [IA]</title>
+    <title>Política de Privacidade e Proteção de Dados (LGPD) | Hubitat by Frame [IA]</title>
+
     <link rel="icon" type="image/png" href="favicon.png">
-    <!-- Google Fonts -->
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-    <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@300;400;500;600;700;800&family=Space+Grotesk:wght@500;700&display=swap" rel="stylesheet">
-    <!-- Font Awesome -->
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&family=Poppins:wght@500;600;700;800&display=swap" rel="stylesheet">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
-    <link rel="stylesheet" href="styles.css">
+
     <style>
-        .legal-page-wrapper {
-            max-width: 960px;
-            margin: 0 auto;
-            padding: 3.5rem 1.5rem 6rem 1.5rem;
-            color: #d4d4d8;
-            font-family: var(--font-body);
+        :root {
+            --bg-body: #09090b;
+            --bg-card: #121215;
+            --texto-principal: #ffffff;
+            --texto-secundario: #a1a1aa;
+            --roxo-primary: #8b5cf6;
+            --roxo-claro: #c084fc;
+            --verde-neon: #10b981;
+            --verde-claro: #34d399;
+            --borda: rgba(255, 255, 255, 0.08);
+        }
+
+        body {
+            margin: 0;
+            padding: 0;
+            font-family: 'Inter', sans-serif;
+            background-color: var(--bg-body);
+            color: var(--texto-principal);
             line-height: 1.7;
         }
-        .legal-header {
-            margin-bottom: 2.5rem;
-            padding-bottom: 2rem;
-            border-bottom: 1px solid rgba(255, 255, 255, 0.1);
-        }
-        .legal-header h1 {
-            font-family: var(--font-heading);
-            font-size: 2.2rem;
-            color: #fff;
-            margin-bottom: 0.5rem;
-            letter-spacing: -0.5px;
-        }
-        .legal-meta {
-            font-size: 0.85rem;
-            color: #a1a1aa;
-            display: flex;
-            gap: 1.5rem;
-            flex-wrap: wrap;
-        }
-        .legal-badge-company {
-            background: rgba(16, 185, 129, 0.1);
-            border: 1px solid rgba(16, 185, 129, 0.35);
-            padding: 0.85rem 1.25rem;
-            border-radius: 12px;
-            margin-bottom: 2.5rem;
-            font-size: 0.85rem;
-            color: #e4e4e7;
-        }
-        .legal-section {
-            margin-bottom: 2.5rem;
-        }
-        .legal-section h2 {
-            font-size: 1.25rem;
-            color: #34d399;
-            margin-bottom: 1rem;
-            font-family: var(--font-heading);
+
+        .header {
+            background: #0d0d10;
+            padding: 16px 40px;
+            border-bottom: 1px solid var(--borda);
             display: flex;
             align-items: center;
-            gap: 0.5rem;
+            justify-content: space-between;
+            position: sticky;
+            top: 0;
+            z-index: 100;
+            box-shadow: 0 4px 20px rgba(0, 0, 0, 0.4);
+            flex-wrap: wrap;
+            gap: 15px;
         }
-        .legal-section p, .legal-section ul {
-            margin-bottom: 1rem;
-            font-size: 0.92rem;
+
+        .nav-docs {
+            display: flex;
+            align-items: center;
+            gap: 10px;
         }
-        .legal-section ul {
-            padding-left: 1.5rem;
-        }
-        .legal-section li {
-            margin-bottom: 0.5rem;
-        }
-        .back-nav {
+
+        .nav-doc-link {
+            text-decoration: none;
+            padding: 8px 16px;
+            border-radius: 20px;
+            font-size: 13px;
+            font-weight: 600;
+            transition: 0.2s;
             display: inline-flex;
             align-items: center;
-            gap: 0.5rem;
-            color: #34d399;
-            text-decoration: none;
-            font-weight: 600;
-            font-size: 0.9rem;
-            margin-bottom: 1.5rem;
-            transition: var(--transition);
+            gap: 6px;
         }
-        .back-nav:hover {
+
+        .nav-doc-link.active {
+            background: var(--verde-neon);
+            color: #09090b;
+            box-shadow: 0 0 15px rgba(16, 185, 129, 0.4);
+            font-weight: 700;
+        }
+
+        .nav-doc-link:not(.active) {
+            background: rgba(255, 255, 255, 0.05);
+            color: var(--texto-secundario);
+            border: 1px solid var(--borda);
+        }
+
+        .nav-doc-link:not(.active):hover {
             color: #fff;
-            transform: translateX(-4px);
+            border-color: var(--verde-claro);
+        }
+
+        .container {
+            max-width: 860px;
+            margin: 40px auto;
+            background: var(--bg-card);
+            padding: 50px 60px;
+            border-radius: 16px;
+            box-shadow: 0 10px 40px rgba(0, 0, 0, 0.5);
+            border: 1px solid var(--borda);
+            border-top: 5px solid var(--verde-neon);
+        }
+
+        h1, h2, h3, h4 {
+            font-family: 'Poppins', sans-serif;
+            color: var(--texto-principal);
+        }
+
+        h1 {
+            border-bottom: 1px solid var(--borda);
+            padding-bottom: 20px;
+            margin-bottom: 25px;
+            font-size: 24px;
+            color: #fff;
+            display: flex;
+            align-items: center;
+            gap: 12px;
+        }
+
+        h2 {
+            margin-top: 40px;
+            color: var(--texto-principal);
+            font-size: 16px;
+            text-transform: uppercase;
+            letter-spacing: 0.5px;
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            background: rgba(255, 255, 255, 0.03);
+            padding: 10px 16px;
+            border-radius: 8px;
+            border-left: 4px solid var(--verde-neon);
+        }
+
+        h3 {
+            margin-top: 25px;
+            margin-bottom: 12px;
+            font-size: 15px;
+            display: flex;
+            align-items: center;
+            gap: 8px;
+            color: var(--verde-claro);
+        }
+
+        p, li {
+            color: var(--texto-secundario);
+            font-size: 14px;
+            margin-bottom: 12px;
+            font-weight: 400;
+        }
+
+        strong {
+            color: var(--texto-principal);
+            font-weight: 600;
+        }
+
+        ul {
+            margin-top: 0;
+            padding-left: 20px;
+        }
+
+        .box-cnpj {
+            background: linear-gradient(135deg, rgba(16, 185, 129, 0.08) 0%, rgba(139, 92, 246, 0.06) 100%);
+            border: 1px solid rgba(16, 185, 129, 0.3);
+            border-radius: 12px;
+            padding: 20px 24px;
+            margin: 25px 0;
+            font-size: 13.5px;
+            line-height: 1.8;
+        }
+
+        .destaque-ia {
+            background: rgba(16, 185, 129, 0.06);
+            border-left: 4px solid var(--verde-neon);
+            padding: 20px;
+            border-radius: 0 8px 8px 0;
+            margin: 25px 0;
+        }
+
+        .data-atualizacao {
+            font-size: 12px;
+            color: #71717a;
+            margin-bottom: 25px;
+            display: flex;
+            align-items: center;
+            gap: 6px;
+            font-weight: 500;
+        }
+
+        @media (max-width: 768px) {
+            .container {
+                margin: 20px;
+                padding: 30px 20px;
+                border-radius: 12px;
+            }
+
+            .header {
+                padding: 15px 20px;
+                justify-content: center;
+            }
+
+            h1 {
+                font-size: 20px;
+            }
         }
     </style>
 </head>
-<body style="background: #09090b; color: #fff; min-height: 100vh;">
 
-    <div class="legal-page-wrapper">
-        <a href="/" class="back-nav"><i class="fa-solid fa-arrow-left"></i> Voltar para a Página Principal</a>
+<body>
 
-        <div class="legal-header">
-            <div style="display: flex; align-items: center; gap: 1rem; margin-bottom: 1rem;">
-                <img src="logo.png" alt="Hubitat Logo" style="height: 48px; width: auto;">
+    <div class="header">
+        <a href="/" style="display: flex; align-items: center; text-decoration: none;">
+            <img src="logo.png" alt="Hubitat by Frame [IA]" style="height: 40px; object-fit: contain;">
+        </a>
+
+        <div class="nav-docs">
+            <a href="/termos" class="nav-doc-link"><i class="fa-solid fa-file-contract"></i> Termos de Uso</a>
+            <a href="/privacidade" class="nav-doc-link active"><i class="fa-solid fa-shield-halved"></i> Política de Privacidade</a>
+            <a href="/login" class="nav-doc-link" style="background: var(--verde-neon); color: #09090b; font-weight: 700;"><i class="fa-solid fa-arrow-right-to-bracket"></i> Acessar Painel</a>
+        </div>
+    </div>
+
+    <div class="container">
+        <h1><i class="fa-solid fa-shield-halved" style="color: var(--verde-claro);"></i> Política de Privacidade e Proteção de Dados (LGPD)</h1>
+
+        <div class="data-atualizacao">
+            <i class="fa-regular fa-calendar-check"></i> Versão 1.0.0 • Atualizada em Agosto de 2026 • Em conformidade com a Lei nº 13.709/2018 (LGPD)
+        </div>
+
+        <p>
+            A privacidade, a segurança dos dados e o sigilo das informações dos condôminos e moradores são pilares fundamentais do <strong>Hubitat by Frame [IA]</strong>. Esta Política de Privacidade explica detalhadamente como coletamos, tratamos, protegemos e armazenamos as suas informações.
+        </p>
+
+        <div class="box-cnpj">
+            <h4 style="margin: 0 0 10px 0; color: var(--verde-claro); font-size: 14px; text-transform: uppercase; letter-spacing: 0.5px;">
+                <i class="fa-solid fa-user-shield"></i> Identificação Institucional & Controle dos Dados
+            </h4>
+            <div style="font-size: 15px; font-weight: 700; color: #ffffff; margin-bottom: 6px;">
+                Frame [IA] — Soluções em Inteligência Artificial
             </div>
-            <h1>Política de Privacidade & Proteção de Dados (LGPD)</h1>
-            <div class="legal-meta">
-                <span><i class="fa-solid fa-shield-halved color-emerald"></i> Lei Geral de Proteção de Dados (Lei nº 13.709/2018)</span>
-                <span><i class="fa-solid fa-calendar-check color-primary"></i> Vigência: Agosto de 2026</span>
-            </div>
+            <strong>Frente Tecnológica & Marca:</strong> Frame [IA] (podendo ser doravante denominada simplesmente como <strong>"Frame"</strong>, "Frame [IA]", "Hubitat" ou "Plataforma")<br>
+            <strong>Razão Social Mantenedora:</strong> MJSV TECNOLOGIA E SOLUCOES DIGITAIS INOVA SIMPLES (I.S.)<br>
+            <strong>CNPJ:</strong> 68.614.850/0001-13<br>
+            <strong>Natureza Jurídica:</strong> 234-8 - Empresa Simples de Inovação (Inova Simples)<br>
+            <strong>Sede Oficial:</strong> Eusébio - CE, Brasil<br>
+            <strong>Encarregado de Dados (DPO) / Privacidade:</strong> contato@frameia.com.br
         </div>
 
-        <div class="legal-badge-company">
-            <strong>Controladora / Operadora de Dados:</strong> MJSV TECNOLOGIA E SOLUCOES DIGITAIS INOVA SIMPLES (I.S.)<br>
-            <strong>CNPJ:</strong> 68.614.850/0001-13 • <strong>Sede:</strong> Eusébio - Ceará<br>
-            <strong>Encarregado de Proteção de Dados (DPO):</strong> JADSON@MJSV.COM.BR | (85) 9662-4278 / (85) 8731-8995
-        </div>
+        <h2>1. Dados Coletados e Finalidade do Tratamento</h2>
+        <p>Coletamos apenas as informações estritamente necessárias para a prestação dos serviços de gestão e segurança condominial:</p>
+        <ul>
+            <li>
+                <strong>Dados Cadastrais de Moradores e Síndicos:</strong> Nome completo, e-mail corporativo/pessoal, número de WhatsApp, unidade residencial (casa/lote/apto), CPF e veículos cadastrados (marca, modelo e placa). <em>Finalidade:</em> Identificação de condôminos, autenticação segura, envio de comunicados oficiais e controle de acesso veicular.
+            </li>
+            <li>
+                <strong>Dados de Visitantes e Prestadores (Portaria):</strong> Nome, documento (RG/CPF), placa do veículo, unidade de destino, data e hora de liberação. <em>Finalidade:</em> Segurança perimetral física da portaria e emissão do Passe Express com QR Code.
+            </li>
+            <li>
+                <strong>Leitura de Etiquetas de Encomendas (OCR):</strong> Código de rastreio, nome do destinatário e transportadora. <em>Finalidade:</em> Identificação automatizada de pacotes recebidos na guarita e notificação instantânea via WhatsApp ao morador.
+            </li>
+            <li>
+                <strong>Logs de Conexão e Sessão:</strong> Endereço IP, horário de acesso e tokens JWT criptografados. <em>Finalidade:</em> Proteção cibernética, prevenção contra acessos indevidos e cumprimento de obrigação legal do Marco Civil da Internet.
+            </li>
+        </ul>
 
-        <div class="legal-section">
-            <h2>1. Compromisso com a Privacidade</h2>
-            <p>
-                A <strong>MJSV TECNOLOGIA E SOLUCOES DIGITAIS INOVA SIMPLES (I.S.)</strong> ("Hubitat by Frame [IA]") valoriza a transparência, a segurança e o respeito aos direitos fundamentais de liberdade e de privacidade dos cidadãos. Esta Política de Privacidade descreve como coletamos, tratamos, armazenamos e protegemos os dados pessoais tratados na plataforma de gestão condominial, em total consonância com a <strong>Lei Geral de Proteção de Dados Pessoais (LGPD - Lei Federal nº 13.709/2018)</strong> e o <strong>Marco Civil da Internet (Lei nº 12.965/2014)</strong>.
-            </p>
-        </div>
-
-        <div class="legal-section">
-            <h2>2. Dados Pessoais Coletados e Finalidades</h2>
-            <p>
-                Tratamos apenas os dados estritamente necessários para a prestação dos serviços de gestão e segurança condominial:
-            </p>
-            <ul>
-                <li><strong>Dados de Condôminos e Moradores:</strong> Nome completo, CPF, unidade residencial (casa/lote/apto), e-mail, telefone/WhatsApp, veículos cadastrados (marca, modelo e placa). <em>Finalidade:</em> Identificação, controle de acesso, envio de comunicados oficiais e prestação de contas.</li>
-                <li><strong>Dados de Visitantes e Prestadores:</strong> Nome, documento de identificação (RG/CPF), placa do veículo, unidade de destino, data e horário de entrada/saída. <em>Finalidade:</em> Segurança patrimonial perimetral e controle de acesso à guarita.</li>
-                <li><strong>Imagens de Etiquetas de Encomendas (OCR):</strong> Código de rastreio, nome do destinatário e transportadora. <em>Finalidade:</em> Notificação automatizada de entregas recebidas na portaria via Inteligência Artificial.</li>
-                <li><strong>Logs de Conexão e Sessão:</strong> Endereço IP, data e hora de acesso, tipo de dispositivo e tokens JWT criptografados. <em>Finalidade:</em> Segurança contra acessos indevidos e cumprimento de obrigação legal do Marco Civil da Internet.</li>
-            </ul>
-        </div>
-
-        <div class="legal-section">
-            <h2>3. Bases Legais para o Tratamento (Art. 7º da LGPD)</h2>
-            <p>
-                O tratamento de dados pessoais no Hubitat é fundamentado nas seguintes hipóteses legais:
-            </p>
-            <ul>
-                <li><strong>Execução de Contrato (Art. 7º, V):</strong> Necessário para a prestação dos serviços contratados pelo condomínio e disponibilização do aplicativo.</li>
-                <li><strong>Legítimo Interesse e Segurança Patrimonial (Art. 7º, IX e Art. 11, II, "g"):</strong> Garantia da segurança física dos condôminos, prevenção a fraudes e controle de acesso perimetral da portaria.</li>
-                <li><strong>Cumprimento de Obrigação Legal (Art. 7º, II):</strong> Guarda de registros de conexão e obrigações fiscais/contábeis.</li>
-            </ul>
-        </div>
-
-        <div class="legal-section">
-            <h2>4. Segurança da Informação e Armazenamento</h2>
-            <p>
-                4.1. <strong>Criptografia:</strong> Todo o tráfego de dados é protegido por certificados TLS/SSL de alta segurança. Senhas são armazenadas utilizando hashes criptográficos unidirecionais seguros (PBKDF2/SHA-256) e tokens de autenticação JWT assinados.
-            </p>
-            <p>
-                4.2. <strong>Infraestrutura Dedicada:</strong> Os dados são hospedados em servidores de banco de dados MySQL dedicados com firewall ativo, isolamento de acessos e rotinas diárias de backup automatizado.
-            </p>
-            <p>
-                4.3. <strong>Não Comercialização:</strong> A <strong>MJSV Tecnologia</strong> NÃO vende, NÃO aluga e NÃO comercializa dados pessoais de condôminos, visitantes ou funcionários sob nenhuma hipótese.
+        <h2>2. Inteligência Artificial Ética e Privacidade Isolada</h2>
+        <div class="destaque-ia">
+            <h4 style="margin: 0 0 10px 0; color: var(--verde-claro); display: flex; align-items: center; gap: 8px;">
+                <i class="fa-solid fa-brain"></i> Garantia Contratual de Não Compartilhamento para Treinamento de IA
+            </h4>
+            <p style="margin: 0; font-size: 13.5px; color: #fff; line-height: 1.7;">
+                Garantimos formalmente que <strong>os dados de moradores, relatórios de portaria, documentos de assembleia e informações do seu condomínio NUNCA são utilizados para treinar modelos públicos de Inteligência Artificial</strong>. O processamento pelo Frame IA Copilot e OCR ocorre em ambiente efêmero, isolado e encriptado, descartando a requisição imediatamente após a resposta.
             </p>
         </div>
 
-        <div class="legal-section">
-            <h2>5. Direitos dos Titulares de Dados (Art. 18 da LGPD)</h2>
-            <p>
-                O titular dos dados pessoais tem o direito de solicitar a qualquer momento:
-            </p>
-            <ul>
-                <li>Confirmação da existência de tratamento e acesso aos dados;</li>
-                <li>Correção de dados incompletos, inexatos ou desatualizados;</li>
-                <li>Anonimização, bloqueio ou eliminação de dados desnecessários ou tratados em desconformidade;</li>
-                <li>Portabilidade dos dados a outro fornecedor de serviço;</li>
-                <li>Informação sobre as entidades públicas e privadas com as quais o controlador realizou uso compartilhado de dados.</li>
-            </ul>
-            <p>
-                Para exercer seus direitos, o titular pode entrar em contato diretamente com nosso Encarregado de Dados (DPO) através do e-mail <strong>JADSON@MJSV.COM.BR</strong> ou <strong>contato@frameia.com.br</strong>.
-            </p>
-        </div>
+        <h2>3. Compartilhamento de Dados com Parceiros Essenciais</h2>
+        <p>
+            O Hubitat <strong>não comercializa, não aluga e não cede</strong> os dados do condomínio a terceiros. O tráfego seguro de informações ocorre única e exclusivamente com provedores de infraestrutura indispensáveis para a operação:
+        </p>
+        <ul>
+            <li><strong>Hostinger Datacenter:</strong> Hospedagem em servidores dedicados com banco de dados MySQL isolado, proteção física e firewall.</li>
+            <li><strong>Meta Platforms (WhatsApp Cloud API):</strong> Tráfego criptografado para compartilhamento de Passes QR Code e avisos de encomendas aos moradores.</li>
+            <li><strong>Mercado Pago:</strong> Processamento seguro de pagamentos e conciliação bancária via Pix.</li>
+            <li><strong>Google Gemini API Enterprise:</strong> Motor corporativo isolado para OCR e assistência de inteligência artificial.</li>
+        </ul>
 
-        <div class="legal-section">
-            <h2>6. Retenção e Descarte de Dados</h2>
-            <p>
-                Os dados pessoais serão retidos pelo período necessário para cumprir as finalidades para as quais foram coletados, respeitando os prazos legais de guarda de documentos previstos no Código Civil, no Marco Civil da Internet e na legislação condominial. Ao término do contrato ou mediante solicitação válida, os dados serão excluídos de forma segura ou anonimizados.
-            </p>
-        </div>
+        <h2>4. Medidas de Segurança da Informação</h2>
+        <ul>
+            <li><strong>Criptografia de Senhas (One-Way Hashing):</strong> As senhas são protegidas por algoritmos PBKDF2/SHA-256 e tokens de sessão assinados JWT, impossibilitando o acesso à senha real mesmo por administradores do sistema.</li>
+            <li><strong>Tráfego Seguro (SSL / HTTPS):</strong> 100% da navegação e chamadas de API utilizam criptografia forte TLS 1.3 (256 bits).</li>
+            <li><strong>Isolamento Multi-Tenant de Banco de Dados:</strong> Cada condomínio possui segregação lógica estrita de informações, garantindo total privacidade entre residenciais.</li>
+        </ul>
 
-        <div class="legal-section">
-            <h2>7. Canal de Contato com o Encarregado (DPO)</h2>
-            <p>
-                Para dúvidas, esclarecimentos, sugestões ou solicitações relacionadas a esta Política de Privacidade e ao tratamento de seus dados pessoais, entre em contato:
-            </p>
-            <p>
-                <strong>MJSV TECNOLOGIA E SOLUCOES DIGITAIS INOVA SIMPLES (I.S.)</strong><br>
-                <strong>E-mail:</strong> JADSON@MJSV.COM.BR / contato@frameia.com.br<br>
-                <strong>Telefones:</strong> (85) 9662-4278 / (85) 8731-8995<br>
-                <strong>Endereço:</strong> Eusébio - Ceará
-            </p>
-        </div>
+        <h2>5. Direitos do Titular de Dados (LGPD - Art. 18)</h2>
+        <p>Em conformidade com a Lei Geral de Proteção de Dados, os condôminos e administradores têm total autonomia para:</p>
+        <ul>
+            <li><strong>Acessar e Retificar:</strong> Visualizar e editar seus dados cadastrais diretamente na aba Perfil ou através da administração do condomínio.</li>
+            <li><strong>Exportar Registros:</strong> Fazer download de relatórios de acesso, histórico de reservas e prestação de contas.</li>
+            <li><strong>Direito à Eliminação:</strong> Solicitar a remoção ou anonimização de seus dados cadastrais ao término do vínculo de residência no condomínio, respeitados os prazos legais de guarda.</li>
+        </ul>
 
-        <div style="margin-top: 3.5rem; padding-top: 2rem; border-top: 1px solid rgba(255, 255, 255, 0.1); text-align: center; font-size: 0.85rem; color: #71717a;">
-            © 2026 Hubitat by Frame [IA] • MJSV TECNOLOGIA E SOLUCOES DIGITAIS INOVA SIMPLES (I.S.) • CNPJ: 68.614.850/0001-13<br>
-            Eusébio - Ceará
+        <h2>6. Canal de Atendimento de Privacidade & DPO</h2>
+        <p>
+            Para exercer qualquer direito previsto na LGPD, tirar dúvidas ou solicitar informações sobre o tratamento de seus dados, entre em contato diretamente com o nosso Encarregado de Proteção de Dados:
+        </p>
+        <p>
+            📧 <strong>E-mail de Privacidade:</strong> <a href="mailto:contato@frameia.com.br" style="color: var(--verde-claro); font-weight: 700; text-decoration: none;">contato@frameia.com.br</a> ou <a href="mailto:jadson@mjsv.com.br" style="color: var(--verde-claro); font-weight: 700; text-decoration: none;">jadson@mjsv.com.br</a>
+        </p>
+
+        <div style="margin-top: 50px; padding-top: 25px; border-top: 1px solid var(--borda); font-size: 12px; color: #71717a; text-align: center; line-height: 1.8;">
+            <p style="margin: 0;">
+                <strong style="color: #fff; font-size: 13px;">Frame [IA] — Soluções em Inteligência Artificial</strong><br>
+                Operada juridicamente por <strong>MJSV TECNOLOGIA E SOLUCOES DIGITAIS INOVA SIMPLES (I.S.)</strong> • CNPJ: 68.614.850/0001-13<br>
+                Sede: Eusébio - CE, Brasil • Consulte também os nossos <a href="/termos" style="color: var(--verde-claro); font-weight: 600; text-decoration: none;">Termos de Uso do Hubitat</a>
+            </p>
         </div>
     </div>
 
 </body>
+
 </html>
