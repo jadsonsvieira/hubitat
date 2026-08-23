@@ -1,4 +1,4 @@
-# Hubitat 🏢
+# Hubitat by Frame [IA] 🏢
 
 > **Plataforma SaaS de Gestão Condominial Inteligente, Controle de Acesso & Portaria Digital**  
 > Desenvolvida sob o ecossistema **Frame [IA]** / **MJSV Holding**.
@@ -7,7 +7,7 @@
 
 ## 📌 Visão Geral
 
-O **Hubitat** é uma plataforma moderna concebida para simplificar a administração de condomínios residenciais e comerciais. A ferramenta conecta síndicos, porteiros e moradores em um ambiente digital unificado, seguro e intuitivo, trazendo automação para autorizações de entrada e governança predial.
+O **Hubitat** (ou **Hubitat by Frame [IA]**) é uma plataforma moderna concebida para simplificar a administração de condomínios residenciais e comerciais. A ferramenta conecta síndicos, porteiros e moradores em um ambiente digital unificado, seguro e intuitivo, trazendo automação para autorizações de entrada e governança predial.
 
 ---
 
@@ -85,4 +85,4 @@ hubitat/
 
 ## 🔒 Governança & Propriedade
 
-Copyright © 2026 **Frame [IA]** / **MJSV Holding**. Todos os direitos reservados.
+Copyright © 2026 **Hubitat by Frame [IA]** / **MJSV Holding**. Todos os direitos reservados.
