@@ -1868,9 +1868,14 @@ def votar_assembleia(req: VotarEnqueteRequest, current_user: dict = Depends(veri
             # Registra o voto
             cursor.execute("INSERT INTO hubitat_assembleia_votos (enquete_id, user_email, voto) VALUES (%s, %s, %s)", (req.enquete_id, user_email, voto))
             
-            # Incrementa o contador na enquete
-            col_voto = f"votos_{voto}"
-            cursor.execute(f"UPDATE hubitat_assembleia_enquetes SET {col_voto} = {col_voto} + 1 WHERE id = %s", (req.enquete_id,))
+            # Incrementa o contador na enquete de forma estatica e segura
+            if voto == "favor":
+                cursor.execute("UPDATE hubitat_assembleia_enquetes SET votos_favor = votos_favor + 1 WHERE id = %s", (req.enquete_id,))
+            elif voto == "contra":
+                cursor.execute("UPDATE hubitat_assembleia_enquetes SET votos_contra = votos_contra + 1 WHERE id = %s", (req.enquete_id,))
+            elif voto == "abstencao":
+                cursor.execute("UPDATE hubitat_assembleia_enquetes SET votos_abstencao = votos_abstencao + 1 WHERE id = %s", (req.enquete_id,))
+            
             conn.commit()
             cursor.close()
             conn.close()
@@ -2068,7 +2073,7 @@ def delete_colaborador(colab_id: str, token: dict = Depends(verify_token)):
 
 # --- CONDOMÍNIO CONFIGURAÇÕES & MORADORES ENDPOINTS ---
 @app.get("/api/condominio/config")
-def get_condominio_config():
+def get_condominio_config(token: dict = Depends(verify_token)):
     if not USE_DB:
         return {
             "id": "eusebio-alphaville",
