@@ -33,12 +33,12 @@ jobs:
 
       - name: Run Static Analysis (Ruff)
         run: |
-          ruff check . --exit-zero
+          ruff check . --exclude _versoes --exit-zero
 
       - name: Run Flake8 Linting
         run: |
-          flake8 . --count --select=E9,F63,F7,F82 --show-source --statistics
-          flake8 . --count --exit-zero --max-complexity=15 --max-line-length=127 --statistics
+          flake8 . --count --select=E9,F63,F7,F82 --exclude=_versoes,.venv,build,dist --show-source --statistics
+          flake8 . --count --exit-zero --max-complexity=15 --max-line-length=127 --exclude=_versoes,.venv,build,dist --statistics
 
   deploy-check:
     name: Deploy Readiness Check
